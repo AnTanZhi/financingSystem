@@ -4,6 +4,7 @@
     multiple
     placeholder="融资类型"
     clearable
+    collapse-tags
   >
     <el-option
       v-for="item in categoriesData"

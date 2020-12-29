@@ -5,6 +5,7 @@ import Layout from '@/layout'
 import rongZiCanShu from './modules/rongZiCanShu'
 import xiTongSheZhi from './modules/xiTongSheZhi'
 import rongZiGuanLi from './modules/rongZiGuanLi'
+import duiWaiDanBao from './modules/duiWaiDanBao'
 export const constantRoutes = [
   {
     path: '/',
@@ -30,6 +31,8 @@ export const constantRoutes = [
   rongZiGuanLi,
   /* 融资参数 */
   rongZiCanShu,
+  /* 对外担保 */
+  duiWaiDanBao,
   /* 系统设置 */
   xiTongSheZhi,
 ]

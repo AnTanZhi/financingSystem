@@ -12,6 +12,7 @@ import './icons'
 import './permission'
 import './utils/error-log'
 import * as filters from './filters'
+import '@/utils/rem'
 if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
   mockXHR()
