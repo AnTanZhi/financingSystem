@@ -1,15 +1,6 @@
 <template>
-  <el-select
-    v-model="copyFid"
-    placeholder="所属大类"
-    @change="getChange"
-  >
-    <el-option
-      v-for="item in fidData"
-      :key="item.value"
-      :label="item.label"
-      :value="item.value"
-    >
+  <el-select v-model="copyFid" placeholder="所属大类" @change="getChange">
+    <el-option v-for="item in fidData" :key="item.value" :label="item.label" :value="String(item.value)">
     </el-option>
   </el-select>
 </template>

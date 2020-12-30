@@ -1,17 +1,7 @@
 <template>
-  <el-select
-    v-model="copyCategoriesId"
-    multiple
-    placeholder="融资类型"
-    clearable
-    collapse-tags
-  >
-    <el-option
-      v-for="item in categoriesData"
-      :key="item.pid"
-      :label="item.pname"
-      :value="item.pid"
-    >
+  <el-select v-model="copyCategoriesId" :multiple="isMultiple" placeholder="融资类型" clearable collapse-tags
+    @change="getChange">
+    <el-option v-for="item in categoriesData" :key="item.pid" :label="item.pname" :value="String(item.pid)">
     </el-option>
   </el-select>
 </template>
@@ -20,7 +10,7 @@
 import index from "@/api/index";
 export default {
   watch: {
-    roleIds() {
+    categoriesId() {
       this.copyCategoriesId = this.categoriesId;
     },
   },
@@ -29,6 +19,11 @@ export default {
     categoriesId: {
       type: [String, Number, Array],
       default: "",
+      required: false,
+    },
+    isMultiple: {
+      type: Boolean,
+      default: true,
       required: false,
     },
   },

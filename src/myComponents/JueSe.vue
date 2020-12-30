@@ -1,18 +1,6 @@
 <template>
-  <el-select
-    v-model="copyRoleIds"
-    multiple
-    collapse-tags
-    placeholder="角色"
-    @change="getChange"
-  >
-    <el-option
-      v-for="item in roleData"
-      :key="item.roleId"
-      :label="item.roleName"
-      :value="item.roleId"
-    >
-    </el-option>
+  <el-select v-model="copyRoleIds" multiple collapse-tags placeholder="角色" @change="getChange">
+    <el-option v-for="item in roleData" :key="item.roleId" :label="item.roleName" :value="String(item.roleId)" />
   </el-select>
 </template>
 

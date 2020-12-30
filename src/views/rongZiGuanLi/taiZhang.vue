@@ -1,246 +1,89 @@
 <template>
   <div class="view-container bg-gray">
     <div class="border-card">
-      <header class="view-header">
+      <header class="view-header" style="margin-bottom:0px !important">
         <div class="header-container">
-          <el-row>
-            <el-col :span="13">
-              <el-row :gutter="10">
-                <el-col :span="7">
-                  <LeiXing v-model="isNull" />
-                </el-col>
-                <el-col
-                  :span="7"
-                  style="display:flex;align-items: center;"
-                >
-                  <el-select
-                    v-model="isNull"
-                    clearable
-                  >
-                    <el-option
-                      :value="0"
-                      label="金融机构"
-                    />
-                    <el-option
-                      :value="0"
-                      label="融资主体"
-                    />
-                    <el-option
-                      :value="0"
-                      label="债务名称"
-                    />
+          <el-form :inline="true" :model="selectParams" class="demo-form-inline">
+            <div style="display:flex;justify-content: space-between;">
+              <div>
+                <el-form-item>
+                  <LeiXing v-model="isNull" style="width:230px" />
+                </el-form-item>
+                <el-form-item>
+                  <div style="display:flex;">
+                    <el-select v-model="isNull" style="width:120px">
+                      <el-option :value="0" label="金融机构" />
+                      <el-option :value="1" label="融资主体" />
+                    </el-select>
+                    <span v-text="`:`" style="font-size:.2rem;margin-left:.125rem;margin-right:.125rem" />
+                    <el-input v-model="isNull" clearable style="width:150px" />
+                  </div>
+                </el-form-item>
+                <el-form-item>
+                  <el-select v-model="isNull" style="width:80px">
+                    <el-option label="2019" value="2019"></el-option>
+                    <el-option label="2020" value="2020"></el-option>
+                    <el-option label="2021" value="2021"></el-option>
                   </el-select>
-                  ：
-                  <el-input v-model="isNull" />
-                </el-col>
-                <el-col :span="3">
-                  <BiZhong v-model="isNull" />
-                </el-col>
-                <el-col :span="4">
-                  <GongSi v-model="isNull" />
-                </el-col>
-                <el-col :span="1">
-                  <el-button
-                    type="primary"
-                    :icon="isShow?'el-icon-menu':'el-icon-s-grid'"
-                    @click="()=>isShow=!isShow"
-                  >{{isShow?'收起':'展开'}}</el-button>
-                </el-col>
-              </el-row>
-            </el-col>
-            <el-col
-              :span="11"
-              class="handle-btn"
-            >
-              <ShangChuan />
-              <el-button
-                type="primary"
-                icon="el-icon-download"
-                @click="goAdd"
-              >模板下载</el-button>
-              <el-button
-                type="primary"
-                icon="el-icon-document-checked"
-                @click="goAdd"
-              >导出</el-button>
-              <el-button
-                type="primary"
-                icon="el-icon-plus"
-                @click="()=>this.$router.push('/rongZiGuanLi/guanLiAdd')"
-              >添加</el-button>
-              <el-button
-                type="danger"
-                icon="el-icon-delete"
-                @click="delS"
-              >删除选中</el-button>
-            </el-col>
-          </el-row>
-          <el-row
-            style="margin-top:10px"
-            v-if="isShow"
-            :gutter="10"
-          >
-            <el-col :span="24">
-              <el-col :span="2">
-                <el-select
-                  clearable
-                  v-model="isNull"
-                  placeholder="是否结清"
-                >
-                  <el-option
-                    label="是"
-                    :value="1"
-                  />
-                  <el-option
-                    label="否"
-                    :value="1"
-                  />
-                </el-select>
-              </el-col>
-              <el-col :span="2">
-                <KeShi v-model="isNull" />
-              </el-col>
-              <el-col :span="4">
-                <el-date-picker
-                  v-model="isNull"
-                  type="daterange"
-                  range-separator="~"
-                  start-placeholder="贷款日期"
-                  end-placeholder="结束日期"
-                  format="yyyy-MM-dd"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                >
-                </el-date-picker>
-              </el-col>
-            </el-col>
-          </el-row>
+                </el-form-item>
+                <el-form-item>
+                  <BiZhong v-model="isNull" style="width:90px" />
+                </el-form-item>
+                <el-form-item>
+                  <GongSi v-model="isNull" style="width:110px" />
+                </el-form-item>
+                <el-form-item>
+                  <KeShi v-model="isNull" style="width:110px" />
+                </el-form-item>
+                <el-form-item>
+                  <el-date-picker v-model="isNull" type="daterange" range-separator="~" start-placeholder="贷款日期"
+                    end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" style="width:240px" />
+                </el-form-item>
+              </div>
+              <div>
+                <el-form-item>
+                  <el-button type="primary" icon="el-icon-document-checked">导出</el-button>
+                </el-form-item>
+              </div>
+            </div>
+          </el-form>
         </div>
       </header>
       <section class="table-container view-section">
-        <el-table
-          :header-cell-style="{background:'#F0FAFF',color:'#787878'}"
-          border
-          stripe
-          v-loading="loading"
-          element-loading-text="加载中，请稍候……"
-          :data="tableData"
-          tooltip-effect="dark"
-          style="width: 100%"
-        >
+        <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
+          element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%">
           <el-table-column label="融资台账(金额单位:万元)">
-            <el-table-column
-              label="序号"
-              prop="pname"
-              align="left"
-            />
-            <el-table-column
-              label="合同编号"
-              prop="pname"
-              align="left"
-            />
-            <el-table-column
-              label="融资主体"
-              prop="pname"
-              align="left"
-            />
-            <el-table-column
-              label="金融机构"
-              prop="pname"
-              align="left"
-            />
-            <el-table-column
-              label="融资类型"
-              prop="pname"
-              align="left"
-            />
-            <el-table-column
-              label="期限"
-              prop="pname"
-              align="left"
-              width="110"
-            />
-            <el-table-column
-              label="年利率"
-              prop="pname"
-              align="left"
-              width="120"
-            />
-            <el-table-column
-              label="融资金额(万元)"
-              prop="pname"
-              align="left"
-              width="120"
-            />
-            <el-table-column
-              label="本期余额(万元)"
-              prop="pname"
-              align="left"
-              width="120"
-            />
-            <el-table-column
-              label="币种"
-              prop="pname"
-              align="left"
-            />
-            <el-table-column
-              label="2020"
-              prop="pname"
-              align="left"
-            >
-              <el-table-column
-                label="还本"
-                prop="pname"
-                align="left"
-              />
-              <el-table-column
-                label="利息"
-                prop="pname"
-                align="left"
-              />
+            <el-table-column label="序号" prop="pname" align="left" />
+            <el-table-column label="合同编号" prop="pname" align="left" />
+            <el-table-column label="融资主体" prop="pname" align="left" />
+            <el-table-column label="金融机构" prop="pname" align="left" />
+            <el-table-column label="融资类型" prop="pname" align="left" />
+            <el-table-column label="期限" prop="pname" align="left" width="110" />
+            <el-table-column label="年利率" prop="pname" align="left" width="120" />
+            <el-table-column label="融资金额(万元)" prop="pname" align="left" width="120" />
+            <el-table-column label="本期余额(万元)" prop="pname" align="left" width="120" />
+            <el-table-column label="币种" prop="pname" align="left" />
+            <el-table-column label="2020" prop="pname" align="left">
+              <el-table-column label="还本" prop="pname" align="left" />
+              <el-table-column label="利息" prop="pname" align="left" />
             </el-table-column>
           </el-table-column>
         </el-table>
       </section>
-      <el-pagination
-        style="text-align: end;"
-        background
-        @size-change="publicSizeSelect"
-        @current-change="publicPageSelect"
-        :current-page="selectParams.pageIndex"
-        :page-sizes="[10, 20, 50, 100]"
-        :page-size="selectParams.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-      >
+      <el-pagination style="text-align: end;" background @size-change="publicSizeSelect"
+        @current-change="publicPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
+        :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog
-      :title="title"
-      :visible.sync="addOrUpdateDig"
-    >
-      <el-form
-        :rules="rules"
-        :model="addOrUpdateParams"
-        label-width="120px"
-        ref="addOrUpdateParams"
-      >
-        <el-form-item
-          label="主体名称"
-          prop="pname"
-        >
+    <el-dialog :title="title" :visible.sync="addOrUpdateDig">
+      <el-form :rules="rules" :model="addOrUpdateParams" label-width="120px" ref="addOrUpdateParams">
+        <el-form-item label="主体名称" prop="pname">
           <el-input v-model="addOrUpdateParams.pname" />
         </el-form-item>
       </el-form>
-      <div
-        slot="footer"
-        class="dialog-footer"
-      >
+      <div slot="footer" class="dialog-footer">
         <el-button @click="addOrUpdateDig = false">取 消</el-button>
-        <el-button
-          type="primary"
-          @click="addLeiXing"
-          v-loading="btnLoading"
-        >确 定</el-button>
+        <el-button type="primary" @click="addLeiXing" v-loading="btnLoading">确 定</el-button>
       </div>
     </el-dialog>
   </div>

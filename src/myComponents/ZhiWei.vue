@@ -1,16 +1,8 @@
 <template>
-  <el-select
-    v-model="copyPosId"
-    placeholder="职位"
-    :clearable="cle"
-    @change="getChange"
-  >
-    <el-option
-      v-for="item in postData"
-      :key="item.positionsId"
-      :label="item.postName"
-      :value="item.positionsId"
-    ></el-option>
+  <el-select v-model="copyPosId" placeholder="职位" :clearable="cle" @change="getChange">
+    <el-option v-for="item in postData" :key="item.positionsId" :label="item.postName"
+      :value="String(item.positionsId)">
+    </el-option>
   </el-select>
 </template>
 <script>

@@ -1,23 +1,13 @@
 <template>
-  <el-select
-    v-model="copyDataId"
-    placeholder="付息频率"
-    :clearable="cle"
-    @change="getChange"
-  >
-    <el-option
-      v-for="item in dataInfo"
-      :key="item.value"
-      :label="item.label"
-      :value="item.value"
-    ></el-option>
+  <el-select v-model="copyDataId" placeholder="付息频率" :clearable="cle" @change="getChange">
+    <el-option v-for="item in dataInfo" :key="item.value" :label="item.label" :value="String(item.value)" />
   </el-select>
 </template>
 <script>
 import index from "@/api/index";
 export default {
   watch: {
-    posId() {
+    dataId() {
       this.copyDataId = this.dataId;
     },
   },

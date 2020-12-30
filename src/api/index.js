@@ -112,4 +112,11 @@ export default {
       method: 'GET'
     })
   },
+  /* 获取抵质押物类型 */
+  getCollateralType() {
+    return request({
+      url: `financing/rongziParam/getDywTypeMap`,
+      method: 'GET'
+    })
+  },
 }

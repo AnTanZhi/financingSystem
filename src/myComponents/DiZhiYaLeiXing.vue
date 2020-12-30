@@ -1,5 +1,5 @@
 <template>
-  <el-select v-model="copyDataId" placeholder="还款模式" :clearable="cle" @change="getChange">
+  <el-select v-model="copyDataId" placeholder="抵质押物类型" :clearable="cle" @change="getChange">
     <el-option v-for="(item,index) in dataInfo" :key="index" :label="item" :value="String(index)" />
   </el-select>
 </template>
@@ -35,14 +35,14 @@ export default {
     getChange(val) {
       this.$emit("change", val);
     },
-    getRepaymentMode() {
-      index.getRepaymentMode().then((res) => {
+    getCollateralType() {
+      index.getCollateralType().then((res) => {
         this.dataInfo = res.data;
       });
     },
   },
   mounted() {
-    this.getRepaymentMode();
+    this.getCollateralType();
   },
 };
 </script>

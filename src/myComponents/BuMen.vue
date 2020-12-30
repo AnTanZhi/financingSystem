@@ -1,16 +1,7 @@
 <template>
-  <el-select
-    v-model="copyDepartId"
-    placeholder="部门"
-    :clearable="cle"
-    @change="getChange"
-  >
-    <el-option
-      v-for="item in departmentData"
-      :key="item.departId"
-      :label="item.departName"
-      :value="item.departId"
-    />
+  <el-select v-model="copyDepartId" placeholder="部门" :clearable="cle" @change="getChange">
+    <el-option v-for="item in departmentData" :key="item.departId" :label="item.departName"
+      :value="String(item.departId)" />
   </el-select>
 </template>
 
