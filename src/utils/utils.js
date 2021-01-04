@@ -19,7 +19,7 @@ export const isNull = (value) => {
   return true
 }
 /* 表格合计 */
-export const tableTotal = (param, total, dataName) => {
+export const tableTotal = (param, dataName) => {
   const { columns, data } = param;
   const sums = [];
   columns.forEach((column, index) => {

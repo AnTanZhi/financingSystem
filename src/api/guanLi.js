@@ -31,4 +31,27 @@ export default {
       data
     })
   },
+  /* 添加/修改放款 */
+  setLoan(data) {
+    return request({
+      url: `financing/rongziFangdai/addOrUpdateEntity`,
+      method: 'POST',
+      data
+    })
+  },
+  /* 放款详细 */
+  loanInfo(id) {
+    return request({
+      url: `financing/rongziFangdai/getEntityById/${id}`,
+      method: 'GET'
+    })
+  },
+  /* 放款删除 */
+  delLoan(data) {
+    return request({
+      url: `financing/rongziFangdai/delete/{ids}`,
+      method: 'DELETE',
+      data
+    })
+  },
 }

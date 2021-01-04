@@ -251,7 +251,7 @@
         <el-divider content-position="left">
           <div style="display:flex;align-items:center">
             <span style="color: #666666;font-weight: 900;font-size: 1.2em">放款金额</span>
-            <el-button type="success" icon="el-icon-edit" circle size="mini" @click="addCollateral"
+            <el-button type="success" icon="el-icon-edit" circle size="mini" @click="()=> this.loanAmountDia = true"
               style="margin-left:10px" v-if="this.$route.query.id" />
           </div>
         </el-divider>
@@ -301,20 +301,94 @@
           <el-table-column label="手续费(万元)" :formatter="row=>Number(row.sxf).toFixed(6)" align="right" />
           <el-table-column label="保证金(万元)" :formatter="row=>Number(row.bzj).toFixed(6)" align="right" />
         </el-table>
+        <!-- 放款金额修改对话框 -->
         <el-dialog title="新沂市城市投资发展有限公司内部办公平台" :visible.sync="loanAmountDia">
-          <el-form :model="loanAmountParams">
+          <el-form :model="loanAmountParams" label-width="130px">
+            <el-row>
+              <el-col :span="8">
+                <ShangChuan />
+              </el-col>
+              <el-col :span="4">
+                <el-button type="primary">模板下载</el-button>
+              </el-col>
+            </el-row>
+            <div style="border:#CCCCCC 1px solid;margin-top:10px">
+              <div
+                style="height: 35px;line-height: 35px;font-size: 14px;font-weight: bold;padding-left: 15px;color: #5a5a5a;border-bottom: 1px solid #ccc;box-shadow: inset 0 0 0px 1px #FFF;border-radius: 4px 4px 0 0;background:#F8F8F8">
+                放款金额编辑</div>
+              <div style="padding:10px 20px">
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="放款金额(万元)：">
+                      <el-input placeholder="放款金额" type="Number" v-model="loanAmountParams.efkjy" />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="放款日期：">
+                      <el-date-picker v-model="loanAmountParams.efksj" type="date" placeholder="选择日期"
+                        value-format="yyyy-MM-dd HH:mm:ss">
+                      </el-date-picker>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="利率(%)：">
+                      <el-input placeholder="利率" type="number" v-model="loanAmountParams.efkll" />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="手续费(万元)：">
+                      <el-input placeholder="手续费" type="number" v-model="loanAmountParams.sxf" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="保证金(万元)：">
+                      <el-input placeholder="保证金" type="number" v-model="loanAmountParams.bzj" />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <div style="text-align:center">
+                  <el-button type="primary" @click="updLoanAmount">确定</el-button>
+                </div>
+              </div>
+            </div>
           </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="loanAmountDia = false">确 定</el-button>
-          </div>
+          <el-button type="danger" style="margin-top:20px;margin-bottom:10px" @click="delLoan">删除选中</el-button>
+          <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
+            element-loading-text="加载中，请稍候……" :data="addOrUpdParams.rongziFangdais" tooltip-effect="dark"
+            style="width: 100%;" @selection-change="loanCountChange" :summary-method="loanCount" show-summary>
+            <el-table-column type="selection" width="40" align="center" />
+            <el-table-column label="放款金额(万元)" :formatter="row=>Number(row.efkjy).toFixed(6)" align="right"
+              prop="efkjy" />
+            <el-table-column label="放款日期" width="100" :formatter="row=>String(row.efksj).substring(0,10)" />
+            <el-table-column label="利率(%)" prop="efkll" align="right" :formatter="row=>`${Number(row.efkll)}%`" />
+            <el-table-column label="手续费(万元)" :formatter="row=>Number(row.sxf).toFixed(6)" align="right" prop="sxf" />
+            <el-table-column label="保证金(万元)" :formatter="row=>Number(row.bzj).toFixed(6)" align="right" prop="bzj" />
+            <el-table-column label="日期" width="100" :formatter="row=>String(row.addTime).substring(0,10)" />
+            <el-table-column label="操作" align="center" width="50">
+              <template slot-scope="s">
+                <el-tooltip class="item" effect="dark" content="编辑" placement="bottom">
+                  <i class="el-icon-edit-outline edit-btn" @click="goUpd(s.row.id)" />
+                </el-tooltip>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-pagination style="text-align: end;margin-top:10px" background @size-change="publicSizeSelect"
+            @current-change="publicPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
+            :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper"
+            :total="addOrUpdParams.rongziFangdais.length">
+          </el-pagination>
         </el-dialog>
         <!-- 资金使用情况登记表代码块 -->
         <el-divider content-position="left">
           <div style="display:flex;align-items:center">
             <span style="color: #666666;font-weight: 900;font-size: 1.2em">资金使用情况登记表</span>
             <span style="color: #666666;font-weight: 900;font-size: 1.2em;margin-left:10px"
-              v-if="this.$route.query.id">监管账户余额: 0.000000(万元)</span>
-            <el-button type="success" icon="el-icon-edit" circle size="mini" @click="addCollateral"
+              v-if="this.$route.query.id">监管账户余额: {{Number(addOrUpdParams.superviseBalance).toFixed(6)}}(万元)</span>
+            <el-button type="success" icon="el-icon-edit" circle size="mini" @click="updFundsTable"
               style="margin-left:10px" v-if="this.$route.query.id" />
           </div>
         </el-divider>
@@ -357,6 +431,71 @@
           <el-table-column label="提款账户" prop="tiAccount" />
           <el-table-column label="日期" :formatter="row=>String(row.tiTime).substring(0,10)" width="100" align="center" />
         </el-table>
+        <!-- 放款金额修改对话框 -->
+        <el-dialog title="新沂市城市投资发展有限公司内部办公平台" :visible.sync="updFundsTableDia">
+          <el-form :model="updFundsParams" label-width="130px">
+            <div style="border:#CCCCCC 1px solid;margin-top:10px">
+              <div
+                style="height: 35px;line-height: 35px;font-size: 14px;font-weight: bold;padding-left: 15px;color: #5a5a5a;border-bottom: 1px solid #ccc;box-shadow: inset 0 0 0px 1px #FFF;border-radius: 4px 4px 0 0;background:#F8F8F8">
+                资金使用情况登记表编辑</div>
+              <div style="padding:10px 20px">
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="提款金额(万元)：">
+                      <el-input placeholder="提款金额" type="Number" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="提款银行：">
+                      <el-input placeholder="提款银行" />
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <el-row>
+                  <el-col :span="12">
+                    <el-form-item label="提款账户：">
+                      <el-input placeholder="提款账户" />
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="12">
+                    <el-form-item label="日期：">
+                      <el-date-picker type="date" placeholder="选择日期" value-format="yyyy-MM-dd hh:MM:ss">
+                      </el-date-picker>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+                <div style="text-align:center">
+                  <el-button type="primary">确定</el-button>
+                </div>
+              </div>
+            </div>
+          </el-form>
+          <!-- <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
+            element-loading-text="加载中，请稍候……" :data="addOrUpdParams.rongziFangdais" tooltip-effect="dark"
+            style="width: 100%;margin-top:20px" @selection-change="loanCountChange" :summary-method="loanCount"
+            show-summary>
+            <el-table-column type="selection" width="40" align="center" />
+            <el-table-column label="放款金额(万元)" :formatter="row=>Number(row.efkjy).toFixed(6)" align="right"
+              prop="efkjy" />
+            <el-table-column label="放款日期" width="100" :formatter="row=>String(row.efksj).substring(0,10)" />
+            <el-table-column label="利率(%)" prop="efkll" align="right" :formatter="row=>`${Number(row.efkll)}%`" />
+            <el-table-column label="手续费(万元)" :formatter="row=>Number(row.sxf).toFixed(6)" align="right" prop="sxf" />
+            <el-table-column label="保证金(万元)" :formatter="row=>Number(row.bzj).toFixed(6)" align="right" prop="bzj" />
+            <el-table-column label="日期" width="100" :formatter="row=>String(row.addTime).substring(0,10)" />
+            <el-table-column label="操作" align="center" width="50">
+              <template slot-scope="s">
+                <el-tooltip class="item" effect="dark" content="编辑" placement="bottom">
+                  <i class="el-icon-edit-outline edit-btn" @click="goUpd(s.row.id)" />
+                </el-tooltip>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-pagination style="text-align: end;margin-top:10px" background @size-change="publicSizeSelect"
+            @current-change="publicPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
+            :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper"
+            :total="addOrUpdParams.rongziFangdais.length">
+          </el-pagination> -->
+        </el-dialog>
         <div v-if="addOrUpdParams.rongZiEntityInfo.kxd">
           <el-divider content-position="left">
             <span style="color: #666666;font-weight: 900;font-size: 1.2em">续贷</span>
@@ -467,8 +606,9 @@ import BaoGao from "@/myComponents/BaoGao";
 import ZeRenRen from "@/myComponents/ZeRenRen";
 import KeShi from "@/myComponents/KeShi";
 import guanLi from "@/api/guanLi";
-import { isNull } from "@/utils/utils";
+import { isNull, tableTotal } from "@/utils/utils";
 import DiZhiYaLeiXing from "@/myComponents/DiZhiYaLeiXing";
+import ShangChuan from "@/myComponents/ShangChuan";
 export default {
   data() {
     return {
@@ -574,10 +714,60 @@ export default {
       loanAmountDia: false,
       /* 放款金额参数 */
       loanAmountParams: {},
+      /* 放款金额分页参数 */
+      selectParams: {
+        pageIndex: 1,
+        pageSize: 10,
+      },
+      /* 放款金额删除参数 */
+      ids: "",
+      /* 修改资金对话框 */
+      updFundsTableDia: false,
+      /* 修改资金参数 */
+      updFundsParams: {},
     };
   },
   methods: {
-    /*  */
+    /* 修改资金 */
+    updFundsTable() {
+      this.updFundsTableDia = true;
+    },
+    /* 删除放款金额 */
+    delLoan() {
+      if (this.ids == "") {
+        this.$message.error("请至少选择一条数据");
+        return;
+      }
+      this.publicDel("delLoan", this.ids);
+    },
+    /* 放款选中 */
+    loanCountChange(val) {
+      this.ids = [];
+      this.ids = val.map((v) => v.id);
+    },
+    /* 放款金额合计 */
+    loanCount(param) {
+      return tableTotal(param, [
+        "放款金额(万元)",
+        "手续费(万元)",
+        "保证金(万元)",
+      ]);
+    },
+    /* 修改前置 */
+    goUpd(id) {
+      guanLi.loanInfo(id).then((res) => {
+        this.loanAmountParams = res.data;
+      });
+    },
+    /* 添加/修改放款金额 */
+    updLoanAmount() {
+      this.loanAmountParams.rongziId = this.$route.query.id;
+      guanLi.setLoan(this.loanAmountParams).then((res) => {
+        this.loanAmountParams = {};
+        this.$message.success("操作成功");
+        this.financingInfo();
+      });
+    },
     /* 删除抵质押物 */
     delCollateral() {
       if (this.addOrUpdParams.rongziDiyawus.length == 1) {
@@ -810,6 +1000,7 @@ export default {
     ZeRenRen,
     KeShi,
     DiZhiYaLeiXing,
+    ShangChuan,
   },
   mixins: [publicMixin],
 };
