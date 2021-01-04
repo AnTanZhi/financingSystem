@@ -2,45 +2,18 @@
   <div class="view-container bg-gray">
     <div class="border-card">
 
-      <Head
-        :selectParams="selectParams"
-        @getTablData="getTablData"
-      />
+      <Head :selectParams="selectParams" @getTablData="getTablData" />
       <!--       
         @goAdd="goAdd"
         @delS="delS" -->
       <section class="table-container view-section">
-        <el-table
-          :header-cell-style="{background:'#F0FAFF',color:'#787878'}"
-          border
-          stripe
-          v-loading="loading"
-          element-loading-text="加载中，请稍候……"
-          :data="tableData"
-          tooltip-effect="dark"
-          style="width: 100%"
-          @selection-change="handleSelectionChange"
-        >
-          <el-table-column
-            type="selection"
-            width="40"
-            align="center"
-          />
-          <el-table-column
-            label="频率名称"
-            prop="pname"
-            align="left"
-          />
-          <el-table-column
-            label="月数"
-            prop="parg"
-            align="left"
-          />
-          <el-table-column
-            label="参数类型"
-            prop="ptype"
-            align="left"
-          />
+        <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
+          element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
+          @selection-change="handleSelectionChange">
+          <el-table-column type="selection" width="40" align="center" />
+          <el-table-column label="频率名称" prop="pname" align="left" />
+          <el-table-column label="月数" prop="parg" align="left" />
+          <el-table-column label="参数类型" prop="ptype" align="left" />
           <!-- <el-table-column
             width="100"
             label="操作"
@@ -73,55 +46,23 @@
           </el-table-column> -->
         </el-table>
       </section>
-      <el-pagination
-        style="text-align: end;"
-        background
-        @size-change="publicSizeSelect"
-        @current-change="publicPageSelect"
-        :current-page="selectParams.pageIndex"
-        :page-sizes="[10, 20, 50, 100]"
-        :page-size="selectParams.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-      >
+      <el-pagination style="text-align: end;" background @size-change="publicSizeSelect"
+        @current-change="publicPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
+        :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog
-      :title="title"
-      :visible.sync="addOrUpdateDig"
-    >
-      <el-form
-        :rules="rules"
-        :model="addOrUpdateParams"
-        label-width="120px"
-        ref="addOrUpdateParams"
-      >
-        <el-form-item
-          label="频率名称"
-          prop="pname"
-        >
+    <el-dialog :title="title" :visible.sync="addOrUpdateDig">
+      <el-form :rules="rules" :model="addOrUpdateParams" label-width="120px" ref="addOrUpdateParams">
+        <el-form-item label="频率名称" prop="pname">
           <el-input v-model="addOrUpdateParams.pname" />
         </el-form-item>
-        <el-form-item
-          label="月数"
-          prop="parg"
-        >
-          <el-input
-            v-model="addOrUpdateParams.parg"
-            type="number"
-          />
+        <el-form-item label="月数" prop="parg">
+          <el-input v-model="addOrUpdateParams.parg" type="number" />
         </el-form-item>
       </el-form>
-      <div
-        slot="footer"
-        class="dialog-footer"
-      >
+      <div slot="footer" class="dialog-footer">
         <el-button @click="addOrUpdateDig = false">取 消</el-button>
-        <el-button
-          type="primary"
-          @click="addCanShu"
-          v-loading="btnLoading"
-        >确 定</el-button>
+        <el-button type="primary" @click="addCanShu" v-loading="btnLoading">确 定</el-button>
       </div>
     </el-dialog>
   </div>

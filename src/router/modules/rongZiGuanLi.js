@@ -22,6 +22,14 @@ const rongZiGuanLi = {
       meta: { title: '融资管理' },
       hidden: true
     },
+    /* 还款计划 */
+    {
+      path: 'huanKuanJiHua',
+      component: () => import('@/views/rongZiGuanLi/huanKuanJiHua'),
+      name: 'huanKuanJiHua',
+      meta: { title: '还款计划' },
+      hidden: true
+    },
     {
       path: 'yvJing',
       component: () => import('@/views/rongZiGuanLi/yvJing'),

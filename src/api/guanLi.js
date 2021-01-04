@@ -54,4 +54,43 @@ export default {
       data
     })
   },
+  /* 放款金额表格 */
+  getLoan(params) {
+    return request({
+      url: `financing/rongziFangdai/getByIdPageList`,
+      method: 'GET',
+      params
+    })
+  },
+  /* 资金使用记录表格 */
+  getFundRecords(params) {
+    return request({
+      url: `financing/rongziTicord/getByIdPageList`,
+      method: 'GET',
+      params
+    })
+  },
+  /* 添加/修改资金使用记录 */
+  setFundRecords(data) {
+    return request({
+      url: `financing/rongziTicord/saveOrUpdateTiCode`,
+      method: 'POST',
+      data
+    })
+  },
+  /* 资金使用记录详细 */
+  getFundRecordsInfo(id) {
+    return request({
+      url: `financing/rongziTicord/getTiCodeEntityById/${id}`,
+      method: 'GET',
+    })
+  },
+  /* 删除资金使用记录 */
+  delFundRecords(data) {
+    return request({
+      url: `financing/rongziTicord/deleteEntity/{id}`,
+      method: 'DELETE',
+      data
+    })
+  },
 }
