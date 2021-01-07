@@ -242,7 +242,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="备注：">
-              <el-input type="textarea" :rows="3" v-model="addOrUpdParams.rongZiEntityInfo.bzcontext">
+              <el-input type="textarea" :rows="5" v-model="addOrUpdParams.rongZiEntityInfo.bzcontext">
               </el-input>
             </el-form-item>
           </el-col>
@@ -251,7 +251,7 @@
         <el-divider content-position="left">
           <div style="display:flex;align-items:center">
             <span style="color: #666666;font-weight: 900;font-size: 1.2em">放款金额</span>
-            <el-button type="success" icon="el-icon-edit" circle size="mini" @click="()=> this.loanAmountDia = true"
+            <el-button type="success" icon="el-icon-edit-outline" circle size="mini" @click="()=> this.loanAmountDia = true"
               style="margin-left:10px" v-if="this.$route.query.id" />
           </div>
         </el-divider>
@@ -390,7 +390,7 @@
             <span style="color: #666666;font-weight: 900;font-size: 1.2em">资金使用情况登记表</span>
             <span style="color: #666666;font-weight: 900;font-size: 1.2em;margin-left:10px"
               v-if="this.$route.query.id">监管账户余额: {{Number(addOrUpdParams.superviseBalance).toFixed(6)}}(万元)</span>
-            <el-button type="success" icon="el-icon-edit" circle size="mini" @click="updFundsTable"
+            <el-button type="success" icon="el-icon-edit-outline" circle size="mini" @click="updFundsTable"
               style="margin-left:10px" v-if="this.$route.query.id" />
           </div>
         </el-divider>
@@ -583,7 +583,7 @@
             </el-row>
           </el-row>
         </div>
-        <el-form-item style="text-align: center;">
+        <el-form-item style="text-align: center;margin-top:20px">
           <el-button type="primary" @click="addManagementParameters">保存</el-button>
           <el-button type="primary"
             @click="()=>this.$router.push({path:'/rongZiGuanLi/guanLi',query:{pageIndex:this.$route.query.pageIndex,pageSize:this.$route.query.pageSize}})">
@@ -676,7 +676,14 @@ export default {
           { required: true, message: "请输入金融机构", trigger: "blur" },
         ],
         lilv: [{ required: true, message: "请输入合同利率", trigger: "blur" }],
-        hkr: [{ required: true, message: "请输入付息日", trigger: "blur" }],
+        hkr: [
+          { required: true, message: "请输入付息日", trigger: "blur" },
+          {
+            pattern: /^((0?[1-9])|(1|2)[0-8])$/g,
+            message: "付息日只能为每月的1号-28号",
+            trigger: "blur",
+          },
+        ],
         schkrq: [
           {
             required: true,
@@ -948,13 +955,15 @@ export default {
       if (this.publicRules("addOrUpdParams")) {
         let start = this.addOrUpdParams.rongZiEntityInfo.dkrqq;
         let end = this.addOrUpdParams.rongZiEntityInfo.dkrqz;
-        for (let i of this.addOrUpdParams.rongziDiyawus) {
-          if (
-            (i.zcmc == "" || i.zcmc == null) &&
-            this.addOrUpdParams.rongZiEntityInfo.dy
-          ) {
-            this.$message.error("抵质押物名称为必填");
-            return;
+        if (!isNull(this.addOrUpdParams.rongziDiyawus)) {
+          for (let i of this.addOrUpdParams.rongziDiyawus) {
+            if (
+              (i.zcmc == "" || i.zcmc == null) &&
+              this.addOrUpdParams.rongZiEntityInfo.dy
+            ) {
+              this.$message.error("抵质押物名称为必填");
+              return;
+            }
           }
         }
         if (start >= end) {
@@ -984,45 +993,51 @@ export default {
           .rongZiEntityInfo.kxd
           ? 1
           : 0;
-        for (let i of this.addOrUpdParams.rongziFangdais) {
-          if (isNull(i.efkjy)) {
-            this.$message.error("放款金额不能为空");
-            return;
-          }
-          if (isNull(i.efksj)) {
-            this.$message.error("放款时间不能为空");
-            return;
-          }
-          if (isNull(i.efkll)) {
-            this.$message.error("放款利率不能为空");
-            return;
-          }
-          if (isNull(i.sxf)) {
-            this.$message.error("手续费不能为空");
-            return;
-          }
-          if (isNull(i.bzj)) {
-            this.$message.error("保证金额不能为空");
-            return;
+        if (!isNull(this.addOrUpdParams.rongziFangdais)) {
+          for (let i of this.addOrUpdParams.rongziFangdais) {
+            if (isNull(i.efkjy)) {
+              this.$message.error("放款金额不能为空");
+              return;
+            }
+            if (isNull(i.efksj)) {
+              this.$message.error("放款时间不能为空")``;
+              return;
+            }
+            if (isNull(i.efkll)) {
+              this.$message.error("放款利率不能为空");
+              return;
+            }
+            if (isNull(i.sxf)) {
+              this.$message.error("手续费不能为空");
+              return;
+            }
+            if (isNull(i.bzj)) {
+              this.$message.error("保证金额不能为空");
+              return;
+            }
           }
         }
-        this.addOrUpdParams.rongziTicords.forEach((item, index) => {
-          if (isNull(item.tiMoney)) {
-            if (isNull(item.tiBlank)) {
-              if (isNull(item.tiAccount)) {
-                if (isNull(item.tiTime)) {
-                  this.addOrUpdParams.rongziTicords[index] = null;
+        if (!isNull(this.addOrUpdParams.rongziTicords)) {
+          this.addOrUpdParams.rongziTicords.forEach((item, index) => {
+            if (isNull(item.tiMoney)) {
+              if (isNull(item.tiBlank)) {
+                if (isNull(item.tiAccount)) {
+                  if (isNull(item.tiTime)) {
+                    this.addOrUpdParams.rongziTicords[index] = null;
+                  }
                 }
               }
             }
-          }
-        });
+          });
+        }
         let data = [];
-        this.addOrUpdParams.rongziTicords.forEach((item, index) => {
-          if (item != null) {
-            data.push(item);
-          }
-        });
+        if (!isNull(this.addOrUpdParams.rongziTicords)) {
+          this.addOrUpdParams.rongziTicords.forEach((item, index) => {
+            if (item != null) {
+              data.push(item);
+            }
+          });
+        }
         this.addOrUpdParams.rongziTicords = data;
         let url = {
           path: "/rongZiGuanLi/guanLi",
@@ -1079,13 +1094,51 @@ export default {
         res.data.rongZiEntityInfo.dy =
           res.data.rongZiEntityInfo.dy == 1 ? true : false;
         res.data.rongZiEntityInfo.bjhkfsmc += "";
+        if (res.data.rongZiEntityInfo.bjhkfsmc == "null")
+          res.data.rongZiEntityInfo.bjhkfsmc = "";
         res.data.rongZiEntityInfo.lxhkfsmc += "";
+        if (res.data.rongZiEntityInfo.lxhkfsmc == "null")
+          res.data.rongZiEntityInfo.lxhkfsmc = "";
         res.data.rongZiEntityInfo.hkplmc += "";
+        if (res.data.rongZiEntityInfo.hkplmc == "null")
+          res.data.rongZiEntityInfo.hkplmc = "";
         res.data.rongZiEntityInfo.zrr += "";
+        if (res.data.rongZiEntityInfo.zrr == "null")
+          res.data.rongZiEntityInfo.zrr = "";
         res.data.rongZiEntityInfo.hkModel += "";
+        if (res.data.rongZiEntityInfo.hkModel == "null")
+          res.data.rongZiEntityInfo.hkModel = "";
+        res.data.rongZiEntityInfo.rzlxmc += "";
+        if (res.data.rongZiEntityInfo.rzlxmc == "null")
+          res.data.rongZiEntityInfo.rzlxmc = "";
         this.deadlineTian = res.data.rongZiEntityInfo.qx;
         this.deadlineYue = res.data.rongZiEntityInfo.qxy;
         this.addOrUpdParams = res.data;
+        this.$set(this.addOrUpdParams, "rongziXudais", [
+          { efkjy: "", efksj: "", ejzsj: "", rongziXudaisKey: "rongziXudais" },
+        ]);
+        if (!this.addOrUpdParams.rongziXudais)
+          this.$set(this.addOrUpdParams, "rongziXudais", [
+            {
+              efkjy: "",
+              efksj: "",
+              ejzsj: "",
+              rongziXudaisKey: "rongziXudais",
+            },
+          ]);
+        if (!this.addOrUpdParams.rongziDiyawus)
+          this.$set(this.addOrUpdParams, "rongziDiyawus", [
+            {
+              rongziDiyawusKey: "rongziDiyawus",
+              zcmc: "",
+              zclb: "",
+              zjbh: "",
+              dkh: "",
+              dyrq: "",
+              dyrqz: "",
+              dyje: "",
+            },
+          ]);
       });
     },
     /* 放款金额表格 */

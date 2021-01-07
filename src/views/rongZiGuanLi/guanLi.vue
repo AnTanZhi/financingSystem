@@ -95,8 +95,7 @@
           <el-table-column label="币种" prop="bzName" align="center" width="70" />
           <el-table-column label="责任人" prop="zrrName" width="100" show-overflow-tooltip align="center" />
           <el-table-column label="是否结清" prop="jieqingmc" align="center" />
-          <el-table-column label="结清操作" />
-          <el-table-column width="100" label="操作" align="center" fixed="right">
+          <el-table-column width="130" label="操作" align="center" fixed="right">
             <template slot-scope="s">
               <el-tooltip class="item" effect="dark" content="编辑" placement="bottom">
                 <i class="el-icon-edit-outline edit-btn" @click="goUpd(s.row.id)" />
@@ -106,6 +105,9 @@
               </el-tooltip>
               <el-tooltip class="item" effect="dark" content="还款计划" placement="bottom">
                 <i class="el-icon-date edit-btn" @click="repaymentPlan(s.row.id)" />
+              </el-tooltip>
+              <el-tooltip class="item" effect="dark" content="结清" placement="bottom" v-if="s.row.jieqingmc=='否'">
+                <i class="el-icon-edit edit-btn" @click="()=>settleDia=true" />
               </el-tooltip>
             </template>
           </el-table-column>
@@ -158,15 +160,13 @@
           <el-col :span="12">
             <el-form-item label="贷款日期起：" prop="dkrqq">
               <el-date-picker v-model="financingInfo.dkrqq" type="date" placeholder="选择日期" format="yyyy-MM-dd"
-                value-format="yyyy-MM-dd HH:mm:ss" style="width:100%">
-              </el-date-picker>
+                value-format="yyyy-MM-dd HH:mm:ss" style="width:100%" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="贷款日期止：" prop="dkrqz">
               <el-date-picker v-model="financingInfo.dkrqz" type="date" placeholder="选择日期" format="yyyy-MM-dd"
-                value-format="yyyy-MM-dd HH:mm:ss" style="width:100%">
-              </el-date-picker>
+                value-format="yyyy-MM-dd HH:mm:ss" style="width:100%" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -355,7 +355,7 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="备注：">
-              <el-input type="textarea" :rows="3" v-model="financingInfo.bzcontext">
+              <el-input type="textarea" :rows="5" v-model="financingInfo.bzcontext">
               </el-input>
             </el-form-item>
           </el-col>
@@ -364,7 +364,7 @@
       <el-divider content-position="left">
         <div style="display:flex;align-items:center">
           <span style="color: #666666;font-weight: 900;font-size: 1.2em">放款金额</span>
-          <el-button type="success" icon="el-icon-edit" circle size="mini" style="margin-left:10px"
+          <el-button type="success" icon="el-icon-edit-outline" circle size="mini" style="margin-left:10px"
             @click="loanAmountDia=true" />
         </div>
       </el-divider>
@@ -442,7 +442,7 @@
           <el-table-column label="放款日期" width="100"
             :formatter="row=>String(row.efksj)=='null'?'':String(row.efksj).substring(0,10)" />
           <el-table-column label="利率(%)" prop="efkll" align="right" :formatter="row=>`${Number(row.efkll)}%`"
-            width="70" />
+            width="80" />
           <el-table-column label="手续费(万元)" :formatter="row=>Number(row.sxf).toFixed(6)" align="right" prop="sxf" />
           <el-table-column label="保证金(万元)" :formatter="row=>Number(row.bzj).toFixed(6)" align="right" prop="bzj" />
           <el-table-column label="日期" width="100"
@@ -465,7 +465,7 @@
         <div style="display:flex;align-items:center">
           <span style="color: #666666;font-weight: 900;font-size: 1.2em">资金使用情况登记表
             监管账户余额：{{Number(escrowAccountBalance).toFixed(6)}}(万元)</span>
-          <el-button type="success" icon="el-icon-edit" circle size="mini" style="margin-left:10px"
+          <el-button type="success" icon="el-icon-edit-outline" circle size="mini" style="margin-left:10px"
             @click="fundRecordsDia=true" />
         </div>
       </el-divider>
@@ -549,6 +549,20 @@
         </el-pagination>
       </el-dialog>
     </el-dialog>
+    <el-dialog title="结清" :visible.sync="settleDia" width="20%">
+      <el-form :model="isYesNull">
+        <el-form-item label="债务名称：">
+          <span>债务名称</span>
+        </el-form-item>
+        <el-form-item label="结清时间：">
+          <el-date-picker v-model="isYesNull" type="date" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="settleDia = false">取 消</el-button>
+        <el-button type="primary" @click="settleDia = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -571,6 +585,7 @@ import guanLi from "@/api/guanLi";
 export default {
   data() {
     return {
+      isYesNull: "",
       /* 上传附件 */ fujian: "",
       /* 查询参数 */ selectParams: {
         pageIndex: Number(this.$route.query.pageIndex) || 1,
@@ -616,6 +631,7 @@ export default {
       /* 资金记录表格(接口) */ fundRecordsData: [],
       /* 资金记录加载中 */ fundRecorLoading: false,
       /* 资金记录删除ids */ fundRecorIds: [],
+      /* 结清对话框 */ settleDia: false,
     };
   },
   methods: {
@@ -772,10 +788,23 @@ export default {
         res.data.rongZiEntityInfo.dy =
           res.data.rongZiEntityInfo.dy == 1 ? true : false;
         res.data.rongZiEntityInfo.bjhkfsmc += "";
+        if (res.data.rongZiEntityInfo.bjhkfsmc == "null")
+          res.data.rongZiEntityInfo.bjhkfsmc = "";
         res.data.rongZiEntityInfo.lxhkfsmc += "";
+        if (res.data.rongZiEntityInfo.lxhkfsmc == "null")
+          res.data.rongZiEntityInfo.lxhkfsmc = "";
         res.data.rongZiEntityInfo.hkplmc += "";
+        if (res.data.rongZiEntityInfo.hkplmc == "null")
+          res.data.rongZiEntityInfo.hkplmc = "";
         res.data.rongZiEntityInfo.zrr += "";
+        if (res.data.rongZiEntityInfo.zrr == "null")
+          res.data.rongZiEntityInfo.zrr = "";
         res.data.rongZiEntityInfo.hkModel += "";
+        if (res.data.rongZiEntityInfo.hkModel == "null")
+          res.data.rongZiEntityInfo.hkModel = "";
+        res.data.rongZiEntityInfo.rzlxmc += "";
+        if (res.data.rongZiEntityInfo.rzlxmc == "null")
+          res.data.rongZiEntityInfo.rzlxmc = "";
         this.financingInfo = res.data.rongZiEntityInfo;
         this.fundRecordsInfo = res.data.rongziTicords;
         this.loanTable = res.data.rongziFangdais;
@@ -810,11 +839,11 @@ export default {
     /* 初始化时间参数 */
     setTime(val) {
       if (isNull(val)) {
-        this.selectParams.dkrqq = "";
-        this.selectParams.dkrqz = "";
+        this.selectParams.startDate = "";
+        this.selectParams.endDate = "";
       } else {
-        this.selectParams.dkrqq = val[0];
-        this.selectParams.dkrqz = val[1];
+        this.selectParams.startDate = val[0];
+        this.selectParams.endDate = val[1];
       }
       this.getTablData();
     },
@@ -830,7 +859,11 @@ export default {
     goUpd(id) {
       this.$router.push({
         path: "/rongZiGuanLi/guanLiAdd",
-        query: { id },
+        query: {
+          id,
+          pageIndex: this.selectParams.pageIndex,
+          pageSize: this.selectParams.pageSize,
+        },
       });
     },
     /* 添加融资主体 */
@@ -839,20 +872,19 @@ export default {
         this.publicAdd("addFinancingBody", this.addOrUpdateParams, "");
       }
     },
-    /* 添加前置 */
-    goAdd() {},
     handleSelectionChange(val) {
       this.ids = [];
       this.ids = val.map((v) => v.id);
     },
     /* 获取表格数据 */
     getTablData() {
+      this.selectParams.pageIndex = 1;
       this.publicSelect();
     },
   },
   mounted() {
     /* 获取表格数据 */
-    this.getTablData();
+    this.publicSelect();
   },
   components: {
     LeiXing,

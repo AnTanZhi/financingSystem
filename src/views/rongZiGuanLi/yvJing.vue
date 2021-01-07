@@ -104,18 +104,38 @@
         @current-change="publicPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
         :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
+      <!-- 预警还款 -->
+      <el-dialog title="收货地址" :visible.sync="WarningRepaymentDia">
+        <el-form label-position="right" label-width="110px">
+          <el-form-item label="债务名称：">
+            <span>杭州市政2.9亿信用证</span>
+          </el-form-item>
+          <el-form-item label="计划还款日期：">
+            <span>2021-01-06</span>
+          </el-form-item>
+          <el-form-item label="利率(%)：">
+            <span>0.00</span>
+          </el-form-item>
+          <el-form-item label="应还总额：">
+            <span>27492.000000</span>
+          </el-form-item>
+          <el-form-item label="实还总额：">
+            <el-input type="number" clearable style="width:220px" />
+          </el-form-item>
+          <el-form-item label="实还日期：">
+            <el-date-picker type="date" value-format="yyyy-MM-dd HH:mm:ss" clearable>
+            </el-date-picker>
+          </el-form-item>
+          <el-form-item label="还款凭证号：">
+            <el-input clearable style="width:220px" />
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="WarningRepaymentDia = false">取 消</el-button>
+          <el-button type="primary" @click="WarningRepaymentDia = false" v-loading="btnLoading">确 定</el-button>
+        </div>
+      </el-dialog>
     </div>
-    <el-dialog :title="title" :visible.sync="addOrUpdateDig">
-      <el-form :rules="rules" :model="addOrUpdateParams" label-width="120px" ref="addOrUpdateParams">
-        <el-form-item label="主体名称" prop="pname">
-          <el-input v-model="addOrUpdateParams.pname" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="addOrUpdateDig = false">取 消</el-button>
-        <el-button type="primary" @click="addLeiXing" v-loading="btnLoading">确 定</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -133,74 +153,13 @@ export default {
   data() {
     return {
       isNull: "",
-      /* 查询参数 */
-      selectParams: {
-        pageIndex: 1,
-        pageSize: 10,
-      },
-      /* mixin参数 */
-      mixinParams: {
-        api: canShu,
-        name: "getFinancingBody",
-      },
-      /* 添加/修改参数 */
-      addOrUpdateParams: {},
-      /* 校验 */
-      rules: {
-        pname: [
-          { required: true, message: "请输入类型名称", trigger: "blur" },
-          { max: 25, message: "长度在最多到 25 个字符", trigger: "blur" },
-        ],
-      },
-      /* 删除参数 */
-      ids: [],
-      /* 是否展示更多搜索框 */
-      isShow: false,
+      /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 10 },
+      /* 预警还款对话框 */ WarningRepaymentDia: false,
     };
   },
-  methods: {
-    /* 删除(多个) */
-    delS() {
-      if (this.ids == "") {
-        this.$message.error("请至少选择一条数据");
-        return;
-      }
-      this.publicDel("delRepaymentFrequency", this.ids);
-    },
-    /* 修改前置 */
-    goUpd(id) {
-      canShu.infoFinancingType(id).then((res) => {
-        this.addOrUpdateParams = res.data;
-        this.title = "参数编辑";
-        this.addOrUpdateDig = true;
-      });
-    },
-    /* 添加融资主体 */
-    addLeiXing() {
-      if (this.publicRules("addOrUpdateParams")) {
-        this.publicAdd("addFinancingBody", this.addOrUpdateParams, "");
-      }
-    },
-    /* 添加前置 */
-    goAdd() {
-      this.addOrUpdateParams = {};
-      this.title = "参数添加";
-      this.addOrUpdateDig = true;
-    },
-    handleSelectionChange(val) {
-      this.ids = [];
-      this.ids = val.map((v) => v.pid);
-    },
-    /* 获取表格数据 */
-    getTablData() {
-      this.publicSelect();
-    },
-  },
-  mounted() {
-    /* 获取表格数据 */
-    this.publicSelect();
-  },
-  components: { LeiXing, BiZhong, GongSi, KeShi, ShangChuan },
+  methods: {},
+  mounted() {},
+  components: {},
   mixins: [publicMixin],
 };
 </script>

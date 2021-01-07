@@ -84,6 +84,14 @@ const rongZiGuanLi = {
       name: 'xinXi',
       meta: { title: '土地信息' }
     },
+    /* 土地信息详细 */
+    {
+      path: 'tuDiXiangXi',
+      component: () => import('@/views/rongZiGuanLi/tuDiXiangXi'),
+      name: 'tuDiXiangXi',
+      meta: { title: '土地信息详细' },
+      hidden: true
+    },
   ]
 }
 export default rongZiGuanLi

@@ -10,9 +10,9 @@ const duiWaiDanBao = {
   },
   children: [
     {
-      path: 'guanLi',
+      path: 'dwGuanLi',
       component: () => import('@/views/duiWaiDanBao/guanLi'),
-      name: 'guanLi',
+      name: 'dwGuanLi',
       meta: { title: '对外担保管理' },
     },
   ]

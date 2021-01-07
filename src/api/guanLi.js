@@ -93,4 +93,35 @@ export default {
       data
     })
   },
+  /* 还款计划表格 */
+  getRepaymentPlan(params) {
+    return request({
+      url: `financing/rongziHuankuan/getByPage`,
+      method: 'GET',
+      params
+    })
+  },
+  /* 还款计划详细 */
+  getRepaymentPlanInfo(id) {
+    return request({
+      url: `financing/rongziHuankuan/getEntityById/${id}`,
+      method: 'GET',
+    })
+  },
+  /* 还款计划修改 */
+  setRepaymentPlan(data) {
+    return request({
+      url: `financing/rongziHuankuan/updateEntity`,
+      method: 'POST',
+      data
+    })
+  },
+  /* 还款计划删除 */
+  delRepaymentPlan(data) {
+    return request({
+      url: `financing/rongziHuankuan/deleteEntityById/{ids}`,
+      method: 'DELETE',
+      data
+    })
+  },
 }

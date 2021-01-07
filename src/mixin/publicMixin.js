@@ -51,7 +51,7 @@ const publicMixin = {
     publicAdd(name, params, url, dig = true) {
       this.btnLoading = true
       this.mixinParams.api[name](params).then(res => {
-        this.$message.success('添加成功')
+        this.$message.success('操作成功')
         this.btnLoading = false
         if (dig) {
           this.addOrUpdateDig = false
