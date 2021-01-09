@@ -365,7 +365,7 @@
         <div style="display:flex;align-items:center">
           <span style="color: #666666;font-weight: 900;font-size: 1.2em">放款金额</span>
           <el-button type="success" icon="el-icon-edit-outline" circle size="mini" style="margin-left:10px"
-            @click="loanAmountDia=true" />
+            @click="()=>{loanAmountDia=true;loanAmountParams={}}" />
         </div>
       </el-divider>
       <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe
@@ -466,7 +466,7 @@
           <span style="color: #666666;font-weight: 900;font-size: 1.2em">资金使用情况登记表
             监管账户余额：{{Number(escrowAccountBalance).toFixed(6)}}(万元)</span>
           <el-button type="success" icon="el-icon-edit-outline" circle size="mini" style="margin-left:10px"
-            @click="fundRecordsDia=true" />
+            @click="()=>{fundRecordsDia=true;fundRecordsParams={}}" />
         </div>
       </el-divider>
       <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe

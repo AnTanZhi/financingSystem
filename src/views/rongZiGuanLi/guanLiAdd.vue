@@ -253,7 +253,8 @@
           <div style="display:flex;align-items:center">
             <span style="color: #666666;font-weight: 900;font-size: 1.2em">放款金额</span>
             <el-button type="success" icon="el-icon-edit-outline" circle size="mini"
-              @click="()=> this.loanAmountDia = true" style="margin-left:10px" v-if="this.$route.query.id" />
+              @click="()=>{loanAmountDia = true;loanAmountParams={}}" style="margin-left:10px"
+              v-if="this.$route.query.id" />
           </div>
         </el-divider>
         <div v-if="!this.$route.query.id">
@@ -385,7 +386,8 @@
             <span style="color: #666666;font-weight: 900;font-size: 1.2em;margin-left:10px"
               v-if="this.$route.query.id">监管账户余额: {{Number(addOrUpdParams.superviseBalance).toFixed(6)}}(万元)</span>
             <el-button type="success" icon="el-icon-edit-outline" circle size="mini"
-              @click="()=>{ this.updFundsTableDia = true}" style="margin-left:10px" v-if="this.$route.query.id" />
+              @click="()=>{updFundsTableDia = true;updFundsParams={}}" style="margin-left:10px"
+              v-if="this.$route.query.id" />
           </div>
         </el-divider>
         <div v-if="!this.$route.query.id">
@@ -655,7 +657,7 @@ export default {
         hkr: [
           { required: true, message: "请输入付息日", trigger: "blur" },
           {
-            pattern: /^((0?[1-9])|(1|2)[0-8])$/g,
+            pattern: /^(([1-9])|(1)[0-9]|(2)[0-8])$/g,
             message: "付息日只能为每月的1号-28号",
             trigger: "blur",
           },
@@ -767,7 +769,7 @@ export default {
         this.$message.success("操作成功");
         this.updFundsParams = {};
         this.fundRecordsTable();
-        this.financingInfo();
+        // this.financingInfo();
       });
     },
     /* 更改放款金额每页展示的数量 */ loanSizeSelect(size) {
@@ -948,9 +950,8 @@ export default {
         this.addOrUpdParams.rongziTicords = data;
         let url = {
           path: "/rongZiGuanLi/guanLi",
-          query: "",
+          query: this.$route.query,
         };
-        // this.addOrUpdParams.rongziFangdais = this.loanData;
         this.publicAdd(
           "addManagementParameters",
           this.addOrUpdParams,
@@ -1055,9 +1056,9 @@ export default {
   },
   mounted() {
     if (this.$route.query.id) {
-      this.financingInfo();
-      this.getLoan();
-      this.fundRecordsTable();
+      /* 融资详细 */ this.financingInfo();
+      /* 放款金额表格 */ this.getLoan();
+      /* 资金使用记录表格 */ this.fundRecordsTable();
     }
   },
   components: {
