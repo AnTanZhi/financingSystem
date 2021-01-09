@@ -1,10 +1,11 @@
 <template>
-  <el-upload style="display:flex" class="upload-demo" ref="upload" action="https://jsonplaceholder.typicode.com/posts/"
-    :on-remove="handleRemove" :file-list="fileList" :auto-upload="false" :limit="1" :on-exceed="beyond"
-    :on-change="updIsShow">
-    <el-button v-if="!isShow" slot="trigger" type="primary" icon="el-icon-document-add">导入数据
+  <el-upload style="display:flex" class="upload-demo" ref="upload" :action="url" :on-remove="handleRemove"
+    :file-list="fileList" :auto-upload="false" :limit="1" :on-change="updIsShow" :on-success='uploadFailed'>
+    <el-button v-show="!is.shangChuan" slot="trigger" type="primary" icon="el-icon-document-add">导入数据
     </el-button>
-    <el-button v-if="isShow" style="margin-right:10px" type="primary" icon="el-icon-upload2">开始导入</el-button>
+    <el-button v-if="is.shangChuan" style="margin-right:10px" type="success" icon="el-icon-upload2"
+      @click="submitUpload">开始导入
+    </el-button>
   </el-upload>
 </template>
 
@@ -13,20 +14,32 @@ export default {
   data() {
     return {
       fileList: [],
-      isShow: false,
+      is: { shangChuan: false },
+      url: `${this.$store.state.upload.uploadHost}financing/ensure/upload`,
     };
   },
   methods: {
+    uploadFailed(res, file, fileList) {
+      this.fileList = [];
+      if (res.total)
+        this.$message.success(
+          `成功${res.successCount}条数据,失败${res.errorCount}条数据,总${res.total}条数据`
+        );
+      else this.$message.error(res);
+      this.$emit("getTable");
+    },
+    submitUpload() {
+      this.$refs.upload.submit();
+    },
     updIsShow(file, fileList) {
       file.name =
         file.name.length > 10 ? file.name.substring(0, 7) + "..." : file.name;
-      this.isShow = !this.isShow;
-    },
-    beyond() {
-      this.$message.error("只允许上传一个附件,请删除后重试");
+      let isShangChuan = !this.is.shangChuan;
+      this.$set(this.is, "shangChuan", isShangChuan);
     },
     handleRemove(file, fileList) {
-      this.isShow = !this.isShow;
+      let isShangChuan = !this.is.shangChuan;
+      this.$set(this.is, "shangChuan", isShangChuan);
     },
   },
 };

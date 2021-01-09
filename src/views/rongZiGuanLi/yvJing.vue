@@ -140,13 +140,8 @@
 </template>
 
 <script>
-import publicMixin from "@/mixin/publicMixin";
-import canShu from "@/api/canShu";
-import DaLei from "@/myComponents/DaLei";
-
+import publicMixin from '@/mixin/publicMixin'
 import LeiXing from "@/myComponents/LeiXing";
-import BiZhong from "@/myComponents/BiZhong";
-import GongSi from "@/myComponents/GongSi";
 import KeShi from "@/myComponents/KeShi";
 import ShangChuan from "@/myComponents/ShangChuan";
 export default {
@@ -159,7 +154,7 @@ export default {
   },
   methods: {},
   mounted() {},
-  components: {},
+  components: {LeiXing,KeShi},
   mixins: [publicMixin],
 };
 </script>

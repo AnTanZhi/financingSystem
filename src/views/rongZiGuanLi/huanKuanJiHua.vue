@@ -14,7 +14,7 @@
               </div>
               <div style="text-align: end;">
                 <el-form-item>
-                  <ShangChuan v-model="isYesNull" />
+                  <ShangChuan @getTable="getRepaymentPlan" />
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-document-checked">导出</el-button>
@@ -23,7 +23,7 @@
                   <el-button type="primary" icon="el-icon-download">模板下载</el-button>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-money">本金管理</el-button>
+                  <el-button type="primary" icon="el-icon-money" @click="addOrUpdPrincipalManagement">本金管理</el-button>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-s-operation">利率调整</el-button>
@@ -37,7 +37,8 @@
         </div>
       </header>
       <section class="table-container view-section" style="text-align: center;">
-        <el-link type="primary" style="margin:10px 0">计算时间2021/1/6 17:24 点击重新计算</el-link>
+        <el-link type="primary" style="margin:10px 0" @click="generateRepaymentPlan">计算时间 2021/1/6 17:24 点击重新计算
+        </el-link>
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
           element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
           @selection-change="handleSelectionChange" :summary-method="getSummaries" show-summary>
@@ -86,7 +87,7 @@
     <!-- 本金管理对话框 -->
     <el-dialog title="本金管理" :visible.sync="principalDia">
       <div style="margin-bottom:20px">
-        <el-form :model="isYesNull" label-position="right" label-width="120px">
+        <el-form :model="principalManagementParams" label-position="right" label-width="120px">
           <el-row>
             <el-col :span="12">
               <el-form-item label="放款金额(万元)">
@@ -124,18 +125,18 @@
         <el-button type="danger">删除选中</el-button>
       </div>
       <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
-        element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
+        element-loading-text="加载中，请稍候……" :data="principalManagement" tooltip-effect="dark" style="width: 100%"
         @selection-change="handleSelectionChange" :summary-method="getSummaries" show-summary>
         <el-table-column type="selection" />
         <el-table-column label="放款金额(万元)" />
         <el-table-column label="还款日期" />
-        <el-table-column label="本金金额(万元)" />
-        <el-table-column label="利率(%)" />
-        <el-table-column label="日期" />
+        <el-table-column label="本金金额(万元)" prop="efksj" />
+        <el-table-column label="利率(%)" prop="efkll" />
+        <el-table-column label="日期" prop="efksj" />
       </el-table>
-      <el-pagination style="text-align: end;margin-top:20px" background @size-change="publicSizeSelect"
-        @current-change="publicPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
-        :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
+      <el-pagination style="text-align: end;margin-top:20px" background @size-change="pmSelectSize"
+        @current-change="pmSelectIndex" :current-page="pmSelectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
+        :page-size="pmSelectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pmTotal">
       </el-pagination>
     </el-dialog>
     <!-- 利率调整 -->
@@ -283,9 +284,54 @@ export default {
       /* 日期参数 */ timeParams: "",
       /* 修改还款计划参数 */ repaymentPlanParams: {},
       /* 还款计划删除ids */ repaymentPlanIds: [],
+      /* 本金管理参数 */ principalManagementParams: {},
+      /* 本金管理 */ principalManagement: [],
+      /* 本金管理查询参数 */ pmSelectParams: {
+        pageIndex: 1,
+        pageSize: 10,
+        rongziId: this.$route.query.id,
+      },
+      /* 本金管理总条数 */ pmTotal: 0,
     };
   },
   methods: {
+    /* 本金管理分页查询 */ pmSelectIndex(index) {
+      this.pmSelectParams.pageIndex = index;
+      this.getPrincipalManagement();
+    },
+    /* 本金管理更改展示数量 */ pmSelectSize(size) {
+      this.pmSelectParams.pageSize = size;
+      this.getPrincipalManagement();
+    },
+    /* 本金管理表格 */
+    getPrincipalManagement() {
+      guanLi.getPrincipalManagement(this.pmSelectParams).then((res) => {
+        this.principalManagement = res.data.records;
+        this.pmTotal = res.data.total;
+      });
+    },
+    /* 添加/修改本金管理 */ addOrUpdPrincipalManagement() {
+      this.principalDia = true;
+      this.principalManagementParams = {};
+      this.getPrincipalManagement();
+    },
+    /* 生成还款计划 */ generateRepaymentPlan() {
+      this.$confirm("确定要重新计算?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        this.loading = true;
+        guanLi.generateRepaymentPlan(this.$route.query.id).then(() => {
+          this.$message.success("生成成功");
+          guanLi.getRepaymentPlan(this.selectParams).then((r) => {
+            this.tableData = r.data.records || r.data;
+            this.loading = false;
+            this.total = r.data.total;
+          });
+        });
+      });
+    },
     /* 还款计划删除 */ delRepaymentPlan() {
       if (this.repaymentPlanIds == "") {
         this.$message.error("请至少选择一条数据");
@@ -340,7 +386,22 @@ export default {
       });
     },
     /* 还款计划列表 */ getRepaymentPlan() {
-      this.publicSelect();
+      this.loading = true;
+      guanLi.getRepaymentPlan(this.selectParams).then((res) => {
+        this.tableData = res.data.records || res.data;
+        this.loading = false;
+        this.total = res.data.total;
+        if (isNull(this.tableData)) {
+          this.loading = true;
+          guanLi.generateRepaymentPlan(this.$route.query.id).then(() => {
+            guanLi.getRepaymentPlan(this.selectParams).then((r) => {
+              this.tableData = r.data.records || r.data;
+              this.loading = false;
+              this.total = r.data.total;
+            });
+          });
+        }
+      });
     },
   },
   mounted() {

@@ -124,4 +124,19 @@ export default {
       data
     })
   },
+  /* 生成还款计划 */
+  generateRepaymentPlan(id) {
+    return request({
+      url: `financing/rongziHuankuan/generate/${id}`,
+      method: 'POST'
+    })
+  },
+  /* 本金管理 */
+  getPrincipalManagement(params) {
+    return request({
+      url: `financing/rongziBenjin/getBenjinListByPage`,
+      method: 'GET',
+      params
+    })
+  },
 }

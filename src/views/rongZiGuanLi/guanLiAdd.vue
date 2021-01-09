@@ -109,7 +109,8 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="合同利率(%)：" prop="lilv">
-              <el-input v-model="addOrUpdParams.rongZiEntityInfo.lilv" type="number" style="width:33%" clearable />
+              <el-input v-model="addOrUpdParams.rongZiEntityInfo.lilv" type="number" style="width:33%" clearable
+                @input="setLendingFrequency" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -120,8 +121,8 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="付息频率：">
-              <PinLv v-model="addOrUpdParams.rongZiEntityInfo.hkplmc" style="width:33%" />
+            <el-form-item label="付息频率：" prop="hkplid">
+              <PinLv v-model="addOrUpdParams.rongZiEntityInfo.hkplid" style="width:33%" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -251,45 +252,38 @@
         <el-divider content-position="left">
           <div style="display:flex;align-items:center">
             <span style="color: #666666;font-weight: 900;font-size: 1.2em">放款金额</span>
-            <el-button type="success" icon="el-icon-edit-outline" circle size="mini" @click="()=> this.loanAmountDia = true"
-              style="margin-left:10px" v-if="this.$route.query.id" />
+            <el-button type="success" icon="el-icon-edit-outline" circle size="mini"
+              @click="()=> this.loanAmountDia = true" style="margin-left:10px" v-if="this.$route.query.id" />
           </div>
         </el-divider>
         <div v-if="!this.$route.query.id">
-          <el-row v-for="item in addOrUpdParams.rongziFangdais" :key="item.rongziFangdaisKey">
-            <el-col :span="4">
-              <el-form-item label="放款金额(万元) *：">
-                <el-input type="number" v-model="item.efkjy" clearable />
+          <el-form :model="item" v-for="item in addOrUpdParams.rongziFangdais" :key="item.rongziFangdaisKey"
+            label-position="right" label-width="140px" inline style="display:flex;justify-content: space-between;">
+            <div>
+              <el-form-item label="* 放款金额(万元)：" class="dzyName">
+                <el-input type="number" v-model="item.efkjy" clearable style="width:140px" />
               </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="放款时间 *：">
+              <el-form-item label="* 放款时间：" class="dzyName">
                 <el-date-picker v-model="item.efksj" type="date" placeholder="选择日期" format="yyyy-MM-dd"
-                  value-format="yyyy-MM-dd HH:mm:ss" style="width:140%" />
+                  value-format="yyyy-MM-dd HH:mm:ss" style="width:140px" />
               </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="放款利率 *：">
-                <el-input type="number" v-model="item.efkll" clearable />
+              <el-form-item label="* 放款利率：" class="dzyName">
+                <el-input type="number" v-model="item.efkll" clearable style="width:140px" />
               </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="手续费(万元) *：">
-                <el-input type="number" v-model="item.sxf" clearable />
+              <el-form-item label="* 手续费(万元)：" class="dzyName">
+                <el-input type="number" v-model="item.sxf" clearable style="width:140px" />
               </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item label="保证金(万元) *：">
-                <el-input type="number" v-model="item.bzj" clearable />
+              <el-form-item label="* 保证金(万元)：" class="dzyName">
+                <el-input type="number" v-model="item.bzj" clearable style="width:140px" />
               </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item>
+            </div>
+            <div>
+              <el-form-item style="text-align: end;margin-right:0">
                 <el-button type="success" icon="el-icon-plus" circle size="mini" @click="addLoanAmount" />
                 <el-button type="danger" icon="el-icon-minus" circle size="mini" @click="delLoanAmount" />
               </el-form-item>
-            </el-col>
-          </el-row>
+            </div>
+          </el-form>
         </div>
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe
           element-loading-text="加载中，请稍候……" :data="loanData" tooltip-effect="dark" style="width: 100%"
@@ -390,40 +384,35 @@
             <span style="color: #666666;font-weight: 900;font-size: 1.2em">资金使用情况登记表</span>
             <span style="color: #666666;font-weight: 900;font-size: 1.2em;margin-left:10px"
               v-if="this.$route.query.id">监管账户余额: {{Number(addOrUpdParams.superviseBalance).toFixed(6)}}(万元)</span>
-            <el-button type="success" icon="el-icon-edit-outline" circle size="mini" @click="updFundsTable"
-              style="margin-left:10px" v-if="this.$route.query.id" />
+            <el-button type="success" icon="el-icon-edit-outline" circle size="mini"
+              @click="()=>{ this.updFundsTableDia = true}" style="margin-left:10px" v-if="this.$route.query.id" />
           </div>
         </el-divider>
         <div v-if="!this.$route.query.id">
-          <el-row v-for="item in addOrUpdParams.rongziTicords" :key="item.rongziTicordsKey">
-            <el-col :span="5">
+          <el-form :model="item" v-for="item in addOrUpdParams.rongziTicords" :key="item.rongziTicordsKey"
+            label-position="right" label-width="140px" inline style="display:flex;justify-content: space-between;">
+            <div>
               <el-form-item label="提款金额(万元)：">
-                <el-input type="number" v-model="item.tiMoney" clearable />
+                <el-input type="number" v-model="item.tiMoney" clearable style="width:140px" />
               </el-form-item>
-            </el-col>
-            <el-col :span="5">
               <el-form-item label="提款银行：">
-                <el-input v-model="item.tiBlank" clearable />
+                <el-input v-model="item.tiBlank" clearable style="width:140px" />
               </el-form-item>
-            </el-col>
-            <el-col :span="5">
               <el-form-item label="提款账户：">
-                <el-input v-model="item.tiAccount" clearable />
+                <el-input v-model="item.tiAccount" clearable style="width:140px" />
               </el-form-item>
-            </el-col>
-            <el-col :span="5">
               <el-form-item label="日期：">
                 <el-date-picker v-model="item.tiTime" type="date" placeholder="选择日期" format="yyyy-MM-dd"
-                  value-format="yyyy-MM-dd HH:mm:ss" style="width:100%" />
+                  value-format="yyyy-MM-dd HH:mm:ss" style="width:140px" />
               </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item>
+            </div>
+            <div>
+              <el-form-item style="text-align: end;margin-right:0">
                 <el-button type="success" icon="el-icon-plus" circle size="mini" @click="addFunds" />
                 <el-button type="danger" icon="el-icon-minus" circle size="mini" @click="delFunds" />
               </el-form-item>
-            </el-col>
-          </el-row>
+            </div>
+          </el-form>
         </div>
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe
           element-loading-text="加载中，请稍候……" :data="addOrUpdParams.rongziTicords" tooltip-effect="dark"
@@ -503,85 +492,71 @@
           <el-divider content-position="left">
             <span style="color: #666666;font-weight: 900;font-size: 1.2em">续贷</span>
           </el-divider>
-          <el-row v-for="item in addOrUpdParams.rongziXudais" :key="item.rongziXudaisKey">
-            <el-col :span="6">
+          <el-form :model="item" v-for="item in addOrUpdParams.rongziXudais" :key="item.rongziXudaisKey"
+            label-position="right" label-width="140px" inline style="display:flex;justify-content: space-between;">
+            <div>
               <el-form-item label="续贷金额(万元)：">
-                <el-input type="number" v-model="item.efkjy" clearable />
+                <el-input type="number" v-model="item.efkjy" clearable style="width:140px" />
               </el-form-item>
-            </el-col>
-            <el-col :span="7">
               <el-form-item label="续贷开始：">
                 <el-date-picker v-model="item.efksj" type="date" placeholder="选择日期" format="yyyy-MM-dd"
-                  value-format="yyyy-MM-dd HH:mm:ss" style="100%" />
+                  value-format="yyyy-MM-dd HH:mm:ss" style="width:140px" />
               </el-form-item>
-            </el-col>
-            <el-col :span="7">
               <el-form-item label="续贷结束：">
                 <el-date-picker v-model="item.ejzsj" type="date" placeholder="选择日期" format="yyyy-MM-dd"
-                  value-format="yyyy-MM-dd HH:mm:ss" style="100%" />
+                  value-format="yyyy-MM-dd HH:mm:ss" style="width:140px" />
               </el-form-item>
-            </el-col>
-            <el-col :span="4">
-              <el-form-item>
+            </div>
+            <div>
+              <el-form-item style="text-align: end;margin-right:0">
                 <el-button type="success" icon="el-icon-plus" circle size="mini" @click="addRenew" />
                 <el-button type="danger" icon="el-icon-minus" circle size="mini" @click="delRenew" />
               </el-form-item>
-            </el-col>
-          </el-row>
+            </div>
+          </el-form>
         </div>
         <div v-if="addOrUpdParams.rongZiEntityInfo.dy">
           <el-divider content-position="left">
             <span style="color: #666666;font-weight: 900;font-size: 1.2em">抵质押物</span>
           </el-divider>
-          <el-row v-for="item in addOrUpdParams.rongziDiyawus" :key="item.rongziDiyawusKey">
-            <el-row>
-              <el-col :span="5">
-                <el-form-item label="抵质押物类型：">
-                  <DiZhiYaLeiXing v-model="item.zclb" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="5">
-                <el-form-item label="证件编号：">
-                  <el-input v-model="item.zjbh" clearable />
-                </el-form-item>
-              </el-col>
-              <el-col :span="5">
-                <el-form-item label="抵质押物名称 *：" class="dzyName">
-                  <el-input v-model="item.zcmc" clearable />
-                </el-form-item>
-              </el-col>
-              <el-col :span="5">
-                <el-form-item label="土地证号：">
-                  <el-input v-model="item.dkh" clearable />
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="6">
-                <el-form-item label="抵质押日期起：">
-                  <el-date-picker v-model="item.dyrq" type="date" placeholder="选择日期" format="yyyy-MM-dd"
-                    value-format="yyyy-MM-dd HH:mm:ss" style="100%" />
-                </el-form-item>
-              </el-col>
-              <el-col :span="7">
+          <el-form :model="item" v-for="item in addOrUpdParams.rongziDiyawus" :key="item.rongziDiyawusKey"
+            label-position="right" label-width="140px" inline>
+            <div>
+              <el-form-item label="抵质押物类型：">
+                <DiZhiYaLeiXing v-model="item.zclb" style="width:140px" />
+              </el-form-item>
+              <el-form-item label="证件编号：">
+                <el-input v-model="item.zjbh" clearable style="width:140px" />
+              </el-form-item>
+              <el-form-item label="* 抵质押物名称：" class="dzyName">
+                <el-input v-model="item.zcmc" clearable style="width:140px" />
+              </el-form-item>
+              <el-form-item label="土地证号：" v-if="item.zclb==1">
+                <el-input v-model="item.dkh" clearable style="width:140px" />
+              </el-form-item>
+              <el-form-item label="抵质押日期起：">
+                <el-date-picker v-model="item.dyrq" type="date" placeholder="选择日期" format="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd HH:mm:ss" style="width:140px" />
+              </el-form-item>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <div>
                 <el-form-item label="抵质押日期止：">
                   <el-date-picker v-model="item.dyrqz" type="date" placeholder="选择日期" format="yyyy-MM-dd"
-                    value-format="yyyy-MM-dd HH:mm:ss" style="100%" />
+                    value-format="yyyy-MM-dd HH:mm:ss" style="width:140px" />
                 </el-form-item>
-              </el-col>
-              <el-col :span="7">
                 <el-form-item label="抵质押金额(万元)：">
-                  <el-input type="number" v-model="item.dyje" clearable />
+                  <el-input type="number" v-model="item.dyje" clearable style="width:140px" />
                 </el-form-item>
-              </el-col>
-              <el-col :span="4">
-                <el-form-item>
+              </div>
+              <div style="text-align: end;">
+                <el-form-item style="margin-right:0">
                   <el-button type="success" icon="el-icon-plus" circle size="mini" @click="addCollateral" />
                   <el-button type="danger" icon="el-icon-minus" circle size="mini" @click="delCollateral" />
                 </el-form-item>
-              </el-col>
-            </el-row>
-          </el-row>
+              </div>
+            </div>
+          </el-form>
         </div>
         <el-form-item style="text-align: center;margin-top:20px">
           <el-button type="primary" @click="addManagementParameters">保存</el-button>
@@ -663,6 +638,9 @@ export default {
       },
       /* 添加/修改校验 */
       rules: {
+        hkplid: [
+          { required: true, message: "请选择首次付息频率", trigger: "change" },
+        ],
         zwmc: [{ required: true, message: "请输入债务名称", trigger: "blur" }],
         qdrq: [
           {
@@ -758,6 +736,12 @@ export default {
     };
   },
   methods: {
+    /* 更改放款频率 */
+    setLendingFrequency(val) {
+      this.addOrUpdParams.rongziFangdais.forEach((item) => {
+        item.efkll = val;
+      });
+    },
     /* 资金记录选中 */
     fundRecordsChange(val) {
       this.delFundsIds = [];
@@ -830,10 +814,6 @@ export default {
     loanPageSelect(page) {
       this.selectParams.pageIndex = page;
       this.getLoan();
-    },
-    /* 修改资金 */
-    updFundsTable() {
-      this.updFundsTableDia = true;
     },
     /* 删除放款金额 */
     delLoan() {
@@ -955,12 +935,13 @@ export default {
       if (this.publicRules("addOrUpdParams")) {
         let start = this.addOrUpdParams.rongZiEntityInfo.dkrqq;
         let end = this.addOrUpdParams.rongZiEntityInfo.dkrqz;
-        if (!isNull(this.addOrUpdParams.rongziDiyawus)) {
+        let dy = this.addOrUpdParams.rongZiEntityInfo.dy;
+        let dsf = this.addOrUpdParams.rongZiEntityInfo.dsf;
+        let zqgd = this.addOrUpdParams.rongZiEntityInfo.zqgd;
+        let kxd = this.addOrUpdParams.rongZiEntityInfo.kxd;
+        if (dy) {
           for (let i of this.addOrUpdParams.rongziDiyawus) {
-            if (
-              (i.zcmc == "" || i.zcmc == null) &&
-              this.addOrUpdParams.rongZiEntityInfo.dy
-            ) {
+            if (i.zcmc == "" || i.zcmc == null) {
               this.$message.error("抵质押物名称为必填");
               return;
             }
@@ -970,37 +951,25 @@ export default {
           this.$message.error("贷款日期止必须大于贷款日期");
           return;
         }
-        this.addOrUpdParams.rongZiEntityInfo.dkrqz = this.addOrUpdParams.rongZiEntityInfo.dkrqz.substring(
-          0,
-          10
-        );
+        this.addOrUpdParams.rongZiEntityInfo.dkrqz = end.substring(0, 10);
         this.addOrUpdParams.rongZiEntityInfo.qx = this.deadlineTian;
         this.addOrUpdParams.rongZiEntityInfo.qxy = this.deadlineYue;
         this.addOrUpdParams.rongZiEntityInfo.dkrqz += " 23:59:59";
-        this.addOrUpdParams.rongZiEntityInfo.dsf = this.addOrUpdParams
-          .rongZiEntityInfo.dsf
-          ? 1
-          : 0;
-        this.addOrUpdParams.rongZiEntityInfo.dy = this.addOrUpdParams
-          .rongZiEntityInfo.dy
-          ? 1
-          : 0;
-        this.addOrUpdParams.rongZiEntityInfo.zqgd = this.addOrUpdParams
-          .rongZiEntityInfo.zqgd
-          ? 1
-          : 0;
-        this.addOrUpdParams.rongZiEntityInfo.kxd = this.addOrUpdParams
-          .rongZiEntityInfo.kxd
-          ? 1
-          : 0;
-        if (!isNull(this.addOrUpdParams.rongziFangdais)) {
+        this.addOrUpdParams.rongZiEntityInfo.dsf = dsf ? 1 : 0;
+        this.addOrUpdParams.rongZiEntityInfo.dy = dy ? 1 : 0;
+        this.addOrUpdParams.rongZiEntityInfo.zqgd = zqgd ? 1 : 0;
+        this.addOrUpdParams.rongZiEntityInfo.kxd = kxd ? 1 : 0;
+        if (
+          !isNull(this.addOrUpdParams.rongziFangdais) &&
+          !this.$route.query.id
+        )
           for (let i of this.addOrUpdParams.rongziFangdais) {
             if (isNull(i.efkjy)) {
               this.$message.error("放款金额不能为空");
               return;
             }
             if (isNull(i.efksj)) {
-              this.$message.error("放款时间不能为空")``;
+              this.$message.error("放款时间不能为空");
               return;
             }
             if (isNull(i.efkll)) {
@@ -1016,7 +985,6 @@ export default {
               return;
             }
           }
-        }
         if (!isNull(this.addOrUpdParams.rongziTicords)) {
           this.addOrUpdParams.rongziTicords.forEach((item, index) => {
             if (isNull(item.tiMoney)) {
@@ -1043,6 +1011,7 @@ export default {
           path: "/rongZiGuanLi/guanLi",
           query: "",
         };
+        this.addOrUpdParams.rongziFangdais = this.loanData;
         this.publicAdd(
           "addManagementParameters",
           this.addOrUpdParams,
@@ -1099,9 +1068,9 @@ export default {
         res.data.rongZiEntityInfo.lxhkfsmc += "";
         if (res.data.rongZiEntityInfo.lxhkfsmc == "null")
           res.data.rongZiEntityInfo.lxhkfsmc = "";
-        res.data.rongZiEntityInfo.hkplmc += "";
-        if (res.data.rongZiEntityInfo.hkplmc == "null")
-          res.data.rongZiEntityInfo.hkplmc = "";
+        res.data.rongZiEntityInfo.hkplid += "";
+        if (res.data.rongZiEntityInfo.hkplid == "null")
+          res.data.rongZiEntityInfo.hkplid = "";
         res.data.rongZiEntityInfo.zrr += "";
         if (res.data.rongZiEntityInfo.zrr == "null")
           res.data.rongZiEntityInfo.zrr = "";
@@ -1114,9 +1083,6 @@ export default {
         this.deadlineTian = res.data.rongZiEntityInfo.qx;
         this.deadlineYue = res.data.rongZiEntityInfo.qxy;
         this.addOrUpdParams = res.data;
-        this.$set(this.addOrUpdParams, "rongziXudais", [
-          { efkjy: "", efksj: "", ejzsj: "", rongziXudaisKey: "rongziXudais" },
-        ]);
         if (!this.addOrUpdParams.rongziXudais)
           this.$set(this.addOrUpdParams, "rongziXudais", [
             {
@@ -1190,5 +1156,12 @@ export default {
   border-radius: 4px 4px 0 0;
   background: #f5f5f5;
   margin-bottom: 20px;
+}
+</style>
+<style lang="scss">
+.dzyName {
+  .el-form-item__label {
+    color: red;
+  }
 }
 </style>

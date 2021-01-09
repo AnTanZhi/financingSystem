@@ -1,33 +1,25 @@
 const publicMixin = {
   data() {
     return {
-      /* 加载中 */
-      loading: false,
-      /* 总条数 */
-      total: 0,
-      /* 列表数据 */
-      tableData: [],
-      /* 添加/修改按钮加载中 */
-      btnLoading: false,
-      /* 添加/修改对话框 */
-      addOrUpdateDig: false,
-      /* 对话框标题 */
-      title: "",
+      /* 加载中 */ loading: false,
+      /* 总条数 */ total: 0,
+      /* 列表数据 */ tableData: [],
+      /* 添加/修改按钮加载中 */ btnLoading: false,
+      /* 添加/修改对话框 */ addOrUpdateDig: false,
+      /* 对话框标题 */ title: "",
     }
   },
   methods: {
     /**
      * @param {string} 通用查询
-     * @param {boolean} total 是否有分页
+     * @param {boolean} total 是否有分页(默认为true)
      */
     publicSelect(total = true) {
       this.loading = true
       this.mixinParams.api[this.mixinParams.name](this.selectParams).then(res => {
         this.tableData = res.data.records || res.data
         this.loading = false
-        if (total) {
-          this.total = res.data.total
-        }
+        if (total) this.total = res.data.total
       })
     },
     /**
@@ -56,12 +48,10 @@ const publicMixin = {
         if (dig) {
           this.addOrUpdateDig = false
           this.publicSelect()
-        } else {
-          this.$router.push({
-            path: url.path,
-            query: url.query
-          })
-        }
+        } else this.$router.push({
+          path: url.path,
+          query: url.query
+        })
       })
     },
     /**
@@ -71,9 +61,12 @@ const publicMixin = {
     publicRules(name) {
       let isOk = false
       this.$refs[name].validate((valid) => {
-        if (valid) {
-          isOk = true
-        } else {
+        if (valid) isOk = true
+        else {
+          setTimeout(() => {
+            let isError = document.getElementsByClassName('is-error')
+            isError[0].querySelector('input').focus()
+          }, 100)
           isOk = false
         }
       })

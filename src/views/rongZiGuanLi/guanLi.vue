@@ -90,7 +90,7 @@
           <el-table-column label="放款金额(万元)" prop="dkje" width="180" align="right"
             :formatter="row=>Number(row.dkje).toFixed(6)" />
           <el-table-column label="本期余额(万元)" width="180" align="right" :formatter="row=>Number(row.dkje).toFixed(6)" />
-          <el-table-column label="利率(%)" prop="lilvRate" align="right" />
+          <el-table-column label="利率(%)" prop="lilvRate" align="right" width="100" show-overflow-tooltip />
           <el-table-column label="综合成本(%)" prop="ptlvRate" width="110" align="right" />
           <el-table-column label="币种" prop="bzName" align="center" width="70" />
           <el-table-column label="责任人" prop="zrrName" width="100" show-overflow-tooltip align="center" />
@@ -107,7 +107,7 @@
                 <i class="el-icon-date edit-btn" @click="repaymentPlan(s.row.id)" />
               </el-tooltip>
               <el-tooltip class="item" effect="dark" content="结清" placement="bottom" v-if="s.row.jieqingmc=='否'">
-                <i class="el-icon-edit edit-btn" @click="()=>settleDia=true" />
+                <i class="el-icon-edit edit-btn" @click="settile(s.row)" />
               </el-tooltip>
             </template>
           </el-table-column>
@@ -548,11 +548,48 @@
           layout="total, sizes, prev, pager, next, jumper" :total="fundRecordsTotal" v-loading="loanLoading">
         </el-pagination>
       </el-dialog>
+      <div v-if="isTableNull(rongziDiyawus)">
+        <el-divider content-position="left">
+          <div style="display:flex;align-items:center">
+            <span style="color: #666666;font-weight: 900;font-size: 1.2em">抵质押物</span>
+          </div>
+        </el-divider>
+        <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe :data="rongziDiyawus"
+          tooltip-effect="dark" style="width: 100%">
+          <el-table-column label="抵质押物类型" prop="zclb" show-overflow-tooltip />
+          <el-table-column label="证件编号" prop="zjbh" show-overflow-tooltip />
+          <el-table-column label="抵质押物名称" prop="zcmc" show-overflow-tooltip />
+          <el-table-column label="土地证号" prop="dkh" show-overflow-tooltip />
+          <el-table-column label="抵质押日期起" prop="dyrq"
+            :formatter="row=>String(row.dyrq)=='null'?'':String(row.dyrq).substring(0,10)" align="center" width="110px"
+            show-overflow-tooltip />
+          <el-table-column label="抵质押日期止" prop="dyrqz"
+            :formatter="row=>String(row.dyrqz)=='null'?'':String(row.dyrqz).substring(0,10)" align="center"
+            width="110px" show-overflow-tooltip />
+          <el-table-column label="抵质押金额(万元)" prop="dyje" align="right" :formatter="row=>Number(row.dyje).toFixed(6)"
+            show-overflow-tooltip />
+        </el-table>
+      </div>
+      <div>
+        <el-divider content-position="left">
+          <div style="display:flex;align-items:center">
+            <span style="color: #666666;font-weight: 900;font-size: 1.2em">续贷</span>
+          </div>
+        </el-divider>
+        <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe :data="rongziXudais"
+          tooltip-effect="dark" style="width: 100%">
+          <el-table-column label="续贷金额(万元)" prop="efkjy" :formatter="row=>Number(row.efkjy).toFixed(6)" />
+          <el-table-column label="续贷开始" prop="efksj"
+            :formatter="row=>String(row.efksj)=='null'?'':String(row.efksj).substring(0,10)" />
+          <el-table-column label="续贷结束" prop="ejzsj"
+            :formatter="row=>String(row.ejzsj)=='null'?'':String(row.ejzsj).substring(0,10)" />
+        </el-table>
+      </div>
     </el-dialog>
     <el-dialog title="结清" :visible.sync="settleDia" width="20%">
       <el-form :model="isYesNull">
         <el-form-item label="债务名称：">
-          <span>债务名称</span>
+          <span>{{settleName}}</span>
         </el-form-item>
         <el-form-item label="结清时间：">
           <el-date-picker v-model="isYesNull" type="date" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
@@ -560,7 +597,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="settleDia = false">取 消</el-button>
-        <el-button type="primary" @click="settleDia = false">确 定</el-button>
+        <el-button type="primary" @click="settle = false">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -632,9 +669,21 @@ export default {
       /* 资金记录加载中 */ fundRecorLoading: false,
       /* 资金记录删除ids */ fundRecorIds: [],
       /* 结清对话框 */ settleDia: false,
+      /* 抵质押表格 */ rongziDiyawus: [],
+      /* 续贷回显 */ rongziXudais: [],
+      /* 结清-债务名称 */ settleName: "",
+      /* 结清参数 */ settleParams: {},
     };
   },
   methods: {
+    /* 结清 */ settile(row) {
+      this.settleName = row.zwmc;
+      this.settleDia = true;
+    },
+    /* 判断表格是不是null */ isTableNull(data) {
+      if (isNull(data)) return false;
+      return true;
+    },
     /* 还款计划 */
     repaymentPlan(id) {
       this.$router.push({
@@ -809,6 +858,8 @@ export default {
         this.fundRecordsInfo = res.data.rongziTicords;
         this.loanTable = res.data.rongziFangdais;
         this.escrowAccountBalance = res.data.superviseBalance;
+        this.rongziDiyawus = res.data.rongziDiyawus;
+        this.rongziXudais - res.data.rongziXudais;
         this.loanSelectParams.rongziId = id;
         this.fundRecordsSelectParmas.rongziId = id;
         /* 放款金额表格 */
