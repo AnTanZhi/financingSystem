@@ -5,12 +5,7 @@
         <el-col :span="20">
           <el-row :gutter="10">
             <el-col :span="5">
-              <el-input
-                v-model="selectParams.frequencyName"
-                placeholder="名称"
-                @input="selectData"
-                clearable
-              />
+              <el-input v-model="selectParams.frequencyName" placeholder="名称" @input="selectData" clearable />
             </el-col>
           </el-row>
         </el-col>

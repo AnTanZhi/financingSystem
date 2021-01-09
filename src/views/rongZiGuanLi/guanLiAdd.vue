@@ -590,8 +590,7 @@ import ShangChuan from "@/myComponents/ShangChuan";
 export default {
   data() {
     return {
-      /* 添加/修改参数 */
-      addOrUpdParams: {
+      /* 添加/修改参数 */ addOrUpdParams: {
         rongZiEntityInfo: {
           dkrqq: "",
           dkrqz: "",
@@ -636,8 +635,7 @@ export default {
           },
         ],
       },
-      /* 添加/修改校验 */
-      rules: {
+      /* 添加/修改校验 */ rules: {
         hkplid: [
           { required: true, message: "请选择首次付息频率", trigger: "change" },
         ],
@@ -690,103 +688,71 @@ export default {
           },
         ],
       },
-      /* 期限(天) */
-      deadlineTian: 0,
-      /* 期限(月) */
-      deadlineYue: 0,
-      /* mixin参数 */
-      mixinParams: {
-        api: guanLi,
-      },
-      /* 放款金额对话框 */
-      loanAmountDia: false,
-      /* 放款金额参数 */
-      loanAmountParams: {},
-      /* 放款金额分页参数 */
-      selectParams: {
+      /* 期限(天) */ deadlineTian: 0,
+      /* 期限(月) */ deadlineYue: 0,
+      /* mixin参数 */ mixinParams: { api: guanLi },
+      /* 放款金额对话框 */ loanAmountDia: false,
+      /* 放款金额参数 */ loanAmountParams: {},
+      /* 放款金额分页参数 */ selectParams: {
         pageIndex: 1,
         pageSize: 10,
         rongziId: this.$route.query.id,
       },
-      /* 放款金额删除参数 */
-      ids: "",
-      /* 放款金额数据 */
-      loanData: [],
-      /* 放款金额总条数 */
-      loanTotal: 0,
-      /* 放款金额加载中 */
-      loanLoading: false,
-      /* 修改资金对话框 */
-      updFundsTableDia: false,
-      /* 修改资金参数 */
-      updFundsParams: {},
-      /* 资金记录查询参数 */
-      fundsSelectParams: {
-        pageIndex: 1,
-        pageSize: 10,
-      },
-      /* 资金记录总条数 */
-      fundsTotal: 0,
-      /* 资金记录加载中 */
-      fundsLoading: false,
-      /* 资金记录数据 */
-      fundsData: [],
-      /* 资金删除参数 */
-      delFundsIds: [],
+      /* 放款金额删除参数 */ ids: "",
+      /* 放款金额数据 */ loanData: [],
+      /* 放款金额总条数 */ loanTotal: 0,
+      /* 放款金额加载中 */ loanLoading: false,
+      /* 修改资金对话框 */ updFundsTableDia: false,
+      /* 修改资金参数 */ updFundsParams: {},
+      /* 资金记录查询参数 */ fundsSelectParams: { pageIndex: 1, pageSize: 10 },
+      /* 资金记录总条数 */ fundsTotal: 0,
+      /* 资金记录加载中 */ fundsLoading: false,
+      /* 资金记录数据 */ fundsData: [],
+      /* 资金删除参数 */ delFundsIds: [],
     };
   },
   methods: {
-    /* 更改放款频率 */
-    setLendingFrequency(val) {
+    /* 更改放款频率 */ setLendingFrequency(val) {
       this.addOrUpdParams.rongziFangdais.forEach((item) => {
         item.efkll = val;
       });
     },
-    /* 资金记录选中 */
-    fundRecordsChange(val) {
+    /* 资金记录选中 */ fundRecordsChange(val) {
       this.delFundsIds = [];
       this.delFundsIds = val.map((v) => v.tiid);
     },
-    /* 删除资金记录 */
-    delFundRecords() {
-      if (this.delFundsIds == "") {
-        this.$message.error("请至少选择一条数据");
-        return;
-      }
-      this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      }).then(() => {
-        guanLi.delFundRecords(this.delFundsIds).then((res) => {
-          this.$message.success("删除成功");
-          this.fundRecordsTable();
-          this.financingInfo();
+    /* 删除资金记录 */ delFundRecords() {
+      if (this.delFundsIds == "") this.$message.error("请至少选择一条数据");
+      else
+        this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }).then(() => {
+          guanLi.delFundRecords(this.delFundsIds).then((res) => {
+            this.$message.success("删除成功");
+            this.fundRecordsTable();
+            this.financingInfo();
+          });
         });
-      });
     },
-    /* 资金记录详细 */
-    getFundRecordsInfo(id) {
+    /* 资金记录详细 */ getFundRecordsInfo(id) {
       guanLi.getFundRecordsInfo(id).then((res) => {
         this.updFundsParams = res.data;
       });
     },
-    /* 资金记录合计 */
-    fundsCount(param) {
+    /* 资金记录合计 */ fundsCount(param) {
       return tableTotal(param, ["提款金额(万元)"]);
     },
-    /* 资金分页查询 */
-    fundsPageSelect(page) {
+    /* 资金分页查询 */ fundsPageSelect(page) {
       this.selectParams.pageIndex = page;
       this.fundRecordsTable();
     },
-    /* 资金更改每页查询条数 */
-    fundsSizeSelect(size) {
+    /* 资金更改每页查询条数 */ fundsSizeSelect(size) {
       this.selectParams.pageSize = size;
       this.fundRecordsTable();
     },
-    /* 资金使用记录表格 */
-    fundRecordsTable() {
+    /* 资金使用记录表格 */ fundRecordsTable() {
       this.fundsLoading = true;
       this.fundsSelectParams.rongziId = this.$route.query.id;
       guanLi.getFundRecords(this.fundsSelectParams).then((res) => {
@@ -795,8 +761,7 @@ export default {
         this.fundsTotal = res.data.total;
       });
     },
-    /* 添加/修改资金使用记录 */
-    setFundRecords() {
+    /* 添加/修改资金使用记录 */ setFundRecords() {
       this.updFundsParams.rongziId = this.$route.query.id;
       guanLi.setFundRecords(this.updFundsParams).then((res) => {
         this.$message.success("操作成功");
@@ -805,54 +770,45 @@ export default {
         this.financingInfo();
       });
     },
-    /* 更改放款金额每页展示的数量 */
-    loanSizeSelect(size) {
+    /* 更改放款金额每页展示的数量 */ loanSizeSelect(size) {
       this.selectParams.pageSize = size;
       this.getLoan();
     },
-    /* 放款金额分页查询 */
-    loanPageSelect(page) {
+    /* 放款金额分页查询 */ loanPageSelect(page) {
       this.selectParams.pageIndex = page;
       this.getLoan();
     },
-    /* 删除放款金额 */
-    delLoan() {
-      if (this.ids == "") {
-        this.$message.error("请至少选择一条数据");
-        return;
-      }
-      this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      }).then(() => {
-        guanLi.delLoan(this.ids).then((res) => {
-          this.$message.success("删除成功");
-          this.getLoan();
+    /* 删除放款金额 */ delLoan() {
+      if (isNull(this.ids)) this.$message.error("请至少选择一条数据");
+      else
+        this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }).then(() => {
+          guanLi.delLoan(this.ids).then((res) => {
+            this.$message.success("删除成功");
+            this.getLoan();
+          });
         });
-      });
     },
-    /* 放款选中 */
-    loanCountChange(val) {
+    /* 放款选中 */ loanCountChange(val) {
       this.ids = [];
       this.ids = val.map((v) => v.id);
     },
-    /* 放款金额合计 */
-    loanCount(param) {
+    /* 放款金额合计 */ loanCount(param) {
       return tableTotal(param, [
         "放款金额(万元)",
         "手续费(万元)",
         "保证金(万元)",
       ]);
     },
-    /* 修改前置(放款金额详细) */
-    goUpd(id) {
+    /* 修改前置(放款金额详细) */ goUpd(id) {
       guanLi.loanInfo(id).then((res) => {
         this.loanAmountParams = res.data;
       });
     },
-    /* 添加/修改放款金额 */
-    updLoanAmount() {
+    /* 添加/修改放款金额 */ updLoanAmount() {
       this.loanAmountParams.rongziId = this.$route.query.id;
       guanLi.setLoan(this.loanAmountParams).then((res) => {
         this.loanAmountParams = {};
@@ -860,16 +816,12 @@ export default {
         this.getLoan();
       });
     },
-    /* 删除抵质押物 */
-    delCollateral() {
-      if (this.addOrUpdParams.rongziDiyawus.length == 1) {
+    /* 删除抵质押物 */ delCollateral() {
+      if (this.addOrUpdParams.rongziDiyawus.length == 1)
         this.$message.error("至少保留一个");
-        return;
-      }
-      this.addOrUpdParams.rongziDiyawus.pop();
+      else this.addOrUpdParams.rongziDiyawus.pop();
     },
-    /* 添加抵质押物 */
-    addCollateral() {
+    /* 添加抵质押物 */ addCollateral() {
       this.addOrUpdParams.rongziDiyawus.push({
         zclb: "",
         zjbh: "",
@@ -879,32 +831,24 @@ export default {
         dyje: "",
       });
     },
-    /* 删除续贷 */
-    delRenew() {
-      if (this.addOrUpdParams.rongziXudais.length == 1) {
+    /* 删除续贷 */ delRenew() {
+      if (this.addOrUpdParams.rongziXudais.length == 1)
         this.$message.error("至少保留一个");
-        return;
-      }
-      this.addOrUpdParams.rongziXudais.pop();
+      else this.addOrUpdParams.rongziXudais.pop();
     },
-    /* 添加续贷 */
-    addRenew() {
+    /* 添加续贷 */ addRenew() {
       this.addOrUpdParams.rongziXudais.push({
         eFkjy: "",
         eFksj: "",
         eJzsj: "",
       });
     },
-    /* 删除记录使用情况 */
-    delFunds() {
-      if (this.addOrUpdParams.rongziTicords.length == 1) {
+    /* 删除记录使用情况 */ delFunds() {
+      if (this.addOrUpdParams.rongziTicords.length == 1)
         this.$message.error("至少保留一个");
-        return;
-      }
-      this.addOrUpdParams.rongziTicords.pop();
+      else this.addOrUpdParams.rongziTicords.pop();
     },
-    /* 添加记录使用情况 */
-    addFunds() {
+    /* 添加记录使用情况 */ addFunds() {
       this.addOrUpdParams.rongziTicords.push({
         tiMoney: "",
         tiBlank: "",
@@ -912,16 +856,12 @@ export default {
         tiTime: "",
       });
     },
-    /* 删除放款金额 */
-    delLoanAmount() {
-      if (this.addOrUpdParams.rongziFangdais.length == 1) {
+    /* 删除放款金额 */ delLoanAmount() {
+      if (this.addOrUpdParams.rongziFangdais.length == 1)
         this.$message.error("至少保留一个");
-        return;
-      }
-      this.addOrUpdParams.rongziFangdais.pop();
+      else this.addOrUpdParams.rongziFangdais.pop();
     },
-    /* 添加放款金额 */
-    addLoanAmount() {
+    /* 添加放款金额 */ addLoanAmount() {
       this.addOrUpdParams.rongziFangdais.push({
         eFkjy: "",
         eFksj: "",
@@ -930,8 +870,7 @@ export default {
         bzj: "",
       });
     },
-    /* 添加管理参数 */
-    addManagementParameters() {
+    /* 添加管理参数 */ addManagementParameters() {
       if (this.publicRules("addOrUpdParams")) {
         let start = this.addOrUpdParams.rongZiEntityInfo.dkrqq;
         let end = this.addOrUpdParams.rongZiEntityInfo.dkrqz;
@@ -1020,8 +959,7 @@ export default {
         );
       }
     },
-    /* 贷款日期止校验 */
-    loanDateVerification() {
+    /* 贷款日期止校验 */ loanDateVerification() {
       let [start, end] = [
         this.addOrUpdParams.rongZiEntityInfo.dkrqq,
         this.addOrUpdParams.rongZiEntityInfo.dkrqz,
@@ -1051,34 +989,33 @@ export default {
         }
       }
     },
-    /* 融资详细 */
-    financingInfo() {
+    /* 融资详细 */ financingInfo() {
       guanLi.getFinancingInfo(this.$route.query.id).then((res) => {
-        res.data.rongZiEntityInfo.zqgd =
-          res.data.rongZiEntityInfo.zqgd == 1 ? true : false;
-        res.data.rongZiEntityInfo.kxd =
-          res.data.rongZiEntityInfo.kxd == 1 ? true : false;
-        res.data.rongZiEntityInfo.dsf =
-          res.data.rongZiEntityInfo.dsf == 1 ? true : false;
-        res.data.rongZiEntityInfo.dy =
-          res.data.rongZiEntityInfo.dy == 1 ? true : false;
+        let zqgd = res.data.rongZiEntityInfo.zqgd;
+        let kxd = res.data.rongZiEntityInfo.kxd;
+        let dsf = res.data.rongZiEntityInfo.dsf;
+        let dy = res.data.rongZiEntityInfo.dy;
+        res.data.rongZiEntityInfo.zqgd = zqgd == 1 ? true : false;
+        res.data.rongZiEntityInfo.kxd = kxd == 1 ? true : false;
+        res.data.rongZiEntityInfo.dsf = dsf == 1 ? true : false;
+        res.data.rongZiEntityInfo.dy = dy == 1 ? true : false;
         res.data.rongZiEntityInfo.bjhkfsmc += "";
-        if (res.data.rongZiEntityInfo.bjhkfsmc == "null")
+        if (isNull(res.data.rongZiEntityInfo.bjhkfsmc))
           res.data.rongZiEntityInfo.bjhkfsmc = "";
         res.data.rongZiEntityInfo.lxhkfsmc += "";
-        if (res.data.rongZiEntityInfo.lxhkfsmc == "null")
+        if (isNull(res.data.rongZiEntityInfo.lxhkfsmc))
           res.data.rongZiEntityInfo.lxhkfsmc = "";
         res.data.rongZiEntityInfo.hkplid += "";
-        if (res.data.rongZiEntityInfo.hkplid == "null")
+        if (isNull(res.data.rongZiEntityInfo.hkplid))
           res.data.rongZiEntityInfo.hkplid = "";
         res.data.rongZiEntityInfo.zrr += "";
-        if (res.data.rongZiEntityInfo.zrr == "null")
+        if (isNull(res.data.rongZiEntityInfo.zrr))
           res.data.rongZiEntityInfo.zrr = "";
         res.data.rongZiEntityInfo.hkModel += "";
-        if (res.data.rongZiEntityInfo.hkModel == "null")
+        if (isNull(res.data.rongZiEntityInfo.hkModel))
           res.data.rongZiEntityInfo.hkModel = "";
         res.data.rongZiEntityInfo.rzlxmc += "";
-        if (res.data.rongZiEntityInfo.rzlxmc == "null")
+        if (isNull(res.data.rongZiEntityInfo.rzlxmc))
           res.data.rongZiEntityInfo.rzlxmc = "";
         this.deadlineTian = res.data.rongZiEntityInfo.qx;
         this.deadlineYue = res.data.rongZiEntityInfo.qxy;
@@ -1107,8 +1044,7 @@ export default {
           ]);
       });
     },
-    /* 放款金额表格 */
-    getLoan() {
+    /* 放款金额表格 */ getLoan() {
       this.loanLoading = true;
       guanLi.getLoan(this.selectParams).then((res) => {
         this.loanData = res.data.records;

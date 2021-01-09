@@ -1,6 +1,10 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
-/* 级联 */
+/**
+ * 级联(递归处理)
+ * @param {Array} data 数据
+ * @param {Array} array 空数组(用于返回)  
+ */
 export const recursion = (data, array) => {
   data.forEach(item => {
     array.push({
@@ -11,13 +15,20 @@ export const recursion = (data, array) => {
   });
   return array
 }
-/* 判断null */
+/**
+ * 判断是否为null(true==null,false!=null)
+ * @param {Object} value 字段
+ */
 export const isNull = (value) => {
-  if (value != "" && value != null && value != undefined)
+  if (value != "" && value != null && value != undefined && value != 'null')
     return false
   return true
 }
-/* 表格合计 */
+/**
+ * 表格合计
+ * @param {Array} param 数据体(方法内置参数)
+ * @param {Array} dataName 参与合计的列的lable 
+ */
 export const tableTotal = (param, dataName) => {
   const { columns, data } = param;
   const sums = [];
@@ -36,7 +47,10 @@ export const tableTotal = (param, dataName) => {
   });
   return sums;
 }
-/* 导出 */
+/**
+ * 导出
+ * @param {Object} data 参数对象(url,method,params,fileName)
+ */
 export const exportMethod = data => {
   return new Promise((resolve, reject) => {
     axios({
@@ -60,7 +74,10 @@ export const exportMethod = data => {
     })
   })
 }
-/* 下载 */
+/**
+ * 下载
+ * @param {Object} data 参数对象(method,url,params,fileName)
+ */
 export const templateDownload = data => {
   axios({
     method: data.method,

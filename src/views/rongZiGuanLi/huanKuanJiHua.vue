@@ -333,11 +333,9 @@ export default {
       });
     },
     /* 还款计划删除 */ delRepaymentPlan() {
-      if (this.repaymentPlanIds == "") {
+      if (this.repaymentPlanIds == "")
         this.$message.error("请至少选择一条数据");
-        return;
-      }
-      this.publicDel("delRepaymentPlan", this.repaymentPlanIds);
+      else this.publicDel("delRepaymentPlan", this.repaymentPlanIds);
     },
     /* 多选赋值 */ handleSelectionChange(val) {
       this.repaymentPlanIds = [];

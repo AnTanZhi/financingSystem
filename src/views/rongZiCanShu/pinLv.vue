@@ -72,71 +72,54 @@
 import Head from "./head";
 import publicMixin from "@/mixin/publicMixin";
 import canShu from "@/api/canShu";
+import { isNull } from "@/utils/utils";
 export default {
   data() {
     return {
-      /* 查询参数 */
-      selectParams: {
-        pageIndex: 1,
-        pageSize: 10,
-      },
-      /* mixin参数 */
-      mixinParams: {
+      /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 10 },
+      /* mixin参数 */ mixinParams: {
         api: canShu,
         name: "getRepaymentFrequency",
       },
-      /* 添加/修改参数 */
-      addOrUpdateParams: {},
-      /* 校验 */
-      rules: {
+      /* 添加/修改参数 */ addOrUpdateParams: {},
+      /* 校验 */ rules: {
         pname: [{ required: true, message: "请输入频率名称", trigger: "blur" }],
         parg: [{ required: true, message: "请输入月数", trigger: "blur" }],
       },
-      /* 删除参数 */
-      ids: [],
+      /* 删除参数 */ ids: [],
     };
   },
   methods: {
-    /* 删除(多个) */
-    delS() {
-      if (this.ids == "") {
-        this.$message.error("请至少选择一条数据");
-        return;
-      }
-      this.publicDel("delRepaymentFrequency", this.ids);
+    /* 删除(多个) */ delS() {
+      if (isNull(this.ids)) this.$message.error("请至少选择一条数据");
+      else this.publicDel("delRepaymentFrequency", this.ids);
     },
-    /* 修改前置 */
-    goUpd(id) {
+    /* 修改前置 */ goUpd(id) {
       canShu.infoRepaymentFrequency(id).then((res) => {
         this.addOrUpdateParams = res.data;
         this.title = "参数编辑";
         this.addOrUpdateDig = true;
       });
     },
-    /* 添加参数 */
-    addCanShu() {
-      if (this.publicRules("addOrUpdateParams")) {
+    /* 添加参数 */ addCanShu() {
+      if (this.publicRules("addOrUpdateParams"))
         this.publicAdd("addRepaymentFrequency", this.addOrUpdateParams, "");
-      }
     },
-    /* 添加前置 */
-    goAdd() {
+    /* 添加前置 */ goAdd() {
       this.addOrUpdateParams = {};
       this.title = "参数添加";
       this.addOrUpdateDig = true;
     },
-    handleSelectionChange(val) {
+    /* 选中值 */ handleSelectionChange(val) {
       this.ids = [];
       this.ids = val.map((v) => v.pid);
     },
-    /* 获取表格数据 */
-    getTablData() {
+    /* 获取表格数据 */ getTablData() {
       this.publicSelect();
     },
   },
   mounted() {
-    /* 获取表格数据 */
-    this.publicSelect();
+    /* 获取表格数据 */ this.publicSelect();
   },
   components: { Head },
   mixins: [publicMixin],
