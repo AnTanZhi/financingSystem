@@ -118,7 +118,7 @@
         :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog title="贷款单详细" :visible.sync="loanNoteDia">
+    <el-dialog title="贷款单详细" :visible.sync="loanNoteDia" :close-on-click-modal="false">
       <el-form :model="financingInfo" label-width="150px" class="demo-ruleForm">
         <el-row>
           <el-col :span="12">
@@ -379,7 +379,7 @@
         <el-table-column label="放款凭证号" prop="fkpz" />
       </el-table>
       <!-- 放款金额详细弹出框 -->
-      <el-dialog width="40%" title="放款金额编辑" :visible.sync="loanAmountDia" append-to-body>
+      <el-dialog width="40%" title="放款金额编辑" :visible.sync="loanAmountDia" append-to-body :close-on-click-modal="false">
         <el-form :model="loanAmountParams" label-width="130px" style="margin-bottom:20px">
           <div style="display:flex;justify-content:space-between">
             <ShangChuan />
@@ -480,7 +480,7 @@
           align="center" width="100" />
       </el-table>
       <!-- 资金记录详细弹出框 -->
-      <el-dialog width="40%" title="放款金额编辑" :visible.sync="fundRecordsDia" append-to-body>
+      <el-dialog width="40%" title="放款金额编辑" :visible.sync="fundRecordsDia" append-to-body :close-on-click-modal="false">
         <el-form :model="fundRecordsParams" label-width="130px" style="margin-bottom:20px">
           <div style="border:#CCCCCC 1px solid;margin-top:10px">
             <div
@@ -586,7 +586,7 @@
         </el-table>
       </div>
     </el-dialog>
-    <el-dialog title="结清" :visible.sync="settleDia" width="20%">
+    <el-dialog title="结清" :visible.sync="settleDia" width="20%" :close-on-click-modal="false">
       <el-form :model="isYesNull">
         <el-form-item label="债务名称：">
           <span>{{settleName}}</span>

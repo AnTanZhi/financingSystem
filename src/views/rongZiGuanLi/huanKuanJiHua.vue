@@ -85,7 +85,7 @@
       </el-pagination>
     </div>
     <!-- 本金管理对话框 -->
-    <el-dialog title="本金管理" :visible.sync="principalDia">
+    <el-dialog title="本金管理" :visible.sync="principalDia" :close-on-click-modal="false">
       <div style="margin-bottom:20px">
         <el-form :model="principalManagementParams" label-position="right" label-width="120px">
           <el-row>
@@ -140,7 +140,7 @@
       </el-pagination>
     </el-dialog>
     <!-- 利率调整 -->
-    <el-dialog title="利率调整" :visible.sync="interestRateDia">
+    <el-dialog title="利率调整" :visible.sync="interestRateDia" :close-on-click-modal="false">
       <div style="margin-bottom:20px">
         <el-form :model="isYesNull" label-position="right" label-width="120px">
           <el-row>
@@ -189,7 +189,7 @@
       </el-pagination>
     </el-dialog>
     <!-- 还款计划修改 -->
-    <el-dialog title="还款计划修改" :visible.sync="updRepaymentPlan">
+    <el-dialog title="还款计划修改" :visible.sync="updRepaymentPlan" :close-on-click-modal="false">
       <div style="margin-bottom:20px">
         <el-form :model="repaymentPlanParams" label-position="right" label-width="120px">
           <el-row>

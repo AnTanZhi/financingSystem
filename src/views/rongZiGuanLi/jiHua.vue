@@ -47,7 +47,7 @@
         :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog title="添加月计划" :visible.sync="addOrUpdateDig">
+    <el-dialog title="添加月计划" :visible.sync="addOrUpdateDig" :close-on-click-modal="false">
       <el-form :model="isNull" label-position="right" label-width="110px">
         <el-form-item label="年月：">
           <el-date-picker v-model="isNull" type="month" placeholder="选择月" clearable />

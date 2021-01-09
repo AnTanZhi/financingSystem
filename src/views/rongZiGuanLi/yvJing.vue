@@ -105,7 +105,7 @@
         :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
       <!-- 预警还款 -->
-      <el-dialog title="收货地址" :visible.sync="WarningRepaymentDia">
+      <el-dialog title="收货地址" :visible.sync="WarningRepaymentDia" :close-on-click-modal="false">
         <el-form label-position="right" label-width="110px">
           <el-form-item label="债务名称：">
             <span>杭州市政2.9亿信用证</span>
@@ -140,7 +140,7 @@
 </template>
 
 <script>
-import publicMixin from '@/mixin/publicMixin'
+import publicMixin from "@/mixin/publicMixin";
 import LeiXing from "@/myComponents/LeiXing";
 import KeShi from "@/myComponents/KeShi";
 import ShangChuan from "@/myComponents/ShangChuan";
@@ -154,7 +154,7 @@ export default {
   },
   methods: {},
   mounted() {},
-  components: {LeiXing,KeShi},
+  components: { LeiXing, KeShi },
   mixins: [publicMixin],
 };
 </script>

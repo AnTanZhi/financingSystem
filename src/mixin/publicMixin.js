@@ -7,6 +7,8 @@ const publicMixin = {
       /* 添加/修改按钮加载中 */ btnLoading: false,
       /* 添加/修改对话框 */ addOrUpdateDig: false,
       /* 对话框标题 */ title: "",
+      /* 后端返回的当前页 */ current: 0,
+      /* 后端返回的总页码 */ pages: 0,
     }
   },
   methods: {
@@ -19,7 +21,11 @@ const publicMixin = {
       this.mixinParams.api[this.mixinParams.name](this.selectParams).then(res => {
         this.tableData = res.data.records || res.data
         this.loading = false
-        if (total) this.total = res.data.total
+        if (total) {
+          this.total = res.data.total
+          this.current = res.data.current
+          this.pages = res.data.pages
+        }
       })
     },
     /**
@@ -121,6 +127,8 @@ const publicMixin = {
       }).then(() => {
         this.mixinParams.api[name](ids).then(res => {
           this.$message.success('删除成功')
+          if (this.current == this.pages && ids.length == this.tableData.length)
+            this.selectParams.pageIndex -= 1
           this.publicSelect()
         })
       })

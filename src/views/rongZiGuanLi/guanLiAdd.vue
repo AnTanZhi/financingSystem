@@ -296,7 +296,7 @@
           <el-table-column label="保证金(万元)" :formatter="row=>Number(row.bzj).toFixed(6)" align="right" />
         </el-table>
         <!-- 放款金额修改对话框 -->
-        <el-dialog title="新沂市城市投资发展有限公司内部办公平台" :visible.sync="loanAmountDia">
+        <el-dialog title="新沂市城市投资发展有限公司内部办公平台" :visible.sync="loanAmountDia" :close-on-click-modal="false">
           <el-form :model="loanAmountParams" label-width="130px">
             <el-row>
               <el-col :span="8">
@@ -424,7 +424,7 @@
             width="100" align="center" />
         </el-table>
         <!-- 资金使用修改对话框 -->
-        <el-dialog title="新沂市城市投资发展有限公司内部办公平台" :visible.sync="updFundsTableDia">
+        <el-dialog title="新沂市城市投资发展有限公司内部办公平台" :visible.sync="updFundsTableDia" :close-on-click-modal="false">
           <el-form :model="updFundsParams" label-width="130px">
             <div style="border:#CCCCCC 1px solid;margin-top:10px">
               <div
@@ -950,7 +950,7 @@ export default {
           path: "/rongZiGuanLi/guanLi",
           query: "",
         };
-        this.addOrUpdParams.rongziFangdais = this.loanData;
+        // this.addOrUpdParams.rongziFangdais = this.loanData;
         this.publicAdd(
           "addManagementParameters",
           this.addOrUpdParams,

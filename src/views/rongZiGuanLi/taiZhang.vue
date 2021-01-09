@@ -75,7 +75,7 @@
         :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
     </div>
-    <el-dialog :title="title" :visible.sync="addOrUpdateDig">
+    <el-dialog :title="title" :visible.sync="addOrUpdateDig" :close-on-click-modal="false">
       <el-form :rules="rules" :model="addOrUpdateParams" label-width="120px" ref="addOrUpdateParams">
         <el-form-item label="主体名称" prop="pname">
           <el-input v-model="addOrUpdateParams.pname" />

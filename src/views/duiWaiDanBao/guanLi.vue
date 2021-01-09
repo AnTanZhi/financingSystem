@@ -84,7 +84,7 @@
         @current-change="publicPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
         :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total" />
     </div>
-    <el-dialog title="对外担保信息" :visible.sync="addOrUpdateDig">
+    <el-dialog title="对外担保信息" :visible.sync="addOrUpdateDig" :close-on-click-modal="false">
       <el-form :model="addOrUpdateParams" label-position="right" label-width="170px" :rules="rules"
         ref="addOrUpdateParams">
         <el-form-item label="保证合同编号：" prop="bh">
@@ -155,25 +155,22 @@ export default {
             message: "责任金额为正数且小数点后2位",
             trigger: "blur",
           },
-          { min: 0, max: 12, message: "最大为12长度", trigger: "blur" },
         ],
         dbje: [
           { required: true, message: "请输入借款金额", trigger: "blur" },
           {
             pattern: /^(([1-9]{1}\d*)|(0{9}))(\.\d{1,2})?$/g,
-            message: "借款金额为正数且小数点后2位",
+            message: "借款金额为正数且小数点后只有2位",
             trigger: "blur",
           },
-          { min: 0, max: 12, message: "最大为12长度", trigger: "blur" },
         ],
         dbye: [
           { required: true, message: "请输入担保余额", trigger: "blur" },
           {
             pattern: /^(([1-9]{1}\d*)|(0{9}))(\.\d{1,2})?$/g,
-            message: "担保余额为正数且小数点后2位",
+            message: "担保余额为正数且小数点后只有2位",
             trigger: "blur",
           },
-          { min: 0, max: 12, message: "最大为12长度", trigger: "blur" },
         ],
         dbstime: [
           {
