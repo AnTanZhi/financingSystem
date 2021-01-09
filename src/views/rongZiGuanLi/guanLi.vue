@@ -89,7 +89,8 @@
             :formatter="row=>Number(row.sxje).toFixed(6)" />
           <el-table-column label="放款金额(万元)" prop="dkje" width="180" align="right"
             :formatter="row=>Number(row.dkje).toFixed(6)" />
-          <el-table-column label="本期余额(万元)" width="180" align="right" :formatter="row=>Number(row.dkje).toFixed(6)" />
+          <el-table-column label="本期余额(万元)" width="180" align="right" prop="balance"
+            :formatter="row=>Number(row.balance).toFixed(6)" />
           <el-table-column label="利率(%)" prop="lilvRate" align="right" width="100" show-overflow-tooltip />
           <el-table-column label="综合成本(%)" prop="ptlvRate" width="110" align="right" />
           <el-table-column label="币种" prop="bzName" align="center" width="70" />
