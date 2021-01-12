@@ -127,8 +127,11 @@ const publicMixin = {
       }).then(() => {
         this.mixinParams.api[name](ids).then(res => {
           this.$message.success('删除成功')
-          if (this.current == this.pages && ids.length == this.tableData.length)
-            this.selectParams.pageIndex -= 1
+          if (this.selectParams) {
+            let pages = Math.ceil(this.total)
+            if (this.selectParams.pageIndex == pages && this.selectParams.pageIndex != 1 && this.ids.length == this.total)
+              this.selectParams.pageIndex -= 1
+          }
           this.publicSelect()
         })
       })

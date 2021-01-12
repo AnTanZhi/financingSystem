@@ -99,3 +99,25 @@ export const templateDownload = data => {
       Message.error("下载异常，请稍候再试");
     });
 }
+/**
+ * 计算相差月/日
+ * @param {Object} data 开始日期和结束日期对象
+ */
+export const getMonthDay = data => {
+  let dataYue = 0
+  let ms = new Date(data.end).getTime() - new Date(data.start).getTime();
+  let tian = ms / 1000 / 60 / 60 / 24 + 1;
+  let nian =
+    new Date(data.end).getFullYear() - new Date(data.start).getFullYear();
+  let yue =
+    new Date(data.end).getMonth() + 1 - (new Date(data.start).getMonth() + 1);
+  let ri = new Date(data.end).getDate() - new Date(data.start).getDate();
+  if (nian > 0) {
+    dataYue += 12;
+  }
+  dataYue += yue;
+  if (ri > 0) {
+    dataYue += 1;
+  }
+  return { dataYue, tian }
+}

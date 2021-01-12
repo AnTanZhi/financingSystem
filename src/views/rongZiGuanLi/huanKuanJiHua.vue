@@ -26,7 +26,7 @@
                   <el-button type="primary" icon="el-icon-money" @click="addOrUpdPrincipalManagement">本金管理</el-button>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-s-operation">利率调整</el-button>
+                  <el-button type="primary" icon="el-icon-s-operation" @click="goAddOrUpdIr">利率调整</el-button>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="danger" icon="el-icon-delete" @click="delRepaymentPlan">删除选中</el-button>
@@ -87,101 +87,122 @@
     <!-- 本金管理对话框 -->
     <el-dialog title="本金管理" :visible.sync="principalDia" :close-on-click-modal="false">
       <div style="margin-bottom:20px">
-        <el-form :model="principalManagementParams" label-position="right" label-width="120px">
+        <el-form :model="principalManagementParams" label-position="right" label-width="120px" :rules="pmRules"
+          ref="principalManagementParams">
           <el-row>
             <el-col :span="12">
-              <el-form-item label="放款金额(万元)">
-                <el-select placeholder="放款金额" style="width:220px">
-                  <el-option label="2800.000000" value="2800.000000" />
+              <el-form-item label="放款金额(万元)" prop="fangdaiId">
+                <el-select v-model="principalManagementParams.fangdaiId" style="width:220px" clearable>
+                  <el-option v-for="item in pmSelectData" :key="item.id" :value="item.id"
+                    :label="Number(item.efkjy).toFixed(6)" />
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="还款日期">
-                <el-date-picker v-model="isYesNull" type="date" placeholder="还款日期" value-format="yyyy-MM-dd HH:mm:ss"
-                  clearable>
+              <el-form-item label="还款日期" prop="efksj">
+                <el-date-picker v-model="principalManagementParams.efksj" type="date" placeholder="还款日期"
+                  value-format="yyyy-MM-dd HH:mm:ss" clearable>
                 </el-date-picker>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="本金金额(万元)">
-                <el-input v-model="isYesNull" placeholder="本金金额" clearable style="width:220px" />
+              <el-form-item label="本金金额(万元)" prop="efkjy">
+                <el-input v-model="principalManagementParams.efkjy" placeholder="本金金额" clearable style="width:220px" />
               </el-form-item>
             </el-col>
             <el-col :span="12">
               <el-form-item label="利率(%)">
-                <el-input v-model="isYesNull" placeholder="利率" clearable style="width:220px" />
+                <el-input v-model="principalManagementParams.efkll" placeholder="利率" clearable style="width:220px" />
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer" style="text-align:center">
-          <el-button type="primary" @click="dialogFormVisible = false">添加</el-button>
+          <el-button type="primary" @click="addPrincipalManagement">添加</el-button>
         </div>
       </div>
       <div style="text-align:end;margin-bottom:10px">
-        <el-button type="danger">删除选中</el-button>
+        <el-button type="danger" @click="delPrincipalManagement">删除选中</el-button>
       </div>
       <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
         element-loading-text="加载中，请稍候……" :data="principalManagement" tooltip-effect="dark" style="width: 100%"
-        @selection-change="handleSelectionChange" :summary-method="getSummaries" show-summary>
-        <el-table-column type="selection" />
-        <el-table-column label="放款金额(万元)" />
-        <el-table-column label="还款日期" />
-        <el-table-column label="本金金额(万元)" prop="efksj" />
-        <el-table-column label="利率(%)" prop="efkll" />
-        <el-table-column label="日期" prop="efksj" />
+        @selection-change="selectPM" :summary-method="pmSummaries" show-summary>
+        <el-table-column type="selection" align="center" />
+        <el-table-column label="放款金额(万元)" :formatter="row=>Number(row.fkeFkjy).toFixed(6)" align="right" />
+        <el-table-column label="还款日期" :formatter="row=>String(row.efksj)=='null'?'':String(row.efksj).substring(0,10)"
+          align="center" width="100" />
+        <el-table-column label="本金金额(万元)" prop="efkjy" :formatter="row=>Number(row.efkjy).toFixed(6)" align="right" />
+        <el-table-column label="利率(%)" width="80" align="center" :formatter="row=>Number(row.efkll).toFixed(2)+'%'" />
+        <el-table-column label="日期" :formatter="row=>String(row.addTime)=='null'?'':String(row.addTime).substring(0,10)"
+          align="center" width="100" />
+        <el-table-column label="操作" width="50" align="center">
+          <template slot-scope="s">
+            <el-tooltip class="item" effect="dark" content="编辑" placement="bottom">
+              <i class="el-icon-edit-outline edit-btn" @click="getPMInfo(s.row.id)" />
+            </el-tooltip>
+          </template>
+        </el-table-column>
       </el-table>
       <el-pagination style="text-align: end;margin-top:20px" background @size-change="pmSelectSize"
         @current-change="pmSelectIndex" :current-page="pmSelectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
-        :page-size="pmSelectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pmTotal">
-      </el-pagination>
+        :page-size="pmSelectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="pmTotal" />
     </el-dialog>
     <!-- 利率调整 -->
     <el-dialog title="利率调整" :visible.sync="interestRateDia" :close-on-click-modal="false">
       <div style="margin-bottom:20px">
-        <el-form :model="isYesNull" label-position="right" label-width="120px">
+        <el-form :model="setIrPrams" label-position="right" label-width="120px" :rules="irRules" ref="setIrPrams">
           <el-row>
             <el-col :span="24">
-              <el-form-item label="放款金额(万元)">
-                <el-select placeholder="放款金额" style="width:220px">
-                  <el-option label="2800.000000" value="2800.000000" />
+              <el-form-item label="放款金额(万元)" prop="fangdaiId">
+                <el-select v-model="setIrPrams.fangdaiId" style="width:220px" clearable>
+                  <el-option v-for="item in pmSelectData" :key="item.id" :value="item.id"
+                    :label="Number(item.efkjy).toFixed(6)" />
                 </el-select>
               </el-form-item>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="调整日期：">
-                <el-date-picker v-model="isYesNull" type="date" placeholder="调整日期" value-format="yyyy-MM-dd HH:mm:ss"
-                  clearable style="width:220px">
+              <el-form-item label="调整日期：" prop="efksj">
+                <el-date-picker v-model="setIrPrams.efksj" type="date" placeholder="调整日期"
+                  value-format="yyyy-MM-dd HH:mm:ss" clearable style="width:220px">
                 </el-date-picker>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="调整利率(%)：">
-                <el-input v-model="isYesNull" placeholder="利率" clearable style="width:220px" />
+              <el-form-item label="调整利率(%)：" prop="efkll">
+                <el-input v-model="setIrPrams.efkll" placeholder="利率" clearable style="width:220px" />
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer" style="text-align:center">
-          <el-button type="primary" @click="dialogFormVisible = false">添加</el-button>
+          <el-button type="primary" @click="setIr">添加</el-button>
         </div>
       </div>
       <div style="text-align:end;margin-bottom:10px">
-        <el-button type="danger">删除选中</el-button>
+        <el-button type="danger" @click="delIr">删除选中</el-button>
       </div>
       <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
-        element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
-        @selection-change="handleSelectionChange" :summary-method="getSummaries" show-summary>
-        <el-table-column type="selection" />
-        <el-table-column label="放款金额(万元)" />
-        <el-table-column label="调整日期" />
-        <el-table-column label="调整利率(%)" />
-        <el-table-column label="日期" />
+        element-loading-text="加载中，请稍候……" :data="irData" tooltip-effect="dark" style="width: 100%"
+        @selection-change="selectIR">
+        <el-table-column type="selection" align="center" />
+        <el-table-column label="放款金额(万元)" :formatter="row=>Number(row.fkeFkjy).toFixed(6)" align="right" />
+        <el-table-column label="调整日期" :formatter="row=>String(row.efksj)=='null'?'':String(row.efksj).substring(0,10)"
+          align="center" width="100" />
+        <el-table-column label="调整利率(%)" :formatter="row=>Number(row.efkll).toFixed(2)+'%'" align="center"
+          width="100" />
+        <el-table-column label="日期" :formatter="row=>String(row.addTime)=='null'?'':String(row.addTime).substring(0,10)"
+          width="100" align="center" />
+        <el-table-column label="操作" width="50" align="center">
+          <template slot-scope="s">
+            <el-tooltip class="item" effect="dark" content="编辑" placement="bottom">
+              <i class="el-icon-edit-outline edit-btn" @click="getIRInfo(s.row.id)" />
+            </el-tooltip>
+          </template>
+        </el-table-column>
       </el-table>
       <el-pagination style="text-align: end;margin-top:20px" background @size-change="publicSizeSelect"
         @current-change="publicPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
@@ -292,9 +313,131 @@ export default {
         rongziId: this.$route.query.id,
       },
       /* 本金管理总条数 */ pmTotal: 0,
+      /* 本金管理删除参数 */ pmIds: [],
+      /* 本金放款下拉框 */ pmSelectData: [],
+      /* 添加本金校验 */ pmRules: {
+        fangdaiId: [
+          { required: true, message: "请选择放款金额", trigger: "change" },
+        ],
+        efksj: [
+          {
+            required: true,
+            message: "请选择还款日期",
+            trigger: "change",
+          },
+        ],
+        efkjy: [{ required: true, message: "请选择本金金额", trigger: "blur" }],
+      },
+      /* 利率查询参数 */ irParams: { pageIndex: 1, pageSize: 10 },
+      /* 利率 */ irData: [],
+      /* 添加/修改利率参数 */ setIrPrams: {},
+      /* 利率校验 */ irRules: {
+        fangdaiId: [
+          { required: true, message: "请选择放款金额", trigger: "change" },
+        ],
+        efksj: [
+          { required: true, message: "请选择调整日期", trigger: "change" },
+        ],
+        efkll: [
+          { required: true, message: "请选择调整利率", trigger: "change" },
+        ],
+      },
+      /* 删除利率参数 */ irIds: [],
     };
   },
   methods: {
+    /* 利率详细 */ getIRInfo(id) {
+      guanLi.getInterestRateInfo(id).then((res) => {
+        this.setIrPrams = res.data;
+        this.interestRateDia = true;
+      });
+    },
+    /* 本金详细 */ getPMInfo(id) {
+      guanLi.getPrincipalManagementInfo(id).then((res) => {
+        this.principalManagementParams = res.data;
+        this.principalDia = true;
+      });
+    },
+    /* 利率选中 */ selectIR(val) {
+      this.irIds = [];
+      this.irIds = val.map((v) => v.id);
+    },
+    /* 删除利率 */ delIr() {
+      if (isNull(this.irIds)) this.$message.error("请至少选择一条数据");
+      else
+        this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }).then(() => {
+          guanLi.delInterestRate(this.irIds).then((res) => {
+            this.$message.success("删除成功");
+            this.getInterestRate();
+          });
+        });
+    },
+    /* 添加/修改利率 */ setIr() {
+      this.setIrPrams.rongziId = this.$route.query.id;
+      if (this.publicRules("setIrPrams"))
+        guanLi.addInterestRate(this.setIrPrams).then((res) => {
+          this.$message.success("添加成功");
+          this.getInterestRate();
+          this.interestRateDia = false;
+        });
+    },
+    /* 添加/修改利率前置 */ goAddOrUpdIr() {
+      this.interestRateDia = true;
+      this.getInterestRate();
+    },
+    /* 获取利率 */ getInterestRate() {
+      this.irParams.rongziId = this.$route.query.id;
+      guanLi.getInterestRate(this.irParams).then((res) => {
+        this.irData = res.data.records;
+      });
+    },
+    /* 本金合计 */ pmSummaries(param) {
+      return tableTotal(param, ["本金金额(万元)"]);
+    },
+    /* 添加本金管理 */ addPrincipalManagement() {
+      this.principalManagementParams.rongziId = this.$route.query.id;
+      if (this.publicRules("principalManagementParams"))
+        guanLi
+          .addPrincipalManagement(this.principalManagementParams)
+          .then((res) => {
+            this.$message.success("添加成功");
+            this.getRepaymentPlan();
+            this.principalDia = false;
+          });
+    },
+    /* 获取本金放款 */ getLoan() {
+      guanLi
+        .getLoan({
+          pageIndex: 1,
+          pageSize: 999999,
+          rongziId: this.$route.query.id,
+        })
+        .then((res) => {
+          this.pmSelectData = res.data.records;
+        });
+    },
+    /* 本金选中 */ selectPM(val) {
+      this.pmIds = [];
+      this.pmIds = val.map((v) => v.id);
+    },
+    /* 删除本金管理 */ delPrincipalManagement() {
+      if (isNull(this.pmIds)) this.$message.error("请至少选择一条数据");
+      else
+        this.$confirm("此操作将永久删除该数据, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }).then(() => {
+          guanLi.delPrincipalManagement(this.pmIds).then((res) => {
+            this.$message.success("删除成功");
+            this.getPrincipalManagement();
+          });
+        });
+    },
     /* 本金管理分页查询 */ pmSelectIndex(index) {
       this.pmSelectParams.pageIndex = index;
       this.getPrincipalManagement();
@@ -303,8 +446,7 @@ export default {
       this.pmSelectParams.pageSize = size;
       this.getPrincipalManagement();
     },
-    /* 本金管理表格 */
-    getPrincipalManagement() {
+    /* 本金管理表格 */ getPrincipalManagement() {
       guanLi.getPrincipalManagement(this.pmSelectParams).then((res) => {
         this.principalManagement = res.data.records;
         this.pmTotal = res.data.total;
@@ -403,6 +545,7 @@ export default {
     },
   },
   mounted() {
+    /* 本金表放款金额下拉框 */ this.getLoan();
     /* 融资表详细(回调表格数据) */ this.getFinancingInfo();
   },
   components: { ShangChuan },

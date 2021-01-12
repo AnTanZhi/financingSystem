@@ -217,7 +217,7 @@ export default {
     /* 模板下载 */ templateDownload() {
       let data = {
         method: "GET",
-        url: this.$store.state.upload.uploadHost + "financing/ensure/loadTemp",
+        url: `${this.$store.state.upload.uploadHost}financing/ensure/loadTemp`,
         fileName: "对外担保.xls",
       };
       templateDownload(data);

@@ -59,13 +59,29 @@
 import publicMixin from "@/mixin/publicMixin";
 import KeShi from "@/myComponents/KeShi";
 import LeiXing from "@/myComponents/LeiXing";
+import { tableTotal, isNull } from "@/utils/utils";
 export default {
   data() {
     return {
       isYesNull: "",
     };
   },
-  methods: {},
+  methods: {
+    /* 表格统计 */ getSummaries(param) {
+      return tableTotal(param, [
+        "融资到账金额",
+        "融资到账可使用金额",
+        "年初本金余额",
+        "年初利息余额",
+        "今年已还本金",
+        "今年已还利息",
+        "今年未还本金",
+        "今年未还利息",
+        "全部未还本金",
+        "全部未还利息",
+      ]);
+    },
+  },
   mounted() {},
   components: { KeShi, LeiXing },
   mixins: [publicMixin],

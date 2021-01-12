@@ -119,4 +119,11 @@ export default {
       method: 'GET'
     })
   },
+  /* 获取土地状态 */
+  getStateLand() {
+    return request({
+      url: `financing/rongziParam/getLandStateMap`,
+      method: 'GET'
+    })
+  },
 }
