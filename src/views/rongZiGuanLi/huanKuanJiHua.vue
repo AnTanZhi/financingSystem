@@ -382,7 +382,7 @@ export default {
         guanLi.addInterestRate(this.setIrPrams).then((res) => {
           this.$message.success("添加成功");
           this.getInterestRate();
-          this.interestRateDia = false;
+          // this.interestRateDia = false;
         });
     },
     /* 添加/修改利率前置 */ goAddOrUpdIr() {
@@ -406,7 +406,7 @@ export default {
           .then((res) => {
             this.$message.success("添加成功");
             this.getRepaymentPlan();
-            this.principalDia = false;
+            // this.principalDia = false;
           });
     },
     /* 获取本金放款 */ getLoan() {
@@ -488,7 +488,7 @@ export default {
         this.$message.success("修改成功");
         this.publicSelect();
         this.repaymentPlanParams = {};
-        this.updRepaymentPlan = false;
+        // this.updRepaymentPlan = false;
       });
     },
     /* 还款计划修改前置 */ goUpd(id) {

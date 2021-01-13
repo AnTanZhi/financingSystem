@@ -3,7 +3,7 @@ export default {
   /* 土地查询 */
   getLand(params) {
     return request({
-      url: 'financing/tAssetsLand/getEntityByPageList',
+      url: 'financing/administration/getEntityByPageList',
       method: 'GET',
       params
     })

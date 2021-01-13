@@ -15,7 +15,7 @@ export default {
   },
   /* 获取融资管理 */ getFinancing(params) {
     return request({
-      url: `financing/rongzi/getByPage`,
+      url: `financing/administration/getByPage`,
       method: 'GET',
       params
     })
@@ -166,6 +166,27 @@ export default {
     return request({
       url: `financing/rongziLl/getEntityByPageList/${id}`,
       method: 'GET'
+    })
+  },
+  /* 获取还款预警 */ getRepaymentWarning(params) {
+    return request({
+      url: `financing/administration/getAlertListByPage`,
+      method: 'GET',
+      params
+    })
+  },
+  /* 还款操作 */ repaymentOperation(data) {
+    return request({
+      url: `financing/administration/repaymentEntity`,
+      method: 'POST',
+      data
+    })
+  },
+  /* 资金到账情况表 */ getFundsArrive(params) {
+    return request({
+      url: `financing/administration/getUsageListByPage`,
+      method: 'GET',
+      params
     })
   },
 }

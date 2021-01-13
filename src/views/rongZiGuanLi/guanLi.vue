@@ -17,19 +17,19 @@
                       <el-option value="债务名称" label="债务名称" />
                     </el-select>
                     <span v-text="`:`" style="font-size:.2rem;margin-left:.125rem;margin-right:.125rem" />
-                    <el-input v-model="selectParams.queryContent" clearable style="width:150px" @input="getTablData" />
+                    <el-input v-model="selectParams.queryContent" clearable style="width:140px" @input="getTablData" />
                   </div>
                 </el-form-item>
                 <el-form-item>
                   <BiZhong v-model="selectParams.bz" style="width:90px" @change="getTablData" />
                 </el-form-item>
+                <el-form-item>
+                  <GongSi v-model="selectParams.suoshugs" style="width:110px" @change="getTablData" />
+                </el-form-item>
                 <el-button type="primary" :icon="!isShow?'el-icon-s-grid':'el-icon-menu'"
                   @click="()=>this.isShow=!this.isShow">
                   {{isShow?'收起':'展开'}}</el-button>
                 <div v-if="isShow">
-                  <el-form-item>
-                    <GongSi v-model="selectParams.suoshugs" style="width:110px" @change="getTablData" />
-                  </el-form-item>
                   <el-form-item>
                     <el-select v-model="selectParams.jieqing" placeholder="是否结清" clearable style="width:110px"
                       @change="getTablData">
@@ -54,7 +54,7 @@
                   <el-button type="primary" icon="el-icon-download">模板下载</el-button>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportFM">导出</el-button>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-plus"
@@ -71,15 +71,20 @@
         </div>
       </header>
       <section class="table-container view-section">
-        <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
+        <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border v-loading="loading"
           element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
-          @selection-change="handleSelectionChange" :summary-method="getSummaries" show-summary>
+          @selection-change="handleSelectionChange" :summary-method="getSummaries" show-summary
+          :row-class-name="tableRowClassName">
           <el-table-column type="selection" width="40" align="center" />
           <el-table-column label="融资主体" prop="rzztName" width="260" show-overflow-tooltip />
           <el-table-column label="金融机构" prop="jinRongJiGou" width="260" show-overflow-tooltip />
-          <el-table-column label="债务名称" width="350" prop="zwmc" show-overflow-tooltip>
+          <el-table-column label="债务名称" width="350" prop="zwmc">
             <template slot-scope="s">
-              <el-link type="primary" :underline="false" @click="getFinancingInfo(s.row.id)">{{s.row.zwmc}}</el-link>
+              <div style="display:flex;justify-content: space-between;">
+                <el-link type="primary" :underline="false" @click="getFinancingInfo(s.row.id)">{{s.row.zwmc}}</el-link>
+                <el-link type="primary" :underline="false" @click="repaymentPlan(s.row.id)"
+                  style="text-align:right;color:red">[还款计划]</el-link>
+              </div>
             </template>
           </el-table-column>
           <el-table-column label="贷款日期" prop="dkrqq" width="100" :formatter="setDkrqq" />
@@ -91,21 +96,20 @@
             :formatter="row=>Number(row.dkje).toFixed(6)" />
           <el-table-column label="本期余额(万元)" width="180" align="right" prop="balance"
             :formatter="row=>Number(row.balance).toFixed(6)" />
-          <el-table-column label="利率(%)" prop="lilvRate" align="right" width="100" show-overflow-tooltip />
-          <el-table-column label="综合成本(%)" prop="ptlvRate" width="110" align="right" />
+          <el-table-column label="利率(%)" align="right" width="100" show-overflow-tooltip
+            :formatter="row=>Number(row.lilv).toFixed(2)+'%'" />
+          <el-table-column label="综合成本(%)" width="110" align="right"
+            :formatter="row=>Number(row.ptlv).toFixed(2)+'%'" />
           <el-table-column label="币种" prop="bzName" align="center" width="70" />
           <el-table-column label="责任人" prop="zrrName" width="100" show-overflow-tooltip align="center" />
           <el-table-column label="是否结清" prop="jieqingmc" align="center" />
-          <el-table-column width="130" label="操作" align="center" fixed="right">
+          <el-table-column width="100" label="操作" align="center" fixed="right">
             <template slot-scope="s">
               <el-tooltip class="item" effect="dark" content="编辑" placement="bottom">
                 <i class="el-icon-edit-outline edit-btn" @click="goUpd(s.row.id)" />
               </el-tooltip>
               <el-tooltip class="item" effect="dark" content="删除" placement="bottom">
                 <i class="el-icon-delete edit-btn" @click="publicDel('delFinancing', [s.row.id])" />
-              </el-tooltip>
-              <el-tooltip class="item" effect="dark" content="还款计划" placement="bottom">
-                <i class="el-icon-date edit-btn" @click="repaymentPlan(s.row.id)" />
               </el-tooltip>
               <el-tooltip class="item" effect="dark" content="结清" placement="bottom" v-if="s.row.jieqingmc=='否'">
                 <i class="el-icon-edit edit-btn" @click="settile(s.row)" />
@@ -116,8 +120,7 @@
       </section>
       <el-pagination style="text-align: end;" background @size-change="publicSizeSelect"
         @current-change="publicPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
-        :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
-      </el-pagination>
+        :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total" />
     </div>
     <el-dialog title="贷款单详细" :visible.sync="loanNoteDia" :close-on-click-modal="false">
       <el-form :model="financingInfo" label-width="150px" class="demo-ruleForm">
@@ -248,8 +251,7 @@
           <el-col :span="12">
             <el-form-item label="首次付息日期：" prop="schkrq">
               <el-date-picker v-model="financingInfo.schkrq" type="date" placeholder="选择日期" format="yyyy-MM-dd"
-                value-format="yyyy-MM-dd HH:mm:ss" style="width:100%">
-              </el-date-picker>
+                value-format="yyyy-MM-dd HH:mm:ss" style="width:100%" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -459,8 +461,7 @@
         <el-pagination style="text-align: end;margin-top:10px" background @size-change="loanSizeSelect"
           @current-change="loanPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
           :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="loanTotal"
-          v-loading="loanLoading">
-        </el-pagination>
+          v-loading="loanLoading" />
       </el-dialog>
       <el-divider content-position="left">
         <div style="display:flex;align-items:center">
@@ -546,8 +547,7 @@
         <el-pagination style="text-align: end;margin-top:10px" background @size-change="fundRecordsSizeSelect"
           @current-change="fundRecordsPageSelect" :current-page="fundRecordsSelectParmas.pageIndex"
           :page-sizes="[10, 20, 50, 100]" :page-size="fundRecordsSelectParmas.pageSize"
-          layout="total, sizes, prev, pager, next, jumper" :total="fundRecordsTotal" v-loading="loanLoading">
-        </el-pagination>
+          layout="total, sizes, prev, pager, next, jumper" :total="fundRecordsTotal" v-loading="loanLoading" />
       </el-dialog>
       <div v-if="isTableNull(rongziDiyawus)">
         <el-divider content-position="left">
@@ -677,6 +677,76 @@ export default {
     };
   },
   methods: {
+    tableRowClassName({ row, rowIndex }) {
+      if (row.jieqing == 1) {
+        return "success-row";
+      } else if (row.jieqing == 2) {
+        return "warning-row";
+      }
+      return "";
+    },
+    /* 导出初始化数据 */ formatJson(filterVal, jsonData) {
+      return jsonData.map((v) =>
+        filterVal.map((j) => {
+          if (j === "dkrqq" || j === "dkrqz") {
+            return String(v[j]) == "null" ? "" : String(v[j]).substring(0, 10);
+          }
+          if (j === "sxje" || j === "dkje" || j === "balance")
+            return Number(v[j]).toFixed(6);
+          if (j === "lilv" || j === "ptlv")
+            return Number(v[j]).toFixed(2) + "%";
+          return v[j];
+        })
+      );
+    },
+    /* 导出 */ exportFM() {
+      this.selectParams.pageSize = this.total;
+      guanLi.getFinancing(this.selectParams).then((res) => {
+        import("@/vendor/Export2Excel").then((excel) => {
+          const header = [
+            "融资主体",
+            "金融机构",
+            "债务名称",
+            "贷款日期",
+            "贷款日期止",
+            "贷款期限(月)",
+            "授信金额(万元)",
+            "放款金额(万元)",
+            "本期余额(万元)",
+            "利率(%)",
+            "综合成本(%)",
+            "币种",
+            "责任人",
+            "是否结清",
+          ];
+          const filterVal = [
+            "rzztName",
+            "jinRongJiGou",
+            "zwmc",
+            "dkrqq",
+            "dkrqz",
+            "qxy",
+            "sxje",
+            "dkje",
+            "balance",
+            "lilv",
+            "ptlv",
+            "bzName",
+            "zrrName",
+            "jieqingmc",
+          ];
+          const list = res.data.records;
+          const data = this.formatJson(filterVal, list);
+          excel.export_json_to_excel({
+            header,
+            data,
+            filename: "融资管理",
+            autoWidth: true,
+            bookType: "xlsx",
+          });
+        });
+      });
+    },
     /* 结清 */ settile(row) {
       this.settleName = row.zwmc;
       this.settleDia = true;
@@ -858,8 +928,7 @@ export default {
       if (isNull(String(row.dkrqz))) return "";
       else return String(row.dkrqz).substring(0, 10);
     },
-    /* 初始化贷款日期 */
-    setDkrqq(row) {
+    /* 初始化贷款日期 */ setDkrqq(row) {
       if (isNull(String(row.dkrqq))) return "";
       else return String(row.dkrqq).substring(0, 10);
     },
@@ -928,5 +997,12 @@ export default {
       margin-left: 0.25rem;
     }
   }
+}
+.el-table .warning-row {
+  background: #aadafd;
+}
+
+.el-table .success-row {
+  background: #bbffbb;
 }
 </style>

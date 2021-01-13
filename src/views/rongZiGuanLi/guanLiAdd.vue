@@ -84,7 +84,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="币种：">
-              <BiZhong v-model="addOrUpdParams.rongZiEntityInfo.bz" style="width:33%" />
+              <BiZhong v-model="addOrUpdParams.rongZiEntityInfo.bz" style="width:33%" :cle="false" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -166,7 +166,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="还款模式：">
-              <MoShi v-model="addOrUpdParams.rongZiEntityInfo.hkModel" style="width:33%" />
+              <MoShi v-model="addOrUpdParams.rongZiEntityInfo.hkModel" style="width:33%" :cle="false" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -230,8 +230,8 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="责任人：">
-              <ZeRenRen v-model="addOrUpdParams.rongZiEntityInfo.zrr" style="width:33%" />
+            <el-form-item label="责任人：" prop="zrr">
+              <ZeRenRen v-model="addOrUpdParams.rongZiEntityInfo.zrr" style="width:33%" />  
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -689,6 +689,7 @@ export default {
             trigger: "change",
           },
         ],
+        zrr: [{ required: true, message: "请选择责任人", trigger: "change" }],
       },
       /* 期限(天) */ deadlineTian: 0,
       /* 期限(月) */ deadlineYue: 0,
@@ -979,13 +980,9 @@ export default {
           let yue =
             new Date(end).getMonth() + 1 - (new Date(start).getMonth() + 1);
           let ri = new Date(end).getDate() - new Date(start).getDate();
-          if (nian > 0) {
-            dataYue += 12;
-          }
+          dataYue += nian * 12;
           dataYue += yue;
-          if (ri > 0) {
-            dataYue += 1;
-          }
+          if (ri > 0) dataYue += 1;
           this.deadlineYue = dataYue;
         }
       }
@@ -1055,6 +1052,9 @@ export default {
     },
   },
   mounted() {
+    this.$set(this.addOrUpdParams.rongZiEntityInfo, "bz", "1");
+    this.$set(this.addOrUpdParams.rongZiEntityInfo, "hkModel", "1");
+    this.$set(this.addOrUpdParams.rongZiEntityInfo, "zrks", "1");
     if (this.$route.query.id) {
       /* 融资详细 */ this.financingInfo();
       /* 放款金额表格 */ this.getLoan();
