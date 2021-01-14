@@ -78,7 +78,7 @@
           <el-table-column type="selection" width="40" align="center" />
           <el-table-column label="融资主体" prop="rzztName" width="260" show-overflow-tooltip />
           <el-table-column label="金融机构" prop="jinRongJiGou" width="260" show-overflow-tooltip />
-          <el-table-column label="债务名称" width="350" prop="zwmc">
+          <el-table-column label="债务名称" width="350" prop="zwmc" show-overflow-tooltip>
             <template slot-scope="s">
               <div style="display:flex;justify-content: space-between;">
                 <el-link type="primary" :underline="false" @click="getFinancingInfo(s.row.id)">{{s.row.zwmc}}</el-link>
@@ -238,7 +238,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="付息频率：">
-              <PinLv v-model="financingInfo.hkplmc" style="width:100%" />
+              <PinLv v-model="financingInfo.hkplid" style="width:100%" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -379,8 +379,28 @@
         <el-table-column label="放款利率" :formatter="row=>Number(row.efkll).toFixed(2)+'%'" align="right" />
         <el-table-column label="手续费(万元)" :formatter="row=>Number(row.sxf).toFixed(6)" align="right" />
         <el-table-column label="保证金(万元)" :formatter="row=>Number(row.bzj).toFixed(6)" align="right" />
-        <el-table-column label="放款凭证号" prop="fkpz" />
+        <el-table-column label="放款凭证号" prop="fkpz" width="100" align="center">
+          <template slot-scope="s">
+            <el-tooltip class="item" effect="dark" content="添加" placement="bottom" v-if="s.row.fkpz==null">
+              <i class="el-icon-plus edit-btn" @click="goAddLVN(s.row.id)" />
+            </el-tooltip>
+            <span v-if="s.row.fkpz!=null">{{s.row.fkpz}}</span>
+          </template>
+        </el-table-column>
       </el-table>
+      <el-dialog width="30%" title="放款凭证号" :visible.sync="lvnDia" append-to-body>
+        <el-form :model="lvnParams" label-width="120px">
+          <el-form-item label="放款金额(万元)：">
+            <el-input v-model="lvnParams.efkjy" placeholder="放款金额" />
+          </el-form-item>
+          <el-form-item label="放款凭证号：">
+            <el-input v-model="lvnParams.fkpz" placeholder="放款凭证号" />
+          </el-form-item>
+          <div style="text-align: center;">
+            <el-button type="primary" @click="addLVN">确定</el-button>
+          </div>
+        </el-form>
+      </el-dialog>
       <!-- 放款金额详细弹出框 -->
       <el-dialog width="40%" title="放款金额编辑" :visible.sync="loanAmountDia" append-to-body :close-on-click-modal="false">
         <el-form :model="loanAmountParams" label-width="130px" style="margin-bottom:20px">
@@ -498,16 +518,14 @@
                 </el-col>
                 <el-col :span="12">
                   <el-form-item label="提款银行：">
-                    <el-input placeholder="提款银行" type="number" v-model="fundRecordsParams.tiBlank" clearable
-                      style="width:100%" />
+                    <el-input placeholder="提款银行" v-model="fundRecordsParams.tiBlank" clearable style="width:100%" />
                   </el-form-item>
                 </el-col>
               </el-row>
               <el-row>
                 <el-col :span="24">
                   <el-form-item label="提款账户：">
-                    <el-input placeholder="提款账户" type="number" v-model="fundRecordsParams.tiAccount" clearable
-                      style="width:100%" />
+                    <el-input placeholder="提款账户" v-model="fundRecordsParams.tiAccount" clearable style="width:100%" />
                   </el-form-item>
                 </el-col>
               </el-row>
@@ -625,10 +643,7 @@ export default {
     return {
       isYesNull: "",
       /* 上传附件 */ fujian: "",
-      /* 查询参数 */ selectParams: {
-        pageIndex: Number(this.$route.query.pageIndex) || 1,
-        pageSize: Number(this.$route.query.pageSize) || 10,
-      },
+      /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 10 },
       /* mixin参数 */ mixinParams: {
         api: guanLi,
         name: "getFinancing",
@@ -674,10 +689,25 @@ export default {
       /* 续贷回显 */ rongziXudais: [],
       /* 结清-债务名称 */ settleName: "",
       /* 结清参数 */ settleParams: {},
+      /* 放款凭证号对话框 */ lvnDia: false,
+      /* 放款凭证号参数 */ lvnParams: {},
     };
   },
   methods: {
-    tableRowClassName({ row, rowIndex }) {
+    /* 添加放款凭证 */ addLVN() {
+      guanLi.setLoan(this.lvnParams).then((res) => {
+        this.$message.success("添加成功");
+        this.lvnDia = false;
+        this.getLoan();
+      });
+    },
+    /* 添加放款凭证前置 */ goAddLVN(id) {
+      guanLi.loanInfo(id).then((res) => {
+        this.lvnParams = res.data;
+        this.lvnDia = true;
+      });
+    },
+    /* 表格变色 */ tableRowClassName({ row, rowIndex }) {
       if (row.jieqing == 1) {
         return "success-row";
       } else if (row.jieqing == 2) {
@@ -890,9 +920,9 @@ export default {
         res.data.rongZiEntityInfo.lxhkfsmc += "";
         if (isNull(res.data.rongZiEntityInfo.lxhkfsmc))
           res.data.rongZiEntityInfo.lxhkfsmc = "";
-        res.data.rongZiEntityInfo.hkplmc += "";
-        if (isNull(res.data.rongZiEntityInfo.hkplmc))
-          res.data.rongZiEntityInfo.hkplmc = "";
+        res.data.rongZiEntityInfo.hkplid += "";
+        if (isNull(res.data.rongZiEntityInfo.hkplid))
+          res.data.rongZiEntityInfo.hkplid = "";
         res.data.rongZiEntityInfo.zrr += "";
         if (isNull(res.data.rongZiEntityInfo.zrr))
           res.data.rongZiEntityInfo.zrr = "";
@@ -951,8 +981,6 @@ export default {
         path: "/rongZiGuanLi/guanLiAdd",
         query: {
           id,
-          pageIndex: this.selectParams.pageIndex,
-          pageSize: this.selectParams.pageSize,
         },
       });
     },

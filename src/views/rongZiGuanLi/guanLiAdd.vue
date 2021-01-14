@@ -231,12 +231,19 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="责任人：" prop="zrr">
-              <ZeRenRen v-model="addOrUpdParams.rongZiEntityInfo.zrr" style="width:33%" />  
+              <ZeRenRen v-model="addOrUpdParams.rongZiEntityInfo.zrr" style="width:33%" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="责任科室：">
               <KeShi v-model="addOrUpdParams.rongZiEntityInfo.zrks" style="width:33%" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="融资主体征信报告：">
+              <BaoGao v-model="addOrUpdParams.rongZiEntityInfo.zlbk" style="width:15%" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -417,8 +424,8 @@
           </el-form>
         </div>
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe
-          element-loading-text="加载中，请稍候……" :data="addOrUpdParams.rongziTicords" tooltip-effect="dark"
-          style="width: 100%" v-if="this.$route.query.id">
+          element-loading-text="加载中，请稍候……" :data="fundsData" tooltip-effect="dark" style="width: 100%"
+          v-if="this.$route.query.id">
           <el-table-column label="提款金额(万元)" :formatter="row=>Number(row.tiMoney).toFixed(6)" align="right" />
           <el-table-column label="提款银行" prop="tiBlank" />
           <el-table-column label="提款账户" prop="tiAccount" />
@@ -562,10 +569,6 @@
         </div>
         <el-form-item style="text-align: center;margin-top:20px">
           <el-button type="primary" @click="addManagementParameters">保存</el-button>
-          <el-button type="primary"
-            @click="()=>this.$router.push({path:'/rongZiGuanLi/guanLi',query:{pageIndex:this.$route.query.pageIndex,pageSize:this.$route.query.pageSize}})">
-            返回
-          </el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -712,6 +715,8 @@ export default {
       /* 资金记录加载中 */ fundsLoading: false,
       /* 资金记录数据 */ fundsData: [],
       /* 资金删除参数 */ delFundsIds: [],
+      /* 放款删除总额 */ ttld: "",
+      /* 放款金额备用 */ las: "",
     };
   },
   methods: {
@@ -767,6 +772,7 @@ export default {
     /* 添加/修改资金使用记录 */ setFundRecords() {
       this.updFundsParams.rongziId = this.$route.query.id;
       guanLi.setFundRecords(this.updFundsParams).then((res) => {
+        this.addOrUpdParams.superviseBalance -= this.updFundsParams.tiMoney;
         this.$message.success("操作成功");
         this.updFundsParams = {};
         this.fundRecordsTable();
@@ -791,13 +797,18 @@ export default {
         }).then(() => {
           guanLi.delLoan(this.ids).then((res) => {
             this.$message.success("删除成功");
+            this.ttld.forEach((item) => {
+              this.addOrUpdParams.superviseBalance -= item;
+            });
             this.getLoan();
           });
         });
     },
     /* 放款选中 */ loanCountChange(val) {
       this.ids = [];
+      this.ttld = [];
       this.ids = val.map((v) => v.id);
+      this.ttld = val.map((v) => v.efkjy);
     },
     /* 放款金额合计 */ loanCount(param) {
       return tableTotal(param, [
@@ -809,13 +820,27 @@ export default {
     /* 修改前置(放款金额详细) */ goUpd(id) {
       guanLi.loanInfo(id).then((res) => {
         this.loanAmountParams = res.data;
+        this.las = res.data.efkjy;
       });
     },
     /* 添加/修改放款金额 */ updLoanAmount() {
       this.loanAmountParams.rongziId = this.$route.query.id;
       guanLi.setLoan(this.loanAmountParams).then((res) => {
-        this.loanAmountParams = {};
         this.$message.success("操作成功");
+        if (!this.loanAmountParams.id) {
+          this.addOrUpdParams.superviseBalance += parseInt(
+            this.loanAmountParams.efkjy
+          );
+        } else {
+          if (this.las > this.loanAmountParams.efkjy) {
+            this.addOrUpdParams.superviseBalance -=
+              parseInt(this.las) - parseInt(this.loanAmountParams.efkjy);
+          } else {
+            this.addOrUpdParams.superviseBalance +=
+              parseInt(this.loanAmountParams.efkjy) - parseInt(this.las);
+          }
+        }
+        this.loanAmountParams = {};
         this.getLoan();
       });
     },
@@ -953,6 +978,11 @@ export default {
           path: "/rongZiGuanLi/guanLi",
           query: this.$route.query,
         };
+        // this.addOrUpdParams
+        if (this.$route.query.id) {
+          this.addOrUpdParams.rongziFangdais = this.loanData;
+          this.addOrUpdParams.rongziTicords = this.fundsData;
+        }
         this.publicAdd(
           "addManagementParameters",
           this.addOrUpdParams,

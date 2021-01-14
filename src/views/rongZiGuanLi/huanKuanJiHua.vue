@@ -17,7 +17,7 @@
                   <ShangChuan @getTable="getRepaymentPlan" />
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportFM">导出</el-button>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-download">模板下载</el-button>
@@ -37,13 +37,13 @@
         </div>
       </header>
       <section class="table-container view-section" style="text-align: center;">
-        <el-link type="primary" style="margin:10px 0" @click="generateRepaymentPlan">计算时间 2021/1/6 17:24 点击重新计算
+        <el-link type="primary" style="margin:10px 0" @click="generateRepaymentPlan">计算时间 {{computingTime}} 点击重新计算
         </el-link>
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
           element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
           @selection-change="handleSelectionChange" :summary-method="getSummaries" show-summary>
           <el-table-column
-            :label="`${financingInfo.zwmc} 还款计划 （注：${financingInfo.bzcontext==null?'':financingInfo.bzcontext}）`">
+            :label="`${financingInfo.zwmc} 还款计划 ${financingInfo.bzcontext==null?'':`(注：${financingInfo.bzcontext})`}`">
             <el-table-column type="selection" width="40" align="center" />
             <el-table-column label="计划还款日期" prop="jhhkrq"
               :formatter="row=>row.jhhkrq+''=='null'?'':String(row.jhhkrq).substring(0,10)" width="110"
@@ -343,9 +343,76 @@ export default {
         ],
       },
       /* 删除利率参数 */ irIds: [],
+      /* 计算时间 */ computingTime: "",
     };
   },
   methods: {
+    /* 导出初始化数据 */ formatJson(filterVal, jsonData) {
+      return jsonData.map((v) =>
+        filterVal.map((j) => {
+          if (j === "jhhkrq" || j === "shrq") {
+            return String(v[j]) == "null" ? "" : String(v[j]).substring(0, 10);
+          }
+          if (
+            j === "dkzy" ||
+            j === "benjin" ||
+            j === "ykls" ||
+            j === "qita" ||
+            j === "estimateSum" ||
+            j === "hkbj" ||
+            j === "sjhkls" ||
+            j === "realSum"
+          )
+            return Number(v[j]).toFixed(6);
+          if (j === "lilv") return Number(v[j]).toFixed(2) + "%";
+          return v[j];
+        })
+      );
+    },
+    /* 导出 */ exportFM() {
+      this.selectParams.pageSize = this.total;
+      guanLi.getRepaymentPlan(this.selectParams).then((res) => {
+        import("@/vendor/Export2Excel").then((excel) => {
+          const header = [
+            "计划还款日期",
+            "贷款总额(万元)",
+            "利率(%)",
+            "天数",
+            "预估本金(万元)",
+            "预估利息(万元)",
+            "预估其他(万元)",
+            "预估合计(万元)",
+            "实还日期",
+            "实还本金(万元)",
+            "实还利息(万元)",
+            "实还合计(万元)",
+          ];
+          const filterVal = [
+            "jhhkrq",
+            "dkzy",
+            "lilv",
+            "tianshu",
+            "benjin",
+            "ykls",
+            "qita",
+            "estimateSum",
+            "shrq",
+            "hkbj",
+            "sjhkls",
+            "realSum",
+          ];
+          const list = res.data.records;
+          const data = this.formatJson(filterVal, list);
+          excel.export_json_to_excel({
+            header,
+            data,
+            filename: "还款计划",
+            autoWidth: true,
+            bookType: "xlsx",
+          });
+        });
+      });
+    },
     /* 利率详细 */ getIRInfo(id) {
       guanLi.getInterestRateInfo(id).then((res) => {
         this.setIrPrams = res.data;
@@ -386,6 +453,7 @@ export default {
         });
     },
     /* 添加/修改利率前置 */ goAddOrUpdIr() {
+      this.setIrPrams = {};
       this.interestRateDia = true;
       this.getInterestRate();
     },
@@ -470,6 +538,7 @@ export default {
             this.tableData = r.data.records || r.data;
             this.loading = false;
             this.total = r.data.total;
+            this.computingTime = this.tableData[0].addTime;
           });
         });
       });
@@ -538,8 +607,11 @@ export default {
               this.tableData = r.data.records || r.data;
               this.loading = false;
               this.total = r.data.total;
+              this.computingTime = this.tableData[0].addTime;
             });
           });
+        } else {
+          this.computingTime = this.tableData[0].addTime;
         }
       });
     },

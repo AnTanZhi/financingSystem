@@ -20,7 +20,7 @@
               </div>
               <div style="text-align: end;">
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportFM">导出</el-button>
                 </el-form-item>
                 <el-form-item>
                   <span>金额单位：万元</span>
@@ -35,22 +35,25 @@
           element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
           :summary-method="getSummaries" show-summary>
           <el-table-column label="融资类型统计表">
-            <el-table-column label="序号" />
-            <el-table-column label="所属大类" />
-            <el-table-column label="融资类型" />
-            <el-table-column label="融资到账金额" />
-            <el-table-column label="融资到账可使用金额" />
-            <el-table-column label="年初本金余额" />
-            <el-table-column label="年初利息余额" />
-            <el-table-column label="今年已还本金" />
-            <el-table-column label="今年已还利息" />
-            <el-table-column label="今年未还本金" />
-            <el-table-column label="今年未还利息" />
-            <el-table-column label="全部未还本金" />
-            <el-table-column label="全部未还利息" />
+            <el-table-column label="序号" prop="parg" width="60" align="center" />
+            <el-table-column label="所属大类" prop="ascription" />
+            <el-table-column label="融资类型" prop="lxName" />
+            <el-table-column label="融资到账金额" prop="received" />
+            <el-table-column label="融资到账可使用金额" prop="receivedAvailable" />
+            <el-table-column label="年初本金余额" prop="yPrincipalBalance" />
+            <el-table-column label="年初利息余额" prop="yInterestBalance" />
+            <el-table-column label="今年已还本金" prop="yearRepaidPrincipal" />
+            <el-table-column label="今年已还利息" prop="yearRepaidInterest" />
+            <el-table-column label="今年未还本金" prop="yearNotPrincipal" />
+            <el-table-column label="今年未还利息" prop="yearNotInterest" />
+            <el-table-column label="全部未还本金" prop="wholeNotPrincipal" />
+            <el-table-column label="全部未还利息" prop="wholeNotInterest" />
           </el-table-column>
         </el-table>
       </section>
+      <el-pagination style="text-align: end;" background @size-change="publicSizeSelect"
+        @current-change="publicPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
+        :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total" />
     </div>
   </div>
 </template>
@@ -60,13 +63,85 @@ import publicMixin from "@/mixin/publicMixin";
 import KeShi from "@/myComponents/KeShi";
 import LeiXing from "@/myComponents/LeiXing";
 import { tableTotal, isNull } from "@/utils/utils";
+import guanLi from "@/api/guanLi";
 export default {
   data() {
     return {
       isYesNull: "",
+      /* mixin参数 */ mixinParams: {
+        name: "getFinancingTypeStatistics",
+        api: guanLi,
+      },
+      /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 10 },
     };
   },
   methods: {
+    /* 导出初始化数据 */ formatJson(filterVal, jsonData) {
+      return jsonData.map((v) =>
+        filterVal.map((j) => {
+          if (
+            j === "received" ||
+            j === "receivedAvailable" ||
+            j === "yPrincipalBalance" ||
+            j === "yInterestBalance" ||
+            j === "yearRepaidPrincipal" ||
+            j === "yearRepaidInterest" ||
+            j === "yearNotPrincipal" ||
+            j === "yearNotInterest" ||
+            j === "wholeNotPrincipal" ||
+            j === "wholeNotInterest"
+          )
+            return Number(v[j]).toFixed(6);
+        })
+      );
+    },
+    /* 导出 */ exportFM() {
+      this.selectParams.pageSize = this.total;
+      guanLi.getFinancing(this.selectParams).then((res) => {
+        import("@/vendor/Export2Excel").then((excel) => {
+          const header = [
+            "所属大类",
+            "融资类型",
+            "融资到账金额",
+            "融资到账可使用金额",
+            "年初本金余额",
+            "年初利息余额",
+            "今年已还本金",
+            "今年已还利息",
+            "今年未还本金",
+            "今年未还利息",
+            "全部未还本金",
+            "全部未还利息",
+          ];
+          const filterVal = [
+            "ascription",
+            "lxName",
+            "received",
+            "receivedAvailable",
+            "yPrincipalBalance",
+            "yInterestBalance",
+            "yearRepaidPrincipal",
+            "yearRepaidInterest",
+            "yearNotPrincipal",
+            "yearNotInterest",
+            "wholeNotPrincipal",
+            "wholeNotInterest",
+          ];
+          const list = res.data.records;
+          const data = this.formatJson(filterVal, list);
+          excel.export_json_to_excel({
+            header,
+            data,
+            filename: "融资类型统计表",
+            autoWidth: true,
+            bookType: "xlsx",
+          });
+        });
+      });
+    },
+    /* 获取资金到账情况表 */ getFinancingTypeStatistics() {
+      this.publicSelect();
+    },
     /* 表格统计 */ getSummaries(param) {
       return tableTotal(param, [
         "融资到账金额",
@@ -74,7 +149,6 @@ export default {
         "年初本金余额",
         "年初利息余额",
         "今年已还本金",
-        "今年已还利息",
         "今年未还本金",
         "今年未还利息",
         "全部未还本金",
@@ -82,7 +156,9 @@ export default {
       ]);
     },
   },
-  mounted() {},
+  mounted() {
+    /* 获取资金到账情况表 */ this.getFinancingTypeStatistics();
+  },
   components: { KeShi, LeiXing },
   mixins: [publicMixin],
 };

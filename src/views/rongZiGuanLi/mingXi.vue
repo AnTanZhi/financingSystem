@@ -70,9 +70,8 @@
         </el-table>
       </section>
       <el-pagination style="text-align: end;" background @size-change="publicSizeSelect"
-        @current-change="publicPageSelect" :current-page="isNull" :page-sizes="[10, 20, 50, 100]" :page-size="isNull"
-        layout="total, sizes, prev, pager, next, jumper" :total="isNull">
-      </el-pagination>
+        @current-change="publicPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
+        :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total" />
     </div>
   </div>
 </template>
@@ -86,6 +85,7 @@ export default {
   data() {
     return {
       isNull: "",
+      /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 10 },
     };
   },
   methods: {},

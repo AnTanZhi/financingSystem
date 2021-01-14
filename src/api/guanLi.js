@@ -189,4 +189,11 @@ export default {
       params
     })
   },
+  /* 资金到账情况表 */ getFinancingTypeStatistics(params) {
+    return request({
+      url: `financing/administration/rongziTypeStatistics`,
+      method: 'GET',
+      params
+    })
+  },
 }
