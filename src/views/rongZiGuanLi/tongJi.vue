@@ -37,7 +37,7 @@
           <el-table-column label="融资类型统计表">
             <el-table-column label="序号" prop="parg" width="60" align="center" />
             <el-table-column label="所属大类" prop="ascription" />
-            <el-table-column label="融资类型" prop="lxName" />
+            <el-table-column label="融资类型" prop="lxName" show-overflow-tooltip />
             <el-table-column label="融资到账金额" prop="received" />
             <el-table-column label="融资到账可使用金额" prop="receivedAvailable" />
             <el-table-column label="年初本金余额" prop="yPrincipalBalance" />
@@ -51,9 +51,6 @@
           </el-table-column>
         </el-table>
       </section>
-      <el-pagination style="text-align: end;" background @size-change="publicSizeSelect"
-        @current-change="publicPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
-        :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total" />
     </div>
   </div>
 </template>
@@ -99,7 +96,10 @@ export default {
       this.selectParams.pageSize = this.total;
       guanLi.getFinancing(this.selectParams).then((res) => {
         import("@/vendor/Export2Excel").then((excel) => {
-          const header = [
+          const multiHeader = [
+            ["融资类型统计表", "", "", "", "", "", "", "", "", "", "", ""],
+          ];
+          const tHeader = [
             "所属大类",
             "融资类型",
             "融资到账金额",
@@ -127,10 +127,13 @@ export default {
             "wholeNotPrincipal",
             "wholeNotInterest",
           ];
+          const merges = ["A1:L1"];
           const list = res.data.records;
           const data = this.formatJson(filterVal, list);
           excel.export_json_to_excel({
-            header,
+            merges,
+            multiHeader,
+            header: tHeader,
             data,
             filename: "融资类型统计表",
             autoWidth: true,
@@ -140,7 +143,7 @@ export default {
       });
     },
     /* 获取资金到账情况表 */ getFinancingTypeStatistics() {
-      this.publicSelect();
+      this.publicSelect(false);
     },
     /* 表格统计 */ getSummaries(param) {
       return tableTotal(param, [

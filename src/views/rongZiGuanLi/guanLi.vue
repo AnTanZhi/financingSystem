@@ -494,9 +494,7 @@
       <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe
         element-loading-text="加载中，请稍候……" :data="fundRecordsInfo" tooltip-effect="dark" style="width: 100%">
         <el-table-column label="提款金额(万元)" :formatter="row=>Number(row.tiMoney).toFixed(6)" align="right" />
-        <el-table-column label="提款银行"
-          :formatter="row=>String(row.tiBlank)=='null'?'':String(row.tiBlank).substring(0,10)" align="center"
-          width="100" />
+        <el-table-column label="提款银行" prop="tiBlank" />
         <el-table-column label="提款账户" prop="tiAccount" />
         <el-table-column label="日期" :formatter="row=>String(row.tiTime)=='null'?'':String(row.tiTime).substring(0,10)"
           align="center" width="100" />
@@ -575,7 +573,7 @@
         </el-divider>
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe :data="rongziDiyawus"
           tooltip-effect="dark" style="width: 100%">
-          <el-table-column label="抵质押物类型" prop="zclb" show-overflow-tooltip />
+          <el-table-column label="抵质押物类型" prop="zclb" show-overflow-tooltip :formatter="setZclb" width="110" />
           <el-table-column label="证件编号" prop="zjbh" show-overflow-tooltip />
           <el-table-column label="抵质押物名称" prop="zcmc" show-overflow-tooltip />
           <el-table-column label="土地证号" prop="dkh" show-overflow-tooltip />
@@ -597,11 +595,13 @@
         </el-divider>
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe :data="rongziXudais"
           tooltip-effect="dark" style="width: 100%">
-          <el-table-column label="续贷金额(万元)" prop="efkjy" :formatter="row=>Number(row.efkjy).toFixed(6)" />
+          <el-table-column label="续贷金额(万元)" prop="efkjy" :formatter="row=>Number(row.efkjy).toFixed(6)" align="right" />
           <el-table-column label="续贷开始" prop="efksj"
-            :formatter="row=>String(row.efksj)=='null'?'':String(row.efksj).substring(0,10)" />
+            :formatter="row=>String(row.efksj)=='null'?'':String(row.efksj).substring(0,10)" width="100"
+            align="center" />
           <el-table-column label="续贷结束" prop="ejzsj"
-            :formatter="row=>String(row.ejzsj)=='null'?'':String(row.ejzsj).substring(0,10)" />
+            :formatter="row=>String(row.ejzsj)=='null'?'':String(row.ejzsj).substring(0,10)" width="100"
+            align="center" />
         </el-table>
       </div>
     </el-dialog>
@@ -694,6 +694,16 @@ export default {
     };
   },
   methods: {
+    /* 初始化抵质押物类型 */ setZclb(row) {
+      let map = new Map([
+        [1, "土地"],
+        [2, "房产"],
+        [3, "股权收益权"],
+        [4, "存单质押"],
+        [5, "应收账款"],
+      ]);
+      return map.get(parseInt(row.zclb));
+    },
     /* 添加放款凭证 */ addLVN() {
       guanLi.setLoan(this.lvnParams).then((res) => {
         this.$message.success("添加成功");
@@ -937,7 +947,7 @@ export default {
         this.loanTable = res.data.rongziFangdais;
         this.escrowAccountBalance = res.data.superviseBalance;
         this.rongziDiyawus = res.data.rongziDiyawus;
-        this.rongziXudais - res.data.rongziXudais;
+        this.rongziXudais = res.data.rongziXudais;
         this.loanSelectParams.rongziId = id;
         this.fundRecordsSelectParmas.rongziId = id;
         /* 放款金额表格 */

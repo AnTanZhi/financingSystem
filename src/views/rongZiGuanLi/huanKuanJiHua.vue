@@ -64,11 +64,11 @@
             <el-table-column label="实还日期" :formatter="row=>row.shrq+''=='null'?'':String(row.shrq).substring(0,10)"
               width="100" align="center" />
             <el-table-column label="实还本金(万元)" show-overflow-tooltip prop="hkbj"
-              :formatter="row=>Number(row.hkbj).toFixed(6)" align="right" />
+              :formatter="row=>row.shrq==null?'':Number(row.hkbj).toFixed(6)" align="right" />
             <el-table-column label="实还利息(万元)" show-overflow-tooltip prop="sjhkls"
-              :formatter="row=>Number(row.sjhkls).toFixed(6)" align="right" />
+              :formatter="row=>row.shrq==null?'':Number(row.sjhkls).toFixed(6)" align="right" />
             <el-table-column label="实还合计(万元)" show-overflow-tooltip prop="realSum"
-              :formatter="row=>Number(row.realSum).toFixed(6)" align="right" />
+              :formatter="row=>row.shrq==null?'':Number(row.realSum).toFixed(6)" align="right" />
             <el-table-column width="50" label="操作" align="center" fixed="right">
               <template slot-scope="s">
                 <el-tooltip class="item" effect="dark" content="编辑" placement="bottom">
@@ -449,6 +449,7 @@ export default {
         guanLi.addInterestRate(this.setIrPrams).then((res) => {
           this.$message.success("添加成功");
           this.getInterestRate();
+          this.setIrPrams = {};
           // this.interestRateDia = false;
         });
     },
@@ -473,7 +474,8 @@ export default {
           .addPrincipalManagement(this.principalManagementParams)
           .then((res) => {
             this.$message.success("添加成功");
-            this.getRepaymentPlan();
+            this.principalManagementParams = {};
+            this.getPrincipalManagement();
             // this.principalDia = false;
           });
     },

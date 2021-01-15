@@ -79,9 +79,14 @@ import publicMixin from "@/mixin/publicMixin";
 import LeiXing from "@/myComponents/LeiXing";
 import KeShi from "@/myComponents/KeShi";
 import GongSi from "@/myComponents/GongSi";
+import { export_json_to_excel } from "@/utils/Export2Excel";
 export default {
   data() {
-    return { isYesNull: "" };
+    return {
+      isYesNull: "",
+      /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 10 },
+      /* mixin参数 */ mixinParams: { name: "", api: "" },
+    };
   },
   methods: {},
   mounted() {},

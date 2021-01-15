@@ -717,6 +717,8 @@ export default {
       /* 资金删除参数 */ delFundsIds: [],
       /* 放款删除总额 */ ttld: "",
       /* 放款金额备用 */ las: "",
+      /* 资金金额备用 */ raof: "",
+      /* 资金删除总额 */ tfd: "",
     };
   },
   methods: {
@@ -728,6 +730,7 @@ export default {
     /* 资金记录选中 */ fundRecordsChange(val) {
       this.delFundsIds = [];
       this.delFundsIds = val.map((v) => v.tiid);
+      this.tfd = val.map((v) => v.tiMoney);
     },
     /* 删除资金记录 */ delFundRecords() {
       if (this.delFundsIds == "") this.$message.error("请至少选择一条数据");
@@ -739,6 +742,9 @@ export default {
         }).then(() => {
           guanLi.delFundRecords(this.delFundsIds).then((res) => {
             this.$message.success("删除成功");
+            this.tfd.forEach((item) => {
+              this.addOrUpdParams.superviseBalance += item;
+            });
             this.fundRecordsTable();
             this.financingInfo();
           });
@@ -747,6 +753,7 @@ export default {
     /* 资金记录详细 */ getFundRecordsInfo(id) {
       guanLi.getFundRecordsInfo(id).then((res) => {
         this.updFundsParams = res.data;
+        this.raof = this.updFundsParams.tiMoney;
       });
     },
     /* 资金记录合计 */ fundsCount(param) {
@@ -772,7 +779,19 @@ export default {
     /* 添加/修改资金使用记录 */ setFundRecords() {
       this.updFundsParams.rongziId = this.$route.query.id;
       guanLi.setFundRecords(this.updFundsParams).then((res) => {
-        this.addOrUpdParams.superviseBalance -= this.updFundsParams.tiMoney;
+        if (this.updFundsParams.tiid) {
+          if (this.updFundsParams.tiMoney > this.raof) {
+            this.addOrUpdParams.superviseBalance =
+              this.addOrUpdParams.superviseBalance -
+              (this.updFundsParams.tiMoney - this.raof);
+          } else {
+            this.addOrUpdParams.superviseBalance =
+              this.addOrUpdParams.superviseBalance +
+              (this.raof - this.updFundsParams.tiMoney);
+          }
+        } else {
+          this.addOrUpdParams.superviseBalance -= this.updFundsParams.tiMoney;
+        }
         this.$message.success("操作成功");
         this.updFundsParams = {};
         this.fundRecordsTable();
@@ -1109,7 +1128,6 @@ export default {
   mixins: [publicMixin],
 };
 </script>
-
 <style lang="scss" scoped>
 .title {
   height: 35px;

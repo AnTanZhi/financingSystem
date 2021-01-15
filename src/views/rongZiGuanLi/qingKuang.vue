@@ -124,7 +124,24 @@ export default {
       this.selectParams.pageSize = this.total;
       guanLi[this.mixinParams.name](this.selectParams).then((res) => {
         import("@/vendor/Export2Excel").then((excel) => {
-          const header = [
+          const multiHeader = [
+            [
+              "城投公司2021年到账资金情况表",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+            ],
+          ];
+          const tHeader = [
             "金融机构",
             "融资主体",
             "融资类型",
@@ -156,9 +173,12 @@ export default {
           ];
           const list = res.data.records;
           const data = this.formatJson(filterVal, list);
+          const merges = ["A1:M1"];
           excel.export_json_to_excel({
-            header,
+            multiHeader, //这里是第一行的表头
+            header: tHeader, //这里应该是算第三行的表头
             data,
+            merges,
             filename: "资金到账情况表",
             autoWidth: true,
             bookType: "xlsx",
