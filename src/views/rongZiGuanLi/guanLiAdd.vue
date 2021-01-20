@@ -541,7 +541,9 @@
                 <el-input v-model="item.zcmc" clearable style="width:140px" />
               </el-form-item>
               <el-form-item label="土地证号：" v-if="item.zclb==1">
-                <el-input v-model="item.dkh" clearable style="width:140px" />
+                <el-autocomplete class="inline-input" v-model="item.dkh" :fetch-suggestions="querySearch"
+                  style="width:140px" :trigger-on-focus="false" />
+                <!-- <el-input v-model="" clearable style="width:140px" /> -->
               </el-form-item>
               <el-form-item label="抵质押日期起：">
                 <el-date-picker v-model="item.dyrq" type="date" placeholder="选择日期" format="yyyy-MM-dd"
@@ -589,6 +591,7 @@ import BaoGao from "@/myComponents/BaoGao";
 import ZeRenRen from "@/myComponents/ZeRenRen";
 import KeShi from "@/myComponents/KeShi";
 import guanLi from "@/api/guanLi";
+import index from "@/api/index";
 import { isNull, tableTotal } from "@/utils/utils";
 import DiZhiYaLeiXing from "@/myComponents/DiZhiYaLeiXing";
 import ShangChuan from "@/myComponents/ShangChuan";
@@ -719,9 +722,30 @@ export default {
       /* 放款金额备用 */ las: "",
       /* 资金金额备用 */ raof: "",
       /* 资金删除总额 */ tfd: "",
+      /* 建议 */ restaurants: "",
     };
   },
   methods: {
+    /* 获取建议 */ getSearchEngineLandNo() {
+      index.getSearchEngineLandNo().then((res) => {
+        this.restaurants = res.data;
+      });
+    },
+    /* 分割取值 */ createFilter(queryString) {
+      return (restaurant) => {
+        return (
+          restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
+          0
+        );
+      };
+    },
+    /* 返回的建议数据 */ querySearch(queryString, cb) {
+      var restaurants = this.restaurants;
+      var results = queryString
+        ? restaurants.filter(this.createFilter(queryString))
+        : restaurants;
+      cb(results);
+    },
     /* 更改放款频率 */ setLendingFrequency(val) {
       this.addOrUpdParams.rongziFangdais.forEach((item) => {
         item.efkll = val;
@@ -1101,6 +1125,7 @@ export default {
     },
   },
   mounted() {
+    this.getSearchEngineLandNo();
     this.$set(this.addOrUpdParams.rongZiEntityInfo, "bz", "1");
     this.$set(this.addOrUpdParams.rongZiEntityInfo, "hkModel", "1");
     this.$set(this.addOrUpdParams.rongZiEntityInfo, "zrks", "1");

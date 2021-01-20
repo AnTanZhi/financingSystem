@@ -121,3 +121,39 @@ export const getMonthDay = data => {
   }
   return { dataYue, tian }
 }
+/**
+ * 前后20年
+ */
+export const getYearsSelect = () => {
+  let date = new Date();
+  let years = []
+  for (let i = 0; i < 11; i++)  years.push(date.getFullYear() - (11 - i));
+  years.push(date.getFullYear());
+  for (let i = 0; i < 5; i++) years.push(date.getFullYear() + 1 + i);
+  return years.reverse();
+}
+/**
+ * 前五年后四年
+ */
+export const getYearsSelectTen = () => {
+  let date = new Date();
+  let years = []
+  for (let i = 0; i < 5; i++)  years.push(date.getFullYear() - (5 - i));
+  years.push(date.getFullYear());
+  for (let i = 0; i < 4; i++) years.push(date.getFullYear() + 1 + i);
+  return years;
+}
+/* 日期默认(补零) */
+export const getTimeZeroFill = () => {
+  let date = new Date()
+  let nian = date.getFullYear()
+  let yue = date.getMonth() + 1
+  let ri = date.getDate()
+  if (yue <= 9) {
+    yue = `0${yue}`
+  }
+  if (ri <= 9) {
+    ri = `0${ri}`
+  }
+  return [`${nian - 5}-01-01`, `${nian}-${yue}-${ri}`]
+}

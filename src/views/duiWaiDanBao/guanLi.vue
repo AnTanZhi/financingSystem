@@ -34,7 +34,7 @@
                   <el-button type="primary" icon="el-icon-download" @click="templateDownload">模板下载</el-button>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked" @click="exportEG">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportXLSX">导出</el-button>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-plus"
@@ -54,7 +54,7 @@
           @selection-change="handleSelectionChange" :summary-method="getSummaries" show-summary>
           <el-table-column type="selection" width="40" align="center" />
           <el-table-column label="序号" type="index" width="50" align="center" />
-          <el-table-column label="保证合同编号" prop="bh" width="500" show-overflow-tooltip="" />
+          <el-table-column label="保证合同编号" prop="bh" show-overflow-tooltip="" />
           <el-table-column label="被担保人" prop="bdbr" show-overflow-tooltip />
           <el-table-column label="债权机构" prop="dbr" show-overflow-tooltip="" />
           <el-table-column label="还款责任金额" prop="zrje" align="right" :formatter="row=>Number(row.zrje).toFixed(6)"
@@ -197,6 +197,55 @@ export default {
     };
   },
   methods: {
+    /* 导出初始化数据 */ formatJson(filterVal, jsonData) {
+      return jsonData.map((v) =>
+        filterVal.map((j) => {
+          if (j == "zrje" || j == "dbje" || j == "dbye")
+            return Number(v[j]).toFixed(6);
+          if (j == "dbstime" || j == "dbetime")
+            return String(v[j]) == "null" ? "" : String(v[j]).substring(0, 10);
+          return v[j];
+        })
+      );
+    },
+    /* 导出 */ exportXLSX() {
+      this.selectParams.pageSize = this.total;
+      danBao[this.mixinParams.name](this.selectParams).then((res) => {
+        import("@/vendor/Export2Excel").then((excel) => {
+          const tHeader = [
+            "保证合同编号",
+            "被担保人",
+            "债权机构",
+            "还款责任金额",
+            "借款金额",
+            "担保余额",
+            "起始日期",
+            "到期日期",
+            "备注",
+          ];
+          const filterVal = [
+            "bh",
+            "bdbr",
+            "dbr",
+            "zrje",
+            "dbje",
+            "dbye",
+            "dbstime",
+            "dbetime",
+            "beizhu",
+          ];
+          const list = Object.freeze(res.data.records);
+          const data = this.formatJson(filterVal, list);
+          excel.export_json_to_excel({
+            header: tHeader, //第三行表头
+            data,
+            filename: "对外担保管理",
+            autoWidth: true,
+            bookType: "xlsx",
+          });
+        });
+      });
+    },
     /* 导出对外担保 */ exportEG() {
       let [bdbr, bh, dbetime, dbr, dbstime, param, type] = [
         `bdbr=${this.selectParams.bdbr || ""}`,

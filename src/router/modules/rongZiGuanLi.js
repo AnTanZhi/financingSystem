@@ -76,7 +76,7 @@ const rongZiGuanLi = {
       path: 'jiHua',
       component: () => import('@/views/rongZiGuanLi/jiHua'),
       name: 'jiHua',
-      meta: { title: '月共工作计划' }
+      meta: { title: '月工作计划' }
     },
     {
       path: 'xinXi',

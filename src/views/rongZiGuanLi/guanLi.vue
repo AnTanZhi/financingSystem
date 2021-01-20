@@ -51,7 +51,7 @@
                   <ShangChuan v-model="fujian" />
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-download">模板下载</el-button>
+                  <el-button type="primary" icon="el-icon-download" @click="dowXLS">模板下载</el-button>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-document-checked" @click="exportFM">导出</el-button>
@@ -606,17 +606,18 @@
       </div>
     </el-dialog>
     <el-dialog title="结清" :visible.sync="settleDia" width="20%" :close-on-click-modal="false">
-      <el-form :model="isYesNull">
+      <el-form :model="settleParams">
         <el-form-item label="债务名称：">
           <span>{{settleName}}</span>
         </el-form-item>
         <el-form-item label="结清时间：">
-          <el-date-picker v-model="isYesNull" type="date" placeholder="选择日期" value-format="yyyy-MM-dd HH:mm:ss" />
+          <el-date-picker v-model="settleParams.settleTime " type="date" placeholder="选择日期"
+            value-format="yyyy-MM-dd HH:mm:ss" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="settleDia = false">取 消</el-button>
-        <el-button type="primary" @click="settle = false">确 定</el-button>
+        <el-button type="primary" @click="settleOperating">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -691,9 +692,46 @@ export default {
       /* 结清参数 */ settleParams: {},
       /* 放款凭证号对话框 */ lvnDia: false,
       /* 放款凭证号参数 */ lvnParams: {},
+      /* 结清参数 */ settleParams: {},
     };
   },
   methods: {
+    /* 模板下载 */ dowXLS() {
+      import("@/vendor/Export2Excel").then((excel) => {
+        const header = [
+          "融资主体",
+          "金融机构",
+          "债务名称",
+          "贷款日期",
+          "贷款日期止",
+          "贷款期限(月)",
+          "授信金额(万元)",
+          "放款金额(万元)",
+          "本期余额(万元)",
+          "利率(%)",
+          "综合成本(%)",
+          "币种",
+          "责任人",
+          "是否结清",
+        ];
+        let data = [];
+        excel.export_json_to_excel({
+          header,
+          data,
+          filename: "融资管理",
+          autoWidth: true,
+          bookType: "xlsx",
+        });
+      });
+    },
+    /* 结清 */ settleOperating() {
+      guanLi.settle(this.settleParams).then((res) => {
+        this.$message.success("操作成功");
+        guanLi.generateRepaymentPlan(this.settleParams.rongziId);
+        this.getTablData();
+        this.settleDia = false;
+      });
+    },
     /* 初始化抵质押物类型 */ setZclb(row) {
       let map = new Map([
         [1, "土地"],
@@ -788,8 +826,11 @@ export default {
       });
     },
     /* 结清 */ settile(row) {
+      this.settleParams = {};
       this.settleName = row.zwmc;
       this.settleDia = true;
+      this.settleParams.rongziId = row.id;
+      this.$set(this.settleParams, "settleTime", row.dkrqz);
     },
     /* 判断表格是不是null */ isTableNull(data) {
       if (isNull(data)) return false;

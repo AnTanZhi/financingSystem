@@ -559,7 +559,7 @@ export default {
         this.$message.success("修改成功");
         this.publicSelect();
         this.repaymentPlanParams = {};
-        // this.updRepaymentPlan = false;
+        this.updRepaymentPlan = false;
       });
     },
     /* 还款计划修改前置 */ goUpd(id) {

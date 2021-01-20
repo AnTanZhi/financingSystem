@@ -146,6 +146,8 @@ export function export_table_to_excel(id) {
 
 export function export_json_to_excel({
   multiHeader = [],
+  multiHeader2 = [],
+  multiHeader3 = [],
   header,
   data,
   filename,
@@ -157,7 +159,12 @@ export function export_json_to_excel({
   filename = filename || 'excel-list'
   data = [...data]
   data.unshift(header);
-
+  for (let i = multiHeader3.length - 1; i > -1; i--) {
+    data.unshift(multiHeader3[i])
+  }
+  for (let i = multiHeader2.length - 1; i > -1; i--) {
+    data.unshift(multiHeader2[i])
+  }
   for (let i = multiHeader.length - 1; i > -1; i--) {
     data.unshift(multiHeader[i])
   }

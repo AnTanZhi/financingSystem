@@ -126,4 +126,18 @@ export default {
       method: 'GET'
     })
   },
+  /* 获取融资类型(一级) */
+  getFinancingTypeOne() {
+    return request({
+      url: `financing/rongziParam/queryRzTypeList`,
+      method: 'GET'
+    })
+  },
+  /* 土地证号搜索引擎 */
+  getSearchEngineLandNo() {
+    return request({
+      url: `financing/rongziParam/getLandCodeBox`,
+      method: 'GET'
+    })
+  },
 }
