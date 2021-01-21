@@ -69,9 +69,9 @@
           <el-table-column label="币种" prop="bz" width="70" fixed="left" align="center" />
           <el-table-column v-for="item in any" :key="item" :label="String(item)">
             <el-table-column label="还本" :prop="`benjin${item}`" align="right" width="120"
-              :formatter="row=>{let field=`benjin${item}`;return Number(row[field]).toFixed(6)}" />
+              :formatter="row=> Number(row[`benjin${item}`]).toFixed(6)" />
             <el-table-column label="付息" :prop="`lixi${item}`" align="right" width="120"
-              :formatter="row=>{let field=`lixi${item}`;return Number(row[field]).toFixed(6)}" />
+              :formatter="row=>Number(row[`lixi${item}`]).toFixed(6)" />
           </el-table-column>
           <el-table-column label="合计">
             <el-table-column label="还本" prop="totalPrincipal" align="right" width="120"
@@ -387,7 +387,7 @@ export default {
     /* 获取融资台账 */ getFinancingLedger() {
       /* 后十年 */ this.setAny();
       guanLi.getFinancingLedger(this.selectParams).then((res) => {
-        this.tableData = Object.freeze(res.data.records);
+        this.tableData = res.data.records;
         this.total = res.data.total;
         this.tableData.forEach((itemS) => {
           this.$set(
@@ -438,10 +438,18 @@ export default {
       this.tenYears = getYearsSelectTen();
     },
     /* 后十年 */ setAny() {
-      this.any = [];
-      for (let i = 0; i < 10; i++) {
-        this.any.push(this.selectParams.year + i);
-      }
+      this.any = [
+        this.selectParams.year,
+        this.selectParams.year + 1,
+        this.selectParams.year + 2,
+        this.selectParams.year + 3,
+        this.selectParams.year + 4,
+        this.selectParams.year + 5,
+        this.selectParams.year + 6,
+        this.selectParams.year + 7,
+        this.selectParams.year + 8,
+        this.selectParams.year + 9,
+      ];
     },
   },
   mounted() {

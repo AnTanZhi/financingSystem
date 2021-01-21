@@ -5,7 +5,7 @@
         <div class="header-container">
           <el-form :inline="true" :model="selectParams" class="demo-form-inline">
             <div style="display:flex;justify-content: space-between;">
-              <div style="width: 52%;">
+              <div>
                 <el-form-item>
                   <LeiXing v-model="copyRzlxmc" style="width:230px" @change="setCopyRzlxmc" />
                 </el-form-item>
@@ -26,33 +26,22 @@
                 <el-form-item>
                   <GongSi v-model="selectParams.suoshugs" style="width:110px" @change="getTablData" />
                 </el-form-item>
-                <el-button type="primary" :icon="!isShow?'el-icon-s-grid':'el-icon-menu'"
-                  @click="()=>this.isShow=!this.isShow">
-                  {{isShow?'收起':'展开'}}</el-button>
-                <div v-if="isShow">
-                  <el-form-item>
-                    <el-select v-model="selectParams.jieqing" placeholder="是否结清" clearable style="width:110px"
-                      @change="getTablData">
-                      <el-option label="是" value="1" />
-                      <el-option label="否" value="0" />
-                    </el-select>
-                  </el-form-item>
-                  <el-form-item>
-                    <KeShi v-model="selectParams.zrks" style="width:110px" @change="getTablData" />
-                  </el-form-item>
-                  <el-form-item>
-                    <el-date-picker v-model="selectTime" type="daterange" range-separator="~" start-placeholder="贷款日期"
-                      end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" style="width:240px" @change="setTime" />
-                  </el-form-item>
-                </div>
+                <el-form-item>
+                  <el-select v-model="selectParams.jieqing" placeholder="是否结清" clearable style="width:110px"
+                    @change="getTablData">
+                    <el-option label="是" value="1" />
+                    <el-option label="否" value="0" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item>
+                  <KeShi v-model="selectParams.zrks" style="width:110px" @change="getTablData" />
+                </el-form-item>
+                <el-form-item>
+                  <el-date-picker v-model="selectTime" type="daterange" range-separator="~" start-placeholder="贷款日期"
+                    end-placeholder="结束日期" value-format="yyyy-MM-dd HH:mm:ss" style="width:240px" @change="setTime" />
+                </el-form-item>
               </div>
               <div style="text-align: end;">
-                <el-form-item>
-                  <ShangChuan v-model="fujian" />
-                </el-form-item>
-                <el-form-item>
-                  <el-button type="primary" icon="el-icon-download" @click="dowXLS">模板下载</el-button>
-                </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-document-checked" @click="exportFM">导出</el-button>
                 </el-form-item>
@@ -637,12 +626,11 @@ import LiXiHuanKuanFangShi from "@/myComponents/LiXiHuanKuanFangShi";
 import PinLv from "@/myComponents/PinLv";
 import MoShi from "@/myComponents/MoShi";
 import ZeRenRen from "@/myComponents/ZeRenRen";
-import { isNull, tableTotal } from "@/utils/utils";
+import { isNull, tableTotal, templateDownload } from "@/utils/utils";
 import guanLi from "@/api/guanLi";
 export default {
   data() {
     return {
-      isYesNull: "",
       /* 上传附件 */ fujian: "",
       /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 10 },
       /* mixin参数 */ mixinParams: {
@@ -696,33 +684,13 @@ export default {
     };
   },
   methods: {
-    /* 模板下载 */ dowXLS() {
-      import("@/vendor/Export2Excel").then((excel) => {
-        const header = [
-          "融资主体",
-          "金融机构",
-          "债务名称",
-          "贷款日期",
-          "贷款日期止",
-          "贷款期限(月)",
-          "授信金额(万元)",
-          "放款金额(万元)",
-          "本期余额(万元)",
-          "利率(%)",
-          "综合成本(%)",
-          "币种",
-          "责任人",
-          "是否结清",
-        ];
-        let data = [];
-        excel.export_json_to_excel({
-          header,
-          data,
-          filename: "融资管理",
-          autoWidth: true,
-          bookType: "xlsx",
-        });
-      });
+    /* 模板下载 */ templateDownload() {
+      let data = {
+        method: "GET",
+        url: `${this.$store.state.upload.uploadHost}financing/rongzi/loadTemp`,
+        fileName: "融资管理.xls",
+      };
+      templateDownload(data);
     },
     /* 结清 */ settleOperating() {
       guanLi.settle(this.settleParams).then((res) => {

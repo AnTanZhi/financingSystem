@@ -6,9 +6,9 @@
           <el-form :inline="true" class="demo-form-inline">
             <div style="display:flex;justify-content: space-between;">
               <div>
-                <el-date-picker v-model="yearMonth" type="monthrange" range-separator="~" :clearable="false"
-                  start-placeholder="开始月份" end-placeholder="结束月份" style="width:190px" value-format="yyyy-MM"
-                  @change="setYearMonth" />
+                <el-date-picker v-model="yearMonth" type="monthrange" :clearable="false" @change="setYearMonth"
+                  style="width:190px" range-separator="~" value-format="yyyy-MM" start-placeholder="开始月份"
+                  end-placeholder="结束月份" />
               </div>
               <div style="text-align: end;">
                 <el-form-item>

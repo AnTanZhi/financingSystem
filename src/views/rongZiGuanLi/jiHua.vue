@@ -153,7 +153,8 @@ export default {
         filterVal.map((j) => {
           if (j === "sdaoZhangTime" || j === "daoZhangTime")
             return String(v[j]) == "null" ? "" : String(v[j]).substring(0, 10);
-          if (j === "xianYeDu") return Number(v[j]).toFixed(6);
+          if (j === "xianYeDu" || j === "sdaoZhangMoney")
+            return Number(v[j]).toFixed(6);
           return v[j];
         })
       );

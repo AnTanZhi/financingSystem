@@ -20,7 +20,7 @@
                   <el-button type="primary" icon="el-icon-document-checked" @click="exportFM">导出</el-button>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-download">模板下载</el-button>
+                  <el-button type="primary" icon="el-icon-download" @click="templateDownload">模板下载</el-button>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-money" @click="addOrUpdPrincipalManagement">本金管理</el-button>
@@ -287,11 +287,10 @@
 import ShangChuan from "@/myComponents/ShangChuan";
 import publicMixin from "@/mixin/publicMixin";
 import guanLi from "@/api/guanLi";
-import { tableTotal, isNull } from "@/utils/utils";
+import { tableTotal, isNull, templateDownload } from "@/utils/utils";
 export default {
   data() {
     return {
-      isYesNull: "",
       /* 本金管理对话框 */ principalDia: false,
       /* 利率调整对话框 */ interestRateDia: false,
       /* 修改还款计划对话框 */ updRepaymentPlan: false,
@@ -347,6 +346,14 @@ export default {
     };
   },
   methods: {
+    /* 模板下载 */ templateDownload() {
+      let data = {
+        method: "GET",
+        url: `${this.$store.state.upload.uploadHost}financing/rongziHuankuan/loadTemp`,
+        fileName: "还款计划.xls",
+      };
+      templateDownload(data);
+    },
     /* 导出初始化数据 */ formatJson(filterVal, jsonData) {
       return jsonData.map((v) =>
         filterVal.map((j) => {
