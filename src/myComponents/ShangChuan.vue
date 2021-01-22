@@ -10,22 +10,27 @@
 </template>
 
 <script>
+import { isNull } from "@/utils/utils";
 export default {
+  props: {
+    url: {
+      type: [String],
+      default: "",
+      required: false,
+    },
+  },
   data() {
     return {
       fileList: [],
       is: { shangChuan: false },
-      url: `${this.$store.state.upload.uploadHost}financing/ensure/upload`,
     };
   },
   methods: {
     uploadFailed(res, file, fileList) {
       this.fileList = [];
-      if (res.total)
-        this.$message.success(
-          `成功${res.successCount}条数据,失败${res.errorCount}条数据,总${res.total}条数据`
-        );
-      else this.$message.error(res);
+      this.$message.success(
+        `成功${res.successCount}条数据,失败${res.errorCount}条数据,总${res.total}条数据`
+      );
       this.$emit("getTable");
     },
     submitUpload() {

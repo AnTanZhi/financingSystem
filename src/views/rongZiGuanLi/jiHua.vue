@@ -32,7 +32,7 @@
             <el-table-column label="序号" type="index" width="50" align="center" />
             <el-table-column label="金融机构" prop="jinRongName" />
             <el-table-column label="资金品种" prop="moneyType" />
-            <el-table-column label="额度(万元)" prop="xianYeDu" align="right" width="130"
+            <el-table-column label="额度(万元)" prop="xianYeDu" align="right" width="130" show-overflow-tooltip
               :formatter="row=>Number(row.xianYeDu).toFixed(6)" />
             <el-table-column label="期限" prop="quXian" width="80" align="center" show-overflow-tooltip />
             <el-table-column label="进展情况" prop="qingKuan" show-overflow-tooltip />

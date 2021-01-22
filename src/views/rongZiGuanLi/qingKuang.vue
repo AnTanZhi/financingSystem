@@ -92,6 +92,7 @@ import LeiXing from "@/myComponents/LeiXing";
 import KeShi from "@/myComponents/KeShi";
 import { tableTotal, isNull, getYearsSelect } from "@/utils/utils";
 import guanLi from "@/api/guanLi";
+import { set } from "js-cookie";
 export default {
   data() {
     return {

@@ -14,7 +14,8 @@
               </div>
               <div style="text-align: end;">
                 <el-form-item>
-                  <ShangChuan @getTable="getRepaymentPlan" />
+                  <ShangChuan @getTable="initPlan"
+                    :url="`${this.$store.state.upload.uploadHost}financing/rongziHuankuan/upload?rongziId=${this.$route.query.id}`" />
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-document-checked" @click="exportFM">导出</el-button>
@@ -28,6 +29,9 @@
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-s-operation" @click="goAddOrUpdIr">利率调整</el-button>
                 </el-form-item>
+                <el-form-item v-for="item in pageNumberLength" :key="item">
+                  <el-button type="primary" icon="el-icon-postcard" @click="setSheet(item)">Sheet{{item}}</el-button>
+                </el-form-item>
                 <el-form-item>
                   <el-button type="danger" icon="el-icon-delete" @click="delRepaymentPlan">删除选中</el-button>
                 </el-form-item>
@@ -37,7 +41,8 @@
         </div>
       </header>
       <section class="table-container view-section" style="text-align: center;">
-        <el-link type="primary" style="margin:10px 0" @click="generateRepaymentPlan">计算时间 {{computingTime}} 点击重新计算
+        <el-link type="primary" style="margin:10px 0" v-if="!pageNumberLength>0" @click="generateRepaymentPlan">计算时间
+          {{computingTime}} 点击重新计算
         </el-link>
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
           element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
@@ -81,8 +86,7 @@
       </section>
       <el-pagination style="text-align: end;" background @size-change="publicSizeSelect"
         @current-change="publicPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
-        :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
-      </el-pagination>
+        :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total" />
     </div>
     <!-- 本金管理对话框 -->
     <el-dialog title="本金管理" :visible.sync="principalDia" :close-on-click-modal="false">
@@ -298,6 +302,7 @@ export default {
         pageIndex: 1,
         pageSize: 10,
         rongziId: this.$route.query.id,
+        sheet: 0,
       },
       /* mixin参数 */ mixinParams: { api: guanLi, name: "getRepaymentPlan" },
       /* 融资详细 */ financingInfo: {},
@@ -343,9 +348,79 @@ export default {
       },
       /* 删除利率参数 */ irIds: [],
       /* 计算时间 */ computingTime: "",
+      /* 页码长度 */ pageNumberLength: 0,
+      /* 备用查询参数 */ loserParams: {
+        pageIndex: 1,
+        pageSize: 10,
+        sheet: 0,
+        rongziId: this.$route.query.id,
+      },
     };
   },
   methods: {
+    /* 还款表 */ initPlan() {
+      guanLi.getRepaymentPlan(this.selectParams).then((a) => {
+        this.tableData = a.data.records || a.data;
+        this.loading = false;
+        this.total = a.data.total;
+        this.getPageNumberLength();
+      });
+    },
+    /* xlsx页码 */ setSheet(index) {
+      this.selectParams.sheet = index;
+      guanLi.getRepaymentPlan(this.selectParams).then((a) => {
+        this.tableData = a.data.records || a.data;
+        this.loading = false;
+        this.total = a.data.total;
+      });
+    },
+    /* 还款计划列表 */ getRepaymentPlan() {
+      this.loading = true;
+      guanLi.getRepaymentPlan(this.selectParams).then((a) => {
+        this.tableData = a.data.records || a.data;
+        this.loading = false;
+        this.total = a.data.total;
+        if (isNull(this.tableData)) {
+          this.selectParams.sheet = 1;
+          guanLi.getRepaymentPlan(this.selectParams).then((b) => {
+            if (isNull(b.data.records)) {
+              guanLi.generateRepaymentPlan(this.$route.query.id).then((c) => {
+                this.selectParams.sheet = 0;
+                guanLi.getRepaymentPlan(this.selectParams).then((d) => {
+                  this.tableData = d.data.records || d.data;
+                  this.loading = false;
+                  this.total = d.data.total;
+                  this.computingTime = b.data.records[0].addTime;
+                });
+              });
+            } else {
+              this.computingTime = b.data.records[0].addTime;
+            }
+          });
+        } else {
+          this.computingTime = this.tableData[0].addTime;
+        }
+      });
+    },
+    async demo() {
+      return new Promise((r) => {
+        guanLi.getRepaymentPlan(this.loserParams).then((res) => {
+          if (isNull(res.data.records)) r(true);
+          r(false);
+        });
+      });
+    },
+    /* 获取页码长度 */ async getPageNumberLength() {
+      for (let i = 0; i <= 999999; i++) {
+        this.loserParams.sheet = i + 1;
+        this.pageNumberLength = i + 1;
+        if (await this.demo()) {
+          this.loserParams.sheet -= 1;
+          this.pageNumberLength -= 1;
+          return false;
+        }
+      }
+    },
     /* 模板下载 */ templateDownload() {
       let data = {
         method: "GET",
@@ -603,29 +678,9 @@ export default {
         this.getRepaymentPlan();
       });
     },
-    /* 还款计划列表 */ getRepaymentPlan() {
-      this.loading = true;
-      guanLi.getRepaymentPlan(this.selectParams).then((res) => {
-        this.tableData = res.data.records || res.data;
-        this.loading = false;
-        this.total = res.data.total;
-        if (isNull(this.tableData)) {
-          this.loading = true;
-          guanLi.generateRepaymentPlan(this.$route.query.id).then(() => {
-            guanLi.getRepaymentPlan(this.selectParams).then((r) => {
-              this.tableData = r.data.records || r.data;
-              this.loading = false;
-              this.total = r.data.total;
-              this.computingTime = this.tableData[0].addTime;
-            });
-          });
-        } else {
-          this.computingTime = this.tableData[0].addTime;
-        }
-      });
-    },
   },
   mounted() {
+    /* 获取页码长度 */ this.getPageNumberLength();
     /* 本金表放款金额下拉框 */ this.getLoan();
     /* 融资表详细(回调表格数据) */ this.getFinancingInfo();
   },

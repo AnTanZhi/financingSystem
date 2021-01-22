@@ -28,7 +28,8 @@
               </div>
               <div style="text-align:end">
                 <el-form-item>
-                  <ShangChuan v-model="isNull" @getTable="getExternalGuarantee" />
+                  <ShangChuan @getTable="getExternalGuarantee"
+                    :url="`${this.$store.state.upload.uploadHost}financing/ensure/upload`" />
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-download" @click="templateDownload">模板下载</el-button>
@@ -139,7 +140,6 @@ import axios from "axios";
 export default {
   data() {
     return {
-      isNull: "",
       /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 10 },
       /* 总条数 */ total: 0,
       /* 非空验证 */ rules: {
