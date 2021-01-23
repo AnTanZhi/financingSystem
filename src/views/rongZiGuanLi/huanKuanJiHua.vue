@@ -30,7 +30,7 @@
                   <el-button type="primary" icon="el-icon-s-operation" @click="goAddOrUpdIr">利率调整</el-button>
                 </el-form-item>
                 <el-form-item v-for="item in pageNumberLength" :key="item">
-                  <el-button type="primary" icon="el-icon-postcard" @click="setSheet(item)">Sheet{{item}}</el-button>
+                  <el-button type="success" icon="el-icon-postcard" @click="setSheet(item)">Sheet{{item}}</el-button>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="danger" icon="el-icon-delete" @click="delRepaymentPlan">删除选中</el-button>
@@ -41,7 +41,7 @@
         </div>
       </header>
       <section class="table-container view-section" style="text-align: center;">
-        <el-link type="primary" style="margin:10px 0" v-if="!pageNumberLength>0" @click="generateRepaymentPlan">计算时间
+        <el-link type="primary" style="margin:10px 0" @click="generateRepaymentPlan" v-if="!pageNumberLength>0">计算时间
           {{computingTime}} 点击重新计算
         </el-link>
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
@@ -359,6 +359,7 @@ export default {
   },
   methods: {
     /* 还款表 */ initPlan() {
+      this.selectParams.sheet = 1;
       guanLi.getRepaymentPlan(this.selectParams).then((a) => {
         this.tableData = a.data.records || a.data;
         this.loading = false;
@@ -394,7 +395,13 @@ export default {
                 });
               });
             } else {
-              this.computingTime = b.data.records[0].addTime;
+              this.selectParams.sheet = 1;
+              guanLi.getRepaymentPlan(this.selectParams).then((e) => {
+                this.tableData = e.data.records || e.data;
+                this.loading = false;
+                this.total = e.data.total;
+                this.computingTime = e.data.records[0].addTime;
+              });
             }
           });
         } else {

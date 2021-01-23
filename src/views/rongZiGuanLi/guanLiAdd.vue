@@ -97,7 +97,7 @@
           <el-col :span="12">
             <el-form-item label="授信金额：" prop="sxje">
               <el-input v-model="addOrUpdParams.rongZiEntityInfo.sxje" type="number" style="margin-right:20px;width:33%"
-                clearable />[万元]
+                clearable @input="setSXJE" />[万元]
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -608,8 +608,8 @@ export default {
             efkjy: "",
             efksj: "",
             efkll: "",
-            sxf: "",
-            bzj: "",
+            sxf: 0,
+            bzj: 0,
             rongziFangdaisKey: "rongziFangdais",
           },
         ],
@@ -726,6 +726,9 @@ export default {
     };
   },
   methods: {
+    /* 放款金额默认值 */ setSXJE() {
+      this.addOrUpdParams.rongziFangdais[0].efkjy = this.addOrUpdParams.rongZiEntityInfo.sxje;
+    },
     /* 获取建议 */ getSearchEngineLandNo() {
       index.getSearchEngineLandNo().then((res) => {
         this.restaurants = res.data;
@@ -982,18 +985,6 @@ export default {
               this.$message.error("放款时间不能为空");
               return;
             }
-            if (isNull(i.efkll)) {
-              this.$message.error("放款利率不能为空");
-              return;
-            }
-            if (isNull(i.sxf)) {
-              this.$message.error("手续费不能为空");
-              return;
-            }
-            if (isNull(i.bzj)) {
-              this.$message.error("保证金额不能为空");
-              return;
-            }
           }
         if (!isNull(this.addOrUpdParams.rongziTicords)) {
           this.addOrUpdParams.rongziTicords.forEach((item, index) => {
@@ -1039,6 +1030,7 @@ export default {
         this.addOrUpdParams.rongZiEntityInfo.dkrqq,
         this.addOrUpdParams.rongZiEntityInfo.dkrqz,
       ];
+      this.addOrUpdParams.rongziFangdais[0].efksj = this.addOrUpdParams.rongZiEntityInfo.dkrqq;
       if (start != "" && start != null && end != "" && end != null) {
         if (start >= end) {
           this.$message.error("贷款日期止必须大于贷款日期");
@@ -1046,16 +1038,15 @@ export default {
         } else {
           let dataYue = 0;
           let ms = new Date(end).getTime() - new Date(start).getTime();
-          let tian = ms / 1000 / 60 / 60 / 24 + 1;
+          let tian = parseInt(ms / 1000 / 60 / 60 / 24 + 1);
           this.deadlineTian = tian;
           let nian =
             new Date(end).getFullYear() - new Date(start).getFullYear();
           let yue =
             new Date(end).getMonth() + 1 - (new Date(start).getMonth() + 1);
           let ri = new Date(end).getDate() - new Date(start).getDate();
-          dataYue += nian * 12;
-          dataYue += yue;
-          if (ri > 0) dataYue += 1;
+          if (ri > 0) dataYue += nian * 12 + yue + 1;
+          else dataYue += nian * 12 + yue;
           this.deadlineYue = dataYue;
         }
       }

@@ -10,6 +10,9 @@ export default {
 };
 </script>
 <style lang="scss">
+.el-table__body-wrapper {
+  z-index: 2;
+}
 .has-gutter {
   tr {
     th {

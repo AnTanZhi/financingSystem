@@ -392,7 +392,8 @@
       </el-dialog>
       <!-- 放款金额详细弹出框 -->
       <el-dialog width="40%" title="放款金额编辑" :visible.sync="loanAmountDia" append-to-body :close-on-click-modal="false">
-        <el-form :model="loanAmountParams" label-width="130px" style="margin-bottom:20px">
+        <el-form :model="loanAmountParams" label-width="130px" style="margin-bottom:20px" :rules="laRules"
+          ref="loanAmountParams">
           <div style="display:flex;justify-content:space-between">
             <ShangChuan />
             <el-button type="primary">模板下载</el-button>
@@ -404,13 +405,13 @@
             <div style="padding:10px 20px">
               <el-row>
                 <el-col :span="12">
-                  <el-form-item label="放款金额(万元)：">
+                  <el-form-item label="放款金额(万元)：" prop="efkjy">
                     <el-input placeholder="放款金额" type="Number" v-model="loanAmountParams.efkjy" clearable
                       style="width:100%" />
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                  <el-form-item label="利率(%)：">
+                  <el-form-item label="利率(%)：" prop="efkll">
                     <el-input placeholder="利率" type="number" v-model="loanAmountParams.efkll" clearable
                       style="width:100%" />
                   </el-form-item>
@@ -418,7 +419,7 @@
               </el-row>
               <el-row>
                 <el-col :span="24">
-                  <el-form-item label="放款日期：">
+                  <el-form-item label="放款日期：" prop="efksj">
                     <el-date-picker v-model="loanAmountParams.efksj" type="date" placeholder="选择日期"
                       value-format="yyyy-MM-dd HH:mm:ss" clearable style="width:100%" />
                   </el-form-item>
@@ -444,7 +445,7 @@
             </div>
           </div>
         </el-form>
-        <el-button type="danger" style="margin:10px 0" @click="delLoan">删除选中</el-button>
+        <el-button type="danger" style="margin:10px 0" @click="delLoan" v-if="loanData.length>1">删除选中</el-button>
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loanLoading"
           element-loading-text="加载中，请稍候……" :data="loanData" tooltip-effect="dark" style="width: 100%"
           @selection-change="loanCountChange" :summary-method="loanCount" show-summary>
@@ -489,7 +490,8 @@
           align="center" width="100" />
       </el-table>
       <!-- 资金记录详细弹出框 -->
-      <el-dialog width="40%" title="放款金额编辑" :visible.sync="fundRecordsDia" append-to-body :close-on-click-modal="false">
+      <el-dialog width="40%" title="资金使用情况登记表编辑
+" :visible.sync="fundRecordsDia" append-to-body :close-on-click-modal="false">
         <el-form :model="fundRecordsParams" label-width="130px" style="margin-bottom:20px">
           <div style="border:#CCCCCC 1px solid;margin-top:10px">
             <div
@@ -554,7 +556,7 @@
           :page-sizes="[10, 20, 50, 100]" :page-size="fundRecordsSelectParmas.pageSize"
           layout="total, sizes, prev, pager, next, jumper" :total="fundRecordsTotal" v-loading="loanLoading" />
       </el-dialog>
-      <div v-if="isTableNull(rongziDiyawus)">
+      <div v-if="financingInfo.dy">
         <el-divider content-position="left">
           <div style="display:flex;align-items:center">
             <span style="color: #666666;font-weight: 900;font-size: 1.2em">抵质押物</span>
@@ -576,7 +578,7 @@
             show-overflow-tooltip />
         </el-table>
       </div>
-      <div>
+      <div v-if="financingInfo.kxd">
         <el-divider content-position="left">
           <div style="display:flex;align-items:center">
             <span style="color: #666666;font-weight: 900;font-size: 1.2em">续贷</span>
@@ -600,8 +602,8 @@
           <span>{{settleName}}</span>
         </el-form-item>
         <el-form-item label="结清时间：">
-          <el-date-picker v-model="settleParams.settleTime " type="date" placeholder="选择日期"
-            value-format="yyyy-MM-dd HH:mm:ss" />
+          <el-date-picker v-model="settleParams.settleTime " type="date" placeholder="选择日期" value-format="yyyy-MM-dd"
+            :clearable="false" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -681,6 +683,13 @@ export default {
       /* 放款凭证号对话框 */ lvnDia: false,
       /* 放款凭证号参数 */ lvnParams: {},
       /* 结清参数 */ settleParams: {},
+      /* 放款金额非空 */ laRules: {
+        efkjy: [{ required: true, message: "请输入放款金额", trigger: "blur" }],
+        efkll: [{ required: true, message: "请输入利率(%)", trigger: "blur" }],
+        efksj: [
+          { required: true, message: "请选择放款日期", trigger: "change" },
+        ],
+      },
     };
   },
   methods: {
@@ -693,12 +702,50 @@ export default {
       templateDownload(data);
     },
     /* 结清 */ settleOperating() {
-      guanLi.settle(this.settleParams).then((res) => {
-        this.$message.success("操作成功");
-        guanLi.generateRepaymentPlan(this.settleParams.rongziId);
-        this.getTablData();
-        this.settleDia = false;
-      });
+      let nian = new Date().getFullYear();
+      let yue = new Date().getMonth();
+      let ri = new Date().getDate();
+      if (yue < 10) yue = `0${yue + 1}`;
+      if (ri < 10) ri = `0${ri}`;
+      let dqsj = `${nian}-${yue}-${ri}`;
+      if (this.settleParams.settleTime < dqsj) {
+        this.$confirm(
+          `选中的时间(${String(this.settleParams.settleTime).substring(
+            0,
+            10
+          )})小于当前时间(${dqsj}), 确定无误?是否继续?`,
+          "提示",
+          {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          }
+        ).then(() => {
+          this.settleParams.settleTime = String(
+            this.settleParams.settleTime
+          ).substring(0, 10);
+          guanLi.settle(this.settleParams).then((res) => {
+            this.$message.success("操作成功");
+            // guanLi.generateRepaymentPlan(this.settleParams.rongziId);
+            this.getTablData();
+            this.settleDia = false;
+          });
+        });
+      } else if (
+        this.settleParams.settleTime > this.settleParams.loserSettleTime
+      ) {
+        this.$message.error("结清时间不能大于贷款日期止");
+      } else {
+        this.settleParams.settleTime = String(
+          this.settleParams.settleTime
+        ).substring(0, 10);
+        guanLi.settle(this.settleParams).then((res) => {
+          this.$message.success("操作成功");
+          // guanLi.generateRepaymentPlan(this.settleParams.rongziId);
+          this.getTablData();
+          this.settleDia = false;
+        });
+      }
     },
     /* 初始化抵质押物类型 */ setZclb(row) {
       let map = new Map([
@@ -799,6 +846,7 @@ export default {
       this.settleDia = true;
       this.settleParams.rongziId = row.id;
       this.$set(this.settleParams, "settleTime", row.dkrqz);
+      this.$set(this.settleParams, "loserSettleTime", row.dkrqz);
     },
     /* 判断表格是不是null */ isTableNull(data) {
       if (isNull(data)) return false;
@@ -869,12 +917,14 @@ export default {
     },
     /* 添加/修改放款金额 */ setLoan() {
       this.loanAmountParams.rongziId = this.loanSelectParams.rongziId;
-      guanLi.setLoan(this.loanAmountParams).then((res) => {
-        this.$message.success("操作成功");
-        this.loanAmountParams = {};
-        this.getFinancingInfo(this.loanSelectParams.rongziId);
-        this.getTablData();
-      });
+      if (this.publicRules("loanAmountParams")) {
+        guanLi.setLoan(this.loanAmountParams).then((res) => {
+          this.$message.success("操作成功");
+          this.loanAmountParams = {};
+          this.getFinancingInfo(this.loanSelectParams.rongziId);
+          this.getTablData();
+        });
+      }
     },
     /* 更改放款金额每页展示的数量 */ loanSizeSelect(size) {
       this.selectParams.pageSize = size;
