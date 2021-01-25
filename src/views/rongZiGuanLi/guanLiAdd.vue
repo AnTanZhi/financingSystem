@@ -311,7 +311,7 @@
                 <ShangChuan />
               </el-col>
               <el-col :span="4">
-                <el-button type="primary">模板下载</el-button>
+                <el-button type="primary" @click="mbxz">模板下载</el-button>
               </el-col>
             </el-row>
             <div style="border:#CCCCCC 1px solid;margin-top:10px">
@@ -592,7 +592,7 @@ import ZeRenRen from "@/myComponents/ZeRenRen";
 import KeShi from "@/myComponents/KeShi";
 import guanLi from "@/api/guanLi";
 import index from "@/api/index";
-import { isNull, tableTotal } from "@/utils/utils";
+import { isNull, tableTotal, templateDownload } from "@/utils/utils";
 import DiZhiYaLeiXing from "@/myComponents/DiZhiYaLeiXing";
 import ShangChuan from "@/myComponents/ShangChuan";
 export default {
@@ -726,6 +726,14 @@ export default {
     };
   },
   methods: {
+    /* 模板下载 */ mbxz() {
+      let data = {
+        method: "GET",
+        url: `${this.$store.state.upload.uploadHost}financing/rongziFangdai/loadTemp`,
+        fileName: "放款金额.xls",
+      };
+      templateDownload(data);
+    },
     /* 放款金额默认值 */ setSXJE() {
       this.addOrUpdParams.rongziFangdais[0].efkjy = this.addOrUpdParams.rongZiEntityInfo.sxje;
     },

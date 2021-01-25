@@ -10,7 +10,6 @@
 </template>
 
 <script>
-import { isNull } from "@/utils/utils";
 export default {
   props: {
     url: {

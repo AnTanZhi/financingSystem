@@ -395,8 +395,10 @@
         <el-form :model="loanAmountParams" label-width="130px" style="margin-bottom:20px" :rules="laRules"
           ref="loanAmountParams">
           <div style="display:flex;justify-content:space-between">
-            <ShangChuan />
-            <el-button type="primary">模板下载</el-button>
+            <ShangChuan
+              :url="`${this.$store.state.upload.uploadHost}financing/rongziFangdai/upload?rongziId=${shangChuanId}`"
+              @getTable="getFinancingInfo(shangChuanId)" />
+            <el-button type="primary" @click="mbxz">模板下载</el-button>
           </div>
           <div style="border:#CCCCCC 1px solid;margin-top:10px">
             <div
@@ -469,8 +471,8 @@
           </el-table-column>
         </el-table>
         <el-pagination style="text-align: end;margin-top:10px" background @size-change="loanSizeSelect"
-          @current-change="loanPageSelect" :current-page="selectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
-          :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="loanTotal"
+          @current-change="loanPageSelect" :current-page="loanSelectParams.pageIndex" :page-sizes="[10, 20, 50, 100]"
+          :page-size="loanSelectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="loanTotal"
           v-loading="loanLoading" />
       </el-dialog>
       <el-divider content-position="left">
@@ -690,14 +692,15 @@ export default {
           { required: true, message: "请选择放款日期", trigger: "change" },
         ],
       },
+      /* 上传需要用的融资id */ shangChuanId: "",
     };
   },
   methods: {
-    /* 模板下载 */ templateDownload() {
+    /* 模板下载 */ mbxz() {
       let data = {
         method: "GET",
-        url: `${this.$store.state.upload.uploadHost}financing/rongzi/loadTemp`,
-        fileName: "融资管理.xls",
+        url: `${this.$store.state.upload.uploadHost}financing/rongziFangdai/loadTemp`,
+        fileName: "放款金额.xls",
       };
       templateDownload(data);
     },
@@ -758,6 +761,10 @@ export default {
       return map.get(parseInt(row.zclb));
     },
     /* 添加放款凭证 */ addLVN() {
+      if (isNull(this.lvnParams.fkpz)) {
+        this.$message.error("请认真填写放款凭证号");
+        return false;
+      }
       guanLi.setLoan(this.lvnParams).then((res) => {
         this.$message.success("添加成功");
         this.lvnDia = false;
@@ -927,11 +934,11 @@ export default {
       }
     },
     /* 更改放款金额每页展示的数量 */ loanSizeSelect(size) {
-      this.selectParams.pageSize = size;
+      this.loanSelectParams.pageSize = size;
       this.getLoan();
     },
     /* 放款金额分页查询 */ loanPageSelect(page) {
-      this.selectParams.pageIndex = page;
+      this.loanSelectParams.pageIndex = page;
       this.getLoan();
     },
     /* 放款选中 */ loanCountChange(val) {
@@ -974,6 +981,7 @@ export default {
       this.getTablData();
     },
     /* 放款金额详细 */ getFinancingInfo(id) {
+      this.shangChuanId = id;
       guanLi.getFinancingInfo(id).then((res) => {
         let zqgd = res.data.rongZiEntityInfo.zqgd;
         let kxd = res.data.rongZiEntityInfo.kxd;

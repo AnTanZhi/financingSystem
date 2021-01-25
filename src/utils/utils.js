@@ -20,7 +20,7 @@ export const recursion = (data, array) => {
  * @param {Object} value 字段
  */
 export const isNull = (value) => {
-  if (value != "" && value != null && value != undefined && value != 'null')
+  if (value != "" && value != null && value != undefined && value != 'null' && value != " ")
     return false
   return true
 }
