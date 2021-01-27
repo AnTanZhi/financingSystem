@@ -6,21 +6,21 @@
           <div class="kapa" style="background: #fa6565;">
             <img src="../../icons/money.png" alt="" />
           </div>
-          <div class="text">融资到账总额：100.00万元</div>
+          <div class="text">融资到账总额：{{Number(indexValueType.received).toFixed(6)}}万元</div>
         </div>
         <div class="kap">
           <div class="kapa" style="background: #F6AB17;">
             <img src="../../icons/money.png" alt="" />
           </div>
-          <div class="text">融资到账可使用：100.00万元</div>
+          <div class="text">融资到账可使用：{{Number(indexValueType.receivedAvailable).toFixed(6)}}万元</div>
         </div>
         <div class="kap">
           <div class="kapa" style="background: #48A1FE;">
             <img src="../../icons/money.png" alt="" />
           </div>
           <div class="text2">
-            <div>年初本金余额：4,157,577.37万元</div>
-            <div>年初利息余额：526,213.94万元</div>
+            <div>年初本金余额：{{Number(indexValueType.yprincipalBalance).toFixed(6)}}万元</div>
+            <div>年初利息余额：{{Number(indexValueType.yinterestBalance).toFixed(6)}}万元</div>
           </div>
         </div>
       </div>
@@ -30,8 +30,8 @@
             <img src="../../icons/money.png" alt="" />
           </div>
           <div class="text2">
-            <div>今年已还本金：255,242.33万元</div>
-            <div>今年已还利息：-6,806.14万元</div>
+            <div>今年已还本金：{{Number(indexValueType.yearRepaidPrincipal).toFixed(6)}}万元</div>
+            <div>今年已还利息：{{Number(indexValueType.yearRepaidInterest).toFixed(6)}}万元</div>
           </div>
         </div>
         <div class="kap">
@@ -39,8 +39,8 @@
             <img src="../../icons/money.png" alt="" />
           </div>
           <div class="text2">
-            <div>今年未还本金：1,466,358.52万元</div>
-            <div>今年未还利息：199,808.63万元</div>
+            <div>今年未还本金：{{Number(indexValueType.yearNotPrincipal).toFixed(6)}}万元</div>
+            <div>今年未还利息：{{Number(indexValueType.yearNotInterest).toFixed(6)}}万元</div>
           </div>
         </div>
         <div class="kap">
@@ -48,8 +48,8 @@
             <img src="../../icons/money.png" alt="" />
           </div>
           <div class="text2">
-            <div>全部未还本金：3,902,335.05万元</div>
-            <div>全部未还利息：517,469.93万元</div>
+            <div>全部未还本金：{{Number(indexValueType.wholeNotPrincipal).toFixed(6)}}万元</div>
+            <div>全部未还利息：{{Number(indexValueType.wholeNotInterest).toFixed(6)}}万元</div>
           </div>
         </div>
       </div>
@@ -59,12 +59,23 @@
 </template>
 
 <script>
+import home from "@/api/home";
 export default {
   data() {
-    return {};
+    return {
+      /* 数值类型 */ indexValueType: {},
+    };
   },
-  methods: {},
-  mounted() {},
+  methods: {
+    /* 数值类型 */ getIndexValueType() {
+      home.getIndexValueType().then((res) => {
+        this.indexValueType = res.data;
+      });
+    },
+  },
+  mounted() {
+    /* 数值类型 */ this.getIndexValueType();
+  },
 };
 </script>
 

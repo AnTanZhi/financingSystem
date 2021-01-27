@@ -10,6 +10,10 @@ export default {
 };
 </script>
 <style lang="scss">
+.el-table__body tr.current-row > td {
+  background: darkturquoise;
+  color: #fff;
+}
 .el-table__body-wrapper {
   z-index: 2;
 }

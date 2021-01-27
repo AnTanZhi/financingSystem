@@ -63,7 +63,7 @@
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border v-loading="loading"
           element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
           @selection-change="handleSelectionChange" :summary-method="getSummaries" show-summary
-          :row-class-name="tableRowClassName">
+          :row-class-name="tableRowClassName" highlight-current-row>
           <el-table-column type="selection" width="40" align="center" />
           <el-table-column label="融资主体" prop="rzztName" width="260" show-overflow-tooltip />
           <el-table-column label="金融机构" prop="jinRongJiGou" width="260" show-overflow-tooltip />
