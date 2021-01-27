@@ -36,8 +36,11 @@ export const tableTotal = (param, dataName) => {
     dataName.forEach(item => {
       if (item == column.label) {
         const values = data.map(item => {
-          if (isNaN(Number(item[column.property]))) return 0
-          else return Number(item[column.property])
+          if (isNaN(Number(item[column.property]))) {
+            return 0
+          } else {
+            return Number(item[column.property])
+          }
         });
         sums[index] = values.reduce((prev, curr) => {
           return Number(Number(prev) + Number(curr)).toFixed(6)
@@ -156,4 +159,39 @@ export const getTimeZeroFill = () => {
     ri = `0${ri}`
   }
   return [`${nian - 5}-01-01`, `${nian}-${yue}-${ri}`]
+}
+/**
+ * 
+ * @param {Number} sy 开始年
+ * @param {Number} sm 开始月 
+ * @param {Number} ey 结束年 
+ * @param {Number} em 结束月 
+ */
+export const dateRange = (sy, sm, ey, em) => {
+  let array = new Array()
+  /* 年相同 */
+  if (sy == ey)
+    for (let index = ~~sm; index <= em; index++)
+      array.push({ year: sy, month: index, })
+  else {
+    for (let i = 0; i < ey - sy; i++) {
+      if (i == 0) {
+        for (let i = ~~sm; i <= 12; i++) {
+          array.push({ year: sy, month: i, })
+        }
+      }
+      if (i != 0 && i != ey - sy) {
+        let nian = sy + i
+        for (let i = 1; i <= 12; i++) {
+          array.push({ year: nian, month: i, })
+        }
+      }
+      if (i + 1 == ey - sy) {
+        for (let i = 1; i <= em; i++) {
+          array.push({ year: ey, month: i, })
+        }
+      }
+    }
+  }
+  return array
 }

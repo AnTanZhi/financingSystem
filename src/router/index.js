@@ -6,11 +6,12 @@ import rongZiCanShu from './modules/rongZiCanShu'
 import xiTongSheZhi from './modules/xiTongSheZhi'
 import rongZiGuanLi from './modules/rongZiGuanLi'
 import duiWaiDanBao from './modules/duiWaiDanBao'
+import home from './modules/home'
 export const constantRoutes = [
   {
     path: '/',
     hidden: true,
-    redirect: '/rongZiCanShu/pinLv'
+    redirect: '/home/index'
   },
   {
     path: '/login',
@@ -27,6 +28,8 @@ export const constantRoutes = [
     component: () => import('@/views/error-page/401'),
     hidden: true
   },
+  /* 首页 */
+  home,
   /* 融资管理 */
   rongZiGuanLi,
   /* 融资参数 */

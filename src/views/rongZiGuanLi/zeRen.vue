@@ -3,19 +3,31 @@
     <div class="border-card">
       <header class="view-header" style="margin-bottom:0px !important">
         <div class="header-container">
-          <el-form :inline="true" class="demo-form-inline">
+          <el-form :inline="true" :model="selectParams" class="demo-form-inline">
             <div style="display:flex;justify-content: space-between;">
               <div>
-                <el-date-picker v-model="yearMonth" type="monthrange" :clearable="false" @change="setYearMonth"
-                  style="width:190px" range-separator="~" value-format="yyyy-MM" start-placeholder="开始月份"
-                  end-placeholder="结束月份" />
+                <el-form-item>
+                  <el-select v-model="selectParams.startYear" style="width:80px" @change="filterYear">
+                    <el-option v-for="item in twoDecades1" :key="item" :value="item" />
+                  </el-select>
+                  <el-select v-model="selectParams.startMonth" style="width:80px" @change="getResponsibility">
+                    <el-option v-for="item in december" :key="item-1" :value="item" />
+                  </el-select>
+                  --
+                  <el-select v-model="selectParams.endYear" style="width:80px" @change="getResponsibility">
+                    <el-option v-for="item in twoDecades2" :key="item" :value="item" />
+                  </el-select>
+                  <el-select v-model="selectParams.endMonth" style="width:80px" @change="getResponsibility">
+                    <el-option v-for="item in december" :key="item-1" :value="item" />
+                  </el-select>
+                </el-form-item>
               </div>
-              <div style="text-align: end;">
+              <div>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-document-checked" @click="exportXLSX">导出</el-button>
-                </el-form-item>
-                <el-form-item>
-                  <span>金额单位：万元</span>
+                  <div style="display: inline;margin-left: 10px;">
+                    金额单位：万元
+                  </div>
                 </el-form-item>
               </div>
             </div>
@@ -26,17 +38,39 @@
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
           element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
           :summary-method="getSummaries" show-summary>
-          <el-table-column :label="tableTitle">
-            <el-table-column />
-            <el-table-column label="还本付息总额" />
-            <el-table-column label="本金" />
-            <el-table-column label="利息" />
-            <el-table-column label="低风险业务" />
-            <el-table-column label="低风险业务明细" />
-            <el-table-column label="可续贷" />
-            <el-table-column label="可续贷明细" />
-            <el-table-column label="还本付息净额" />
-            <el-table-column label="还本付息明细" />
+          <el-table-column
+            :label="`${selectParams.startYear}年${selectParams.startMonth} - ${selectParams.endYear}年${selectParams.endMonth}月份还本付息责任表 截止${new Date().getFullYear()}年${new Date().getMonth()+1}月${new Date().getDate()}日数据`">
+            <el-table-column prop="time" align="center" width="80" />
+            <el-table-column label="还本付息总额" prop="money" align="right" :formatter="row=>Number(row.money).toFixed(6)"
+              width="130" />
+            <el-table-column label="本金" prop="benjin" align="right" :formatter="row=>Number(row.benjin).toFixed(6)"
+              width="130" />
+            <el-table-column label="利息" prop="lixi" align="right" :formatter="row=>Number(row.lixi).toFixed(6)"
+              width="130" />
+            <el-table-column label="低风险业务" prop="lowRiskBusiness" align="right" width="130"
+              :formatter="row=>Number(row.lowRiskBusiness).toFixed(6)" />
+            <el-table-column label="低风险业务明细">
+              <template slot-scope="s">
+                <div v-for="(item,index) in s.row.responsibilityDFX" :key="index">
+                  {{Number(item.money).toFixed(6)}}:{{item.zwmc}}</div>
+              </template>
+            </el-table-column>
+            <el-table-column label="可续贷" prop="canXudai" width="130" align="right"
+              :formatter="row=>Number(row.canXudai).toFixed(6)" />
+            <el-table-column label="可续贷明细">
+              <template slot-scope="s">
+                <div v-for="(item,index) in s.row.responsibilityKXD" :key="index">
+                  {{Number(item.money).toFixed(6)}}:{{item.zwmc}}</div>
+              </template>
+            </el-table-column>
+            <el-table-column label="还本付息净额" prop="netDebtService" width="130" align="right"
+              :formatter="row=>Number(row.netDebtService).toFixed(6)" />
+            <el-table-column label="还本付息明细">
+              <template slot-scope="s">
+                <div v-for="(item,index) in s.row.responsibilityHBFX" :key="index">
+                  {{Number(item.money).toFixed(6)}}:{{item.zwmc}}</div>
+              </template>
+            </el-table-column>
           </el-table-column>
         </el-table>
       </section>
@@ -45,78 +79,62 @@
 </template>
 
 <script>
-import { tableTotal, isNull } from "@/utils/utils";
+import { getYearsSelect, tableTotal, dateRange, isNull } from "@/utils/utils";
 import publicMixin from "@/mixin/publicMixin";
 import guanLi from "@/api/guanLi";
 export default {
   data() {
     return {
-      /* 年月日期 */ yearMonth: [
-        `${new Date().getFullYear()}-01`,
-        `${new Date().getFullYear()}-12`,
-      ],
-      isYesNull: "",
       /* 查询参数 */ selectParams: {
-        pageIndex: 1,
-        pageSize: 10,
-        startDate: `${new Date().getFullYear()}-01`,
-        endDate: `${new Date().getFullYear()}-12`,
+        startYear: new Date().getFullYear(),
+        startMonth: "01",
+        endYear: new Date().getFullYear(),
+        endMonth: 12,
       },
+      /* 前后20年 */ twoDecades1: [],
+      /* 前后20年 */ twoDecades2: [],
+      /* 12月 */ december: [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        10,
+        11,
+        12,
+      ],
       /* mixin参数 */ mixinParams: {
-        api: guanLi,
         name: "getTableDebtServiceLiability",
+        api: guanLi,
       },
-      /* 表格标题 */ tableTitle: "",
+      /* 备用数组 */ array: [],
     };
   },
   methods: {
-    /* 获取表格标题 */ getTableTitle() {
-      let xzn = String(this.yearMonth[0]).substring(0, 4);
-      let xzy = String(this.yearMonth[0]).substring(5, 7);
-      let jsn = String(this.yearMonth[1]).substring(0, 4);
-      let jsy = String(this.yearMonth[1]).substring(5, 7);
-      let dqn = new Date().getFullYear();
-      let dqy = new Date().getMonth() + 1;
-      let dqr = new Date().getDate();
-      this.tableTitle = `${xzn}年${xzy}-${jsn}年${jsy}月份还本付息责任表 截止${dqn}年${dqy}月${dqr}日数据`;
-    },
-    /* 获取还本付息责任表 */ getTableDebtServiceLiability() {
-      this.publicSelect();
-    },
-    /* 初始化年月日期 */ setYearMonth(val) {
-      this.selectParams.startDate = val[0];
-      this.selectParams.endDate = val[1];
-      let xzn = String(val[0]).substring(0, 4);
-      let xzy = String(val[0]).substring(5, 7);
-      let jsn = String(val[1]).substring(0, 4);
-      let jsy = String(val[1]).substring(5, 7);
-      let dqn = new Date().getFullYear();
-      let dqy = new Date().getMonth() + 1;
-      let dqr = new Date().getDate();
-      this.tableTitle = `${xzn}年${xzy}-${jsn}年${jsy}月份还本付息责任表 截止${dqn}年${dqy}月${dqr}日数据`;
-      this.getTableDebtServiceLiability();
-    },
     /* 导出初始化数据 */ formatJson(filterVal, jsonData) {
       return jsonData.map((v) =>
         filterVal.map((j) => {
-          if (j === "efksj") {
-            return String(v[j]) == "null" ? "" : String(v[j]).substring(0, 10);
-          }
-          if (j === "efkjy" || j === "sxf" || j === "bzj" || j === "available")
-            return Number(v[j]).toFixed(6);
-          if (j === "lilv" || j === "ptlv")
-            return Number(v[j]).toFixed(2) + "%";
+          if (j === "sxje") return Number(v[j]).toFixed(6);
           return v[j];
         })
       );
     },
     /* 导出 */ exportXLSX() {
-      this.selectParams.pageSize = this.total;
       guanLi[this.mixinParams.name](this.selectParams).then((res) => {
         import("@/vendor/Export2Excel").then((excel) => {
           const multiHeader = [
             [
-              "2021年1 - 12月份还本付息责任表 截止2021年1月15日数据",
+              `${this.selectParams.startYear}年${
+                this.selectParams.startMonth
+              }月份-${this.selectParams.endYear}年${
+                this.selectParams.endMonth
+              }月份还本付息责任表 截止${new Date().getFullYear()}年${
+                new Date().getMonth() + 1
+              }月${new Date().getDate()}日数据`,
               "",
               "",
               "",
@@ -140,20 +158,126 @@ export default {
             "还本付息净额",
             "还本付息明细",
           ];
-          const filterVal = [];
-          const list = res.data.records;
+          const merges = ["A1:J1"];
+          const filterVal = [
+            "time",
+            "money",
+            "benjin",
+            "lixi",
+            "lowRiskBusiness",
+            "dfx",
+            "canXudai",
+            "kxd",
+            "netDebtService",
+            "hbfx",
+          ];
+          let list = JSON.stringify(this.tableData);
+          list = JSON.parse(list);
+          list.forEach((item) => {
+            this.$set(item, "dfx", []);
+            this.$set(item, "kxd", []);
+            this.$set(item, "hbfx", []);
+            item.responsibilityDFX.forEach((item2) => {
+              item.dfx.push(`${Number(item2.money).toFixed(6)}:${item2.zwmc}`);
+            });
+            item.responsibilityKXD.forEach((item2) => {
+              item.kxd.push(`${Number(item2.money).toFixed(6)}:${item2.zwmc}`);
+            });
+            item.responsibilityHBFX.forEach((item2) => {
+              item.hbfx.push(`${Number(item2.money).toFixed(6)}:${item2.zwmc}`);
+            });
+            item.dfx = item.dfx.join("\n");
+            item.kxd = item.kxd.join("\n");
+            item.hbfx = item.hbfx.join("\n");
+          });
           const data = this.formatJson(filterVal, list);
-          const merges = ["A1:M1"];
           excel.export_json_to_excel({
-            multiHeader, //这里是第一行的表头
-            header: tHeader, //这里应该是算第三行的表头
+            multiHeader, //第一行表头
+            header: tHeader, //第三行表头
             data,
             merges,
-            filename: "资金到账情况表",
+            filename: "还本付息责任表",
             autoWidth: true,
             bookType: "xlsx",
           });
         });
+      });
+    },
+    /* 获取责任表 */ getResponsibility() {
+      this.array = dateRange(
+        this.selectParams.startYear,
+        this.selectParams.startMonth,
+        this.selectParams.endYear,
+        this.selectParams.endMonth
+      );
+      this.loading = true;
+      if (this.selectParams.startYear == this.selectParams.endYear) {
+        if (this.selectParams.endMonth < this.selectParams.startMonth) {
+          this.$message.error("月份选择有误");
+          this.loading = false;
+          return false;
+        }
+      }
+      guanLi.getTableDebtServiceLiability(this.selectParams).then((res) => {
+        this.tableData = res.data;
+        let map = new Map();
+        this.tableData.forEach((item) => {
+          this.$set(item, "time", `${item.year}.${item.month}`);
+          map.set(`${item.year}.${item.month}`, item);
+        });
+        console.log(this.array, "array");
+        this.array.forEach((r, i) => {
+          if (map.get(`${r.year}.${r.month}`)) {
+            this.array[i] = map.get(`${r.year}.${r.month}`);
+            /* 低风险业务 */
+            let lowRiskBusiness = 0;
+            if (isNull(this.array[i].responsibilityDFX)) {
+              this.$set(this.array[i], "lowRiskBusiness", 0);
+            } else {
+              this.array[i].responsibilityDFX.forEach((item) => {
+                lowRiskBusiness += item.money;
+              });
+              this.$set(this.array[i], "lowRiskBusiness", lowRiskBusiness);
+            }
+            /* 可续贷 */
+            let canXudai = 0;
+            if (isNull(this.array[i].responsibilityKXD)) {
+              this.$set(this.array[i], "canXudai", 0);
+            } else {
+              this.array[i].responsibilityKXD.forEach((item) => {
+                canXudai += item.money;
+              });
+              this.$set(this.array[i], "canXudai", canXudai);
+            }
+            /* 还本付息净额 */
+            let netDebtService = 0;
+            if (isNull(this.array[i].responsibilityHBFX)) {
+              this.$set(this.array[i], "netDebtService", 0);
+            } else {
+              this.array[i].responsibilityHBFX.forEach((item) => {
+                netDebtService += item.money;
+                this.$set(this.array[i], "netDebtService", netDebtService);
+              });
+            }
+          } else {
+            this.$set(
+              this.array[i],
+              "time",
+              `${this.array[i].year}.${this.array[i].month}`
+            );
+            this.$set(this.array[i], "money", 0);
+            this.$set(this.array[i], "benjin", 0);
+            this.$set(this.array[i], "lixi", 0);
+            this.$set(this.array[i], "responsibilityDFX", []);
+            this.$set(this.array[i], "lowRiskBusiness", 0.0);
+            this.$set(this.array[i], "responsibilityKXD", []);
+            this.$set(this.array[i], "canXudai", 0.0);
+            this.$set(this.array[i], "responsibilityHBFX", []);
+            this.$set(this.array[i], "netDebtService", 0.0);
+          }
+        });
+        this.tableData = this.array;
+        this.loading = false;
       });
     },
     /* 表格合计 */ getSummaries(param) {
@@ -166,15 +290,26 @@ export default {
         "还本付息净额",
       ]);
     },
+    /* 筛选年份 */ filterYear() {
+      this.twoDecades2 = this.twoDecades1;
+      this.twoDecades2 = this.twoDecades2.filter(
+        (v) => v >= this.selectParams.startYear
+      );
+      this.selectParams.endYear = this.twoDecades2[this.twoDecades2.length - 1];
+      this.getResponsibility();
+    },
+    /* 前后20年 */ getTwoDecades() {
+      this.twoDecades1 = getYearsSelect();
+      this.twoDecades2 = getYearsSelect();
+    },
   },
   mounted() {
-    /* 获取表格标题 */ this.getTableTitle();
-    /* 获取还本付息责任表 */ this.getTableDebtServiceLiability();
+    /* 获取责任表 */ this.getResponsibility();
+    /* 获取前后20年 */ this.getTwoDecades();
   },
-  components: {},
   mixins: [publicMixin],
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="sass" scoped>
 </style>

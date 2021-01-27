@@ -87,8 +87,10 @@ export default {
       else this.publicDel("delRepaymentFrequency", this.ids);
     },
     /* 修改前置 */ goUpd(id) {
+      this.addOrUpdateParams = {};
       canShu.infoFinancingType(id).then((res) => {
         this.addOrUpdateParams = res.data;
+        this.addOrUpdateParams.fid = res.data.fid + "";
         this.title = "参数编辑";
         this.addOrUpdateDig = true;
       });

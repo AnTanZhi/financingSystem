@@ -368,7 +368,7 @@
         <el-table-column label="放款利率" :formatter="row=>Number(row.efkll).toFixed(2)+'%'" align="right" />
         <el-table-column label="手续费(万元)" :formatter="row=>Number(row.sxf).toFixed(6)" align="right" />
         <el-table-column label="保证金(万元)" :formatter="row=>Number(row.bzj).toFixed(6)" align="right" />
-        <el-table-column label="放款凭证号" prop="fkpz" width="100" align="center">
+        <el-table-column label="放款凭证号" prop="fkpz" width="100" align="center" show-overflow-tooltip>
           <template slot-scope="s">
             <el-tooltip class="item" effect="dark" content="添加" placement="bottom" v-if="s.row.fkpz==null">
               <i class="el-icon-plus edit-btn" @click="goAddLVN(s.row.id)" />
