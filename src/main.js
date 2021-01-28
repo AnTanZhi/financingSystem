@@ -3,6 +3,7 @@ import '@/styles/index.scss'
 import Cookies from 'js-cookie'
 import 'normalize.css/normalize.css'
 import Element from 'element-ui'
+import echarts from 'echarts'
 import './styles/element-variables.scss'
 import '@/styles/index.scss'
 import App from './App'
@@ -15,6 +16,7 @@ import * as filters from './filters'
 // import '@/utils/rem'
 import './utils/rem'
 import 'default-passive-events'
+Vue.prototype.echarts = echarts
 if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
   mockXHR()
