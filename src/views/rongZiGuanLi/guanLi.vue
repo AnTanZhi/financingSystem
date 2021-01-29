@@ -94,10 +94,10 @@
           <el-table-column label="是否结清" prop="jieqingmc" align="center" />
           <el-table-column width="100" label="操作" align="center" fixed="right">
             <template slot-scope="s">
-              <el-tooltip class="item" effect="dark" content="编辑" placement="bottom">
+              <el-tooltip class="item" effect="dark" content="编辑" placement="bottom" v-if="userInfo.userId==s.row.zrr">
                 <i class="el-icon-edit-outline edit-btn" @click="goUpd(s.row.id)" />
               </el-tooltip>
-              <el-tooltip class="item" effect="dark" content="删除" placement="bottom">
+              <el-tooltip class="item" effect="dark" content="删除" placement="bottom" v-if="userInfo.userId==s.row.zrr">
                 <i class="el-icon-delete edit-btn" @click="publicDel('delFinancing', [s.row.id])" />
               </el-tooltip>
               <el-tooltip class="item" effect="dark" content="结清" placement="bottom" v-if="s.row.jieqingmc=='否'">
@@ -693,6 +693,7 @@ export default {
         ],
       },
       /* 上传需要用的融资id */ shangChuanId: "",
+      /* 登陆人信息 */ userInfo: {},
     };
   },
   methods: {
@@ -1075,6 +1076,9 @@ export default {
     },
   },
   mounted() {
+    /* 获取登录人 */ this.userInfo = JSON.parse(
+      sessionStorage.getItem("userInfo")
+    );
     /* 获取表格数据 */ this.publicSelect();
   },
   components: {

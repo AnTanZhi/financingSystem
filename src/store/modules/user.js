@@ -34,6 +34,7 @@ const actions = {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
       login({ userLogin: username.trim(), password: password }).then(response => {
+        sessionStorage.setItem('userInfo', JSON.stringify(response.data))
         const { data } = response
         commit('SET_TOKEN', data.accessToken)
         setToken(data.accessToken)

@@ -59,7 +59,11 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="融资类型：">
-              <LeiXing v-model="addOrUpdParams.rongZiEntityInfo.rzlxmc" style="width:33%" :isMultiple="false" />
+              <el-select v-model="addOrUpdParams.rongZiEntityInfo.rzlxmc" multiple collapse-tags style="width:33%"
+                clearable>
+                <el-option v-for="item in typeFinancing" :key="item.pid" :label="item.pname" :value="item.pid"
+                  :disabled="item.fid==0" />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -724,6 +728,7 @@ export default {
       /* 资金金额备用 */ raof: "",
       /* 资金删除总额 */ tfd: "",
       /* 建议 */ restaurants: "",
+      /* 融资类型 */ typeFinancing: [],
     };
   },
   methods: {
@@ -1123,8 +1128,30 @@ export default {
         this.loanLoading = false;
       });
     },
+    /* 获取融资类型 */ getTypeFinancing() {
+      index.getFinancingType().then((res) => {
+        this.typeFinancing = this.financingTypeRecursion(res.data, [], "");
+      });
+    },
+    /* 类型递归 */
+    financingTypeRecursion(data, array, index) {
+      data.forEach((item) => {
+        array.push({
+          pname: index + item.pname,
+          pid: item.pid,
+          fid: item.fid,
+        });
+        if (item.childrens != "") {
+          index += "-";
+          this.financingTypeRecursion(item.childrens, array, index);
+          index = "";
+        }
+      });
+      return array;
+    },
   },
   mounted() {
+    /* 获取融资类型 */ this.getTypeFinancing();
     this.getSearchEngineLandNo();
     this.$set(this.addOrUpdParams.rongZiEntityInfo, "bz", "1");
     this.$set(this.addOrUpdParams.rongZiEntityInfo, "hkModel", "1");
