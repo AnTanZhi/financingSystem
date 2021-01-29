@@ -4,23 +4,27 @@
       <div class="kapd">
         <div class="kap">
           <div class="kapa" style="background: #fa6565;">
-            <img src="../../icons/tp1.png" alt="" />
+            <img src="../../icons/cklt.png" alt="" />
           </div>
-          <div class="text">融资到账总额：{{Number(indexValueType.received).toFixed(6)}}万元</div>
+          <div class="text" @click="()=>$router.push('/rongZiGuanLi/qingKuang')" style="cursor:pointer;">
+            融资到账总额：{{Number(indexValueType.received).toFixed(6)}}万元</div>
         </div>
         <div class="kap">
           <div class="kapa" style="background: #F6AB17;">
             <img src="../../icons/tp2.png" alt="" />
           </div>
-          <div class="text">融资到账可使用：{{Number(indexValueType.receivedAvailable).toFixed(6)}}万元</div>
+          <div class="text" @click="()=>$router.push('/rongZiGuanLi/qingKuang')" style="cursor:pointer;">
+            融资到账可使用：{{Number(indexValueType.receivedAvailable).toFixed(6)}}万元</div>
         </div>
         <div class="kap">
           <div class="kapa" style="background: #48A1FE;">
-            <img src="../../icons/tp1.png" alt="" />
+            <img src="../../icons/sw.png" alt="" />
           </div>
           <div class="text2">
-            <div>年初本金余额：{{Number(indexValueType.yprincipalBalance).toFixed(6)}}万元</div>
-            <div>年初利息余额：{{Number(indexValueType.yinterestBalance).toFixed(6)}}万元</div>
+            <div @click="()=>$router.push('/rongZiGuanLi/mingXi')" style="cursor:pointer;">
+              年初本金余额：{{Number(indexValueType.yprincipalBalance).toFixed(6)}}万元</div>
+            <div @click="()=>$router.push('/rongZiGuanLi/mingXi')" style="cursor:pointer;">
+              年初利息余额：{{Number(indexValueType.yinterestBalance).toFixed(6)}}万元</div>
           </div>
         </div>
       </div>
@@ -30,8 +34,10 @@
             <img src="../../icons/tp1.png" alt="" />
           </div>
           <div class="text2">
-            <div>今年已还本金：{{Number(indexValueType.yearRepaidPrincipal).toFixed(6)}}万元</div>
-            <div>今年已还利息：{{Number(indexValueType.yearRepaidInterest).toFixed(6)}}万元</div>
+            <div @click="()=>$router.push('/rongZiGuanLi/huiZong')" style="cursor:pointer;">
+              今年已还本金：{{Number(indexValueType.yearRepaidPrincipal).toFixed(6)}}万元</div>
+            <div @click="()=>$router.push('/rongZiGuanLi/huiZong')" style="cursor:pointer;">
+              今年已还利息：{{Number(indexValueType.yearRepaidInterest).toFixed(6)}}万元</div>
           </div>
         </div>
         <div class="kap">
@@ -39,17 +45,21 @@
             <img src="../../icons/tp3.png" alt="" />
           </div>
           <div class="text2">
-            <div>今年未还本金：{{Number(indexValueType.yearNotPrincipal).toFixed(6)}}万元</div>
-            <div>今年未还利息：{{Number(indexValueType.yearNotInterest).toFixed(6)}}万元</div>
+            <div @click="()=>$router.push('/rongZiGuanLi/huiZong')" style="cursor:pointer;">
+              今年未还本金：{{Number(indexValueType.yearNotPrincipal).toFixed(6)}}万元</div>
+            <div @click="()=>$router.push('/rongZiGuanLi/huiZong')" style="cursor:pointer;">
+              今年未还利息：{{Number(indexValueType.yearNotInterest).toFixed(6)}}万元</div>
           </div>
         </div>
         <div class="kap">
           <div class="kapa" style="background: #9C89C9;">
-            <img src="../../icons/tp2.png" alt="" />
+            <img src="../../icons/sjx.png" alt="" />
           </div>
           <div class="text2">
-            <div>全部未还本金：{{Number(indexValueType.wholeNotPrincipal).toFixed(6)}}万元</div>
-            <div>全部未还利息：{{Number(indexValueType.wholeNotInterest).toFixed(6)}}万元</div>
+            <div @click="()=>$router.push('/rongZiGuanLi/taiZhang')" style="cursor:pointer;">
+              全部未还本金：{{Number(indexValueType.wholeNotPrincipal).toFixed(6)}}万元</div>
+            <div @click="()=>$router.push('/rongZiGuanLi/taiZhang')" style="cursor:pointer;">
+              全部未还利息：{{Number(indexValueType.wholeNotInterest).toFixed(6)}}万元</div>
           </div>
         </div>
       </div>

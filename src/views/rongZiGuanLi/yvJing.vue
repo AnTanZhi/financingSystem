@@ -89,7 +89,7 @@
             :formatter="row=>String(row.jhhkrq)=='null'?'':String(row.jhhkrq).substring(0,10)" align="center" />
           <el-table-column label="贷款总额(万元)" prop="dkzy" width="120" align="right"
             :formatter="row=>Number(row.dkzy).toFixed(6)" />
-          <el-table-column label="利率(%)" width="80" align="center" :formatter="row=>row.lilv+'%'" />
+          <el-table-column label="利率(%)" width="80" align="center" :formatter="row=>Number(row.lilv).toFixed(3)+'%'" />
           <el-table-column label="本金(万元)" prop="benjin" align="right" :formatter="row=>Number(row.benjin).toFixed(6)"
             show-overflow-tooltip width="120" />
           <el-table-column label="预估利息(万元)" prop="ykls" align="right" width="120"
@@ -163,7 +163,7 @@ import { tableTotal, isNull } from "@/utils/utils";
 export default {
   data() {
     return {
-      /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 10, days: "30" },
+      /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 20, days: "30" },
       /* mixin参数 */ mixinParams: { api: guanLi, name: "getRepaymentWarning" },
       /* 日期查询参数 */ timeParams: "",
       /* 时间检索类型 */ isTime: "预警天数",

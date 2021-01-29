@@ -85,7 +85,7 @@ export default {
       },
       /* 查询参数 */ selectParams: {
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
         year: new Date().getFullYear(),
       },
       /* 年限 */ years: "",

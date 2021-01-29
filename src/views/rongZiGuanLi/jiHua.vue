@@ -118,7 +118,7 @@ export default {
     return {
       /* 查询参数 */ selectParams: {
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
         yearMonth: "",
       },
       /* mixin参数 */ mixinParams: { name: "getMonthlyWorkPlan", api: guanLi },

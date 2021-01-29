@@ -86,9 +86,9 @@
           <el-table-column label="本期余额(万元)" width="180" align="right" prop="balance"
             :formatter="row=>Number(row.balance).toFixed(6)" />
           <el-table-column label="利率(%)" align="right" width="100" show-overflow-tooltip
-            :formatter="row=>Number(row.lilv).toFixed(2)+'%'" />
+            :formatter="row=>Number(row.lilv).toFixed(3)+'%'" />
           <el-table-column label="综合成本(%)" width="110" align="right"
-            :formatter="row=>Number(row.ptlv).toFixed(2)+'%'" />
+            :formatter="row=>Number(row.ptlv).toFixed(3)+'%'" />
           <el-table-column label="币种" prop="bzName" align="center" width="70" />
           <el-table-column label="责任人" prop="zrrName" width="100" show-overflow-tooltip align="center" />
           <el-table-column label="是否结清" prop="jieqingmc" align="center" />
@@ -365,7 +365,7 @@
         <el-table-column label="放款金额(万元)" :formatter="row=>Number(row.efkjy).toFixed(6)" align="right" />
         <el-table-column label="放款时间" :formatter="row=>String(row.efksj)=='null'?'':String(row.efksj).substring(0,10)"
           align="center" width="100" />
-        <el-table-column label="放款利率" :formatter="row=>Number(row.efkll).toFixed(2)+'%'" align="right" />
+        <el-table-column label="放款利率" :formatter="row=>Number(row.efkll).toFixed(3)+'%'" align="right" />
         <el-table-column label="手续费(万元)" :formatter="row=>Number(row.sxf).toFixed(6)" align="right" />
         <el-table-column label="保证金(万元)" :formatter="row=>Number(row.bzj).toFixed(6)" align="right" />
         <el-table-column label="放款凭证号" prop="fkpz" width="100" align="center" show-overflow-tooltip>
@@ -456,7 +456,7 @@
             width="120" />
           <el-table-column label="放款日期" width="100"
             :formatter="row=>String(row.efksj)=='null'?'':String(row.efksj).substring(0,10)" />
-          <el-table-column label="利率(%)" prop="efkll" align="right" :formatter="row=>`${Number(row.efkll)}%`"
+          <el-table-column label="利率(%)" prop="efkll" align="right" :formatter="row=>`${Number(row.efkll).toFixed(3)}%`"
             width="80" />
           <el-table-column label="手续费(万元)" :formatter="row=>Number(row.sxf).toFixed(6)" align="right" prop="sxf" />
           <el-table-column label="保证金(万元)" :formatter="row=>Number(row.bzj).toFixed(6)" align="right" prop="bzj" />
@@ -636,7 +636,7 @@ export default {
   data() {
     return {
       /* 上传附件 */ fujian: "",
-      /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 10 },
+      /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 20 },
       /* mixin参数 */ mixinParams: {
         api: guanLi,
         name: "getFinancing",
@@ -658,7 +658,7 @@ export default {
       /* 放款金额修改/添加参数 */ loanAmountParams: {},
       /* 放款金额查询参数 */ loanSelectParams: {
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
         rongziId: "",
       },
       /* 放款金额总条数 */ loanTotal: 0,
@@ -670,7 +670,7 @@ export default {
       /* 资金记录添加/修改参数 */ fundRecordsParams: {},
       /* 资金记录查询参数 */ fundRecordsSelectParmas: {
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
         rongziId: "",
       },
       /* 资金记录总条数 */ fundRecordsTotal: 0,

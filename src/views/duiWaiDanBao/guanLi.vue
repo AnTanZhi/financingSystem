@@ -140,7 +140,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 10 },
+      /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 20 },
       /* 总条数 */ total: 0,
       /* 非空验证 */ rules: {
         bh: [

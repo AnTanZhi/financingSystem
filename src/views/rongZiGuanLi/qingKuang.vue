@@ -73,9 +73,9 @@
             <el-table-column label="到账日期"
               :formatter="row=>String(row.efksj)=='null'?'':String(row.efksj).substring(0,10)" align="center"
               width="100" />
-            <el-table-column label="合同利率" width="80" align="right" :formatter="row=>Number(row.lilv).toFixed(2)+'%'"
+            <el-table-column label="合同利率" width="80" align="right" :formatter="row=>Number(row.lilv).toFixed(3)+'%'"
               show-overflow-tooltip />
-            <el-table-column label="综合利率" width="80" align="right" :formatter="row=>Number(row.ptlv).toFixed(2)+'%'" />
+            <el-table-column label="综合利率" width="80" align="right" :formatter="row=>Number(row.ptlv).toFixed(3)+'%'" />
           </el-table-column>
         </el-table>
       </section>
@@ -98,7 +98,7 @@ export default {
     return {
       /* 查询参数 */ selectParams: {
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
         year: new Date().getFullYear(),
       },
       /* 年限 */ years: [],

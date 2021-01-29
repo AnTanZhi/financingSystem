@@ -55,8 +55,8 @@
               align="center" />
             <el-table-column label="贷款总额(万元)" show-overflow-tooltip :formatter="row=>Number(row.dkzy).toFixed(6)"
               align="right" />
-            <el-table-column label="利率(%)" show-overflow-tooltip :formatter="row=>row.lilv+'%'" width="80"
-              align="center" />
+            <el-table-column label="利率(%)" show-overflow-tooltip :formatter="row=>Number(row.lilv).toFixed(3)+'%'"
+              width="80" align="center" />
             <el-table-column label="天数" show-overflow-tooltip prop="tianshu" width="50" align="center" />
             <el-table-column label="预估本金(万元)" show-overflow-tooltip prop="benjin"
               :formatter="row=>Number(row.benjin).toFixed(6)" align="right" />
@@ -138,7 +138,7 @@
         <el-table-column label="还款日期" :formatter="row=>String(row.efksj)=='null'?'':String(row.efksj).substring(0,10)"
           align="center" width="100" />
         <el-table-column label="本金金额(万元)" prop="efkjy" :formatter="row=>Number(row.efkjy).toFixed(6)" align="right" />
-        <el-table-column label="利率(%)" width="80" align="center" :formatter="row=>Number(row.efkll).toFixed(2)+'%'" />
+        <el-table-column label="利率(%)" width="80" align="center" :formatter="row=>Number(row.efkll).toFixed(3)+'%'" />
         <el-table-column label="日期" :formatter="row=>String(row.addTime)=='null'?'':String(row.addTime).substring(0,10)"
           align="center" width="100" />
         <el-table-column label="操作" width="50" align="center">
@@ -196,7 +196,7 @@
         <el-table-column label="放款金额(万元)" :formatter="row=>Number(row.fkeFkjy).toFixed(6)" align="right" />
         <el-table-column label="调整日期" :formatter="row=>String(row.efksj)=='null'?'':String(row.efksj).substring(0,10)"
           align="center" width="100" />
-        <el-table-column label="调整利率(%)" :formatter="row=>Number(row.efkll).toFixed(2)+'%'" align="center"
+        <el-table-column label="调整利率(%)" :formatter="row=>Number(row.efkll).toFixed(3)+'%'" align="center"
           width="100" />
         <el-table-column label="日期" :formatter="row=>String(row.addTime)=='null'?'':String(row.addTime).substring(0,10)"
           width="100" align="center" />
@@ -300,7 +300,7 @@ export default {
       /* 修改还款计划对话框 */ updRepaymentPlan: false,
       /* 查询参数 */ selectParams: {
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
         rongziId: this.$route.query.id,
         sheet: 0,
       },
@@ -313,7 +313,7 @@ export default {
       /* 本金管理 */ principalManagement: [],
       /* 本金管理查询参数 */ pmSelectParams: {
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
         rongziId: this.$route.query.id,
       },
       /* 本金管理总条数 */ pmTotal: 0,
@@ -332,7 +332,7 @@ export default {
         ],
         efkjy: [{ required: true, message: "请选择本金金额", trigger: "blur" }],
       },
-      /* 利率查询参数 */ irParams: { pageIndex: 1, pageSize: 10 },
+      /* 利率查询参数 */ irParams: { pageIndex: 1, pageSize: 20 },
       /* 利率 */ irData: [],
       /* 添加/修改利率参数 */ setIrPrams: {},
       /* 利率校验 */ irRules: {
@@ -351,7 +351,7 @@ export default {
       /* 页码长度 */ pageNumberLength: 0,
       /* 备用查询参数 */ loserParams: {
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
         sheet: 0,
         rongziId: this.$route.query.id,
       },

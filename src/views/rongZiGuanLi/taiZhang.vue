@@ -60,7 +60,7 @@
           <el-table-column label="金融机构" prop="jinRongJiGou" fixed="left" show-overflow-tooltip />
           <el-table-column label="融资类型" prop="lxName" width="140" fixed="left" />
           <el-table-column label="期限" width="170" fixed="left" prop="theTerm" />
-          <el-table-column label="年利率" width="70" align="right" fixed="left" :formatter="row=>Number(row.lilv)+'%'"
+          <el-table-column label="年利率" width="70" align="right" fixed="left" :formatter="row=>Number(row.lilv).toFixed(3)+'%'"
             show-overflow-tooltip />
           <el-table-column label="融资金额(万元)" prop="sxje" width="130" align="right" fixed="left"
             :formatter="row=>Number(row.sxje).toFixed(6)" />
@@ -102,7 +102,7 @@ export default {
       isYesNull: "",
       /* 查询参数 */ selectParams: {
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
         queryType: "金融机构",
         year: new Date().getFullYear(),
       },

@@ -49,7 +49,7 @@
           <el-table-column label="授信额度" prop="sxje" align="right" width="120"
             :formatter="row=>Number(row.sxje).toFixed(6)" fixed />
           <el-table-column label="融资成本(或利率%)" prop="lilv" width="150" align="right"
-            :formatter="row=>Number(row.lilv).toFixed(2)+'%'" fixed />
+            :formatter="row=>Number(row.lilv).toFixed(3)+'%'" fixed />
           <el-table-column label="期限(天)" prop="qx" width="80" align="center" fixed />
           <el-table-column label="提款金额" prop="tiMoney" align="right" width="120"
             :formatter="row=>Number(row.tiMoney).toFixed(6)" fixed />
@@ -105,7 +105,7 @@ import { isNull, tableTotal, getTimeZeroFill } from "@/utils/utils";
 export default {
   data() {
     return {
-      /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 10 },
+      /* 查询参数 */ selectParams: { pageIndex: 1, pageSize: 20 },
       /* mixin参数 */ mixinParams: { name: "getFinancingSummary", api: guanLi },
       /* 当前题 */ tmIndex: 1,
       /* 题目集合 */ timuList: {},

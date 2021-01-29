@@ -67,7 +67,7 @@
           <el-table-column label="借款截止日期" align="center" width="110" fixed="left"
             :formatter="row=>String(row.dkrqz)==''?'':String(row.dkrqz).substring(0,10)" />
           <el-table-column label="利率" align="right" width="100" fixed="left"
-            :formatter="row=>Number(row.lilv).toFixed(2)+'%'" />
+            :formatter="row=>Number(row.lilv).toFixed(3)+'%'" />
           <el-table-column label="币种" prop="bz" width="70" align="center" fixed="left" />
           <el-table-column v-for="item in month" :key="item" :label="`${item}月`">
             <el-table-column label="本金" :prop="`bj${item}`" width="120" align="right"
@@ -104,7 +104,7 @@ export default {
       isNull: "",
       /* 查询参数 */ selectParams: {
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
         year: new Date().getFullYear(),
       },
       /* 备用融资类型参数 */ loserFTparams: "",

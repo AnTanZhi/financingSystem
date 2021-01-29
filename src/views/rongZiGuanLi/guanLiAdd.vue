@@ -299,7 +299,7 @@
           <el-table-column label="放款金额(万元)" :formatter="row=>Number(row.efkjy).toFixed(6)" align="right" />
           <el-table-column label="放款时间" :formatter="row=>String(row.efksj)=='null'?'':String(row.efksj).substring(0,10)"
             align="center" width="100" />
-          <el-table-column label="放款利率" :formatter="row=>Number(row.efkll).toFixed(2)+'%'" align="right" />
+          <el-table-column label="放款利率" :formatter="row=>Number(row.efkll).toFixed(3)+'%'" align="right" />
           <el-table-column label="手续费(万元)" :formatter="row=>Number(row.sxf).toFixed(6)" align="right" />
           <el-table-column label="保证金(万元)" :formatter="row=>Number(row.bzj).toFixed(6)" align="right" />
         </el-table>
@@ -367,7 +367,8 @@
               prop="efkjy" />
             <el-table-column label="放款日期" width="100"
               :formatter="row=>String(row.efksj)=='null'?'':String(row.efksj).substring(0,10)" />
-            <el-table-column label="利率(%)" prop="efkll" align="right" :formatter="row=>`${Number(row.efkll)}%`" />
+            <el-table-column label="利率(%)" prop="efkll" align="right"
+              :formatter="row=>`${Number(row.efkll).toFixed(3)}%`" />
             <el-table-column label="手续费(万元)" :formatter="row=>Number(row.sxf).toFixed(6)" align="right" prop="sxf" />
             <el-table-column label="保证金(万元)" :formatter="row=>Number(row.bzj).toFixed(6)" align="right" prop="bzj" />
             <el-table-column label="日期" width="100"
@@ -704,7 +705,7 @@ export default {
       /* 放款金额参数 */ loanAmountParams: {},
       /* 放款金额分页参数 */ selectParams: {
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
         rongziId: this.$route.query.id,
       },
       /* 放款金额删除参数 */ ids: "",
@@ -713,7 +714,7 @@ export default {
       /* 放款金额加载中 */ loanLoading: false,
       /* 修改资金对话框 */ updFundsTableDia: false,
       /* 修改资金参数 */ updFundsParams: {},
-      /* 资金记录查询参数 */ fundsSelectParams: { pageIndex: 1, pageSize: 10 },
+      /* 资金记录查询参数 */ fundsSelectParams: { pageIndex: 1, pageSize: 20 },
       /* 资金记录总条数 */ fundsTotal: 0,
       /* 资金记录加载中 */ fundsLoading: false,
       /* 资金记录数据 */ fundsData: [],

@@ -192,7 +192,7 @@ export default {
       /* 查询参数 */
       selectParams: {
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
       },
       /* mixin参数 */
       mixinParams: {
