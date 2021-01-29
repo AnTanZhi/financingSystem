@@ -1,5 +1,13 @@
 <template>
   <div id="tags-view-container" class="tags-view-container">
+    <div class="hamburger">
+      <hamburger
+        id="hamburger-container"
+        :is-active="sidebar.opened"
+        class="hamburger-container"
+        @toggleClick="toggleSideBar"
+      />
+    </div>
     <scroll-pane ref="scrollPane" class="tags-view-wrapper" @scroll="handleScroll">
       <router-link
         v-for="tag in visitedViews"
@@ -28,9 +36,11 @@
 <script>
 import ScrollPane from './ScrollPane'
 import path from 'path'
+import Hamburger from '@/components/Hamburger'
+import { mapGetters } from 'vuex'
 
 export default {
-  components: { ScrollPane },
+  components: { ScrollPane, Hamburger },
   data() {
     return {
       visible: false,
@@ -46,7 +56,8 @@ export default {
     },
     routes() {
       return this.$store.state.permission.routes
-    }
+    },
+    ...mapGetters(['sidebar', 'avatar', 'device'])
   },
   watch: {
     $route() {
@@ -192,6 +203,9 @@ export default {
     },
     handleScroll() {
       this.closeMenu()
+    },
+    toggleSideBar() {
+      this.$store.dispatch('app/toggleSideBar')
     }
   }
 }
@@ -204,7 +218,16 @@ export default {
   background: #fff;
   border-bottom: 1px solid #d8dce5;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .12), 0 0 3px 0 rgba(0, 0, 0, .04);
+  .hamburger {
+    position: absolute;
+    width: 35px;
+    top:0;
+    left: 0;
+    height: 34px;
+  }
   .tags-view-wrapper {
+    width: calc(100% - 35px);
+    margin-left: 35px;
     .tags-view-item {
       display: inline-block;
       position: relative;
@@ -287,6 +310,19 @@ export default {
         color: #fff;
       }
     }
+  }
+}
+
+.hamburger-container {
+  line-height: 34px;
+  height: 100%;
+  float: left;
+  cursor: pointer;
+  transition: background 0.3s;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.025);
   }
 }
 </style>

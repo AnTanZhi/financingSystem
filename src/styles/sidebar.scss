@@ -2,13 +2,17 @@
 
   .main-container {
     min-height: 100%;
+    padding-top: 84px;
     transition: margin-left .28s;
     margin-left: $sideBarWidth;
     position: relative;
+    &.show-menu {
+      margin-left: $sideBarWidth;
+    }
   }
 
   .sidebar-container {
-    transition: width 0.28s;
+    /*transition: width 0.28s;
     width: $sideBarWidth !important;
     background-color: $menuBg;
     height: 100%;
@@ -18,6 +22,18 @@
     bottom: 0;
     left: 0;
     z-index: 1001;
+    overflow: hidden;*/
+
+    transition: width 0.28s;
+    width: $sideBarWidth !important;
+    background-color: $menuBg;
+    //min-height: 100%;
+    position: fixed;
+    z-index: 99;
+    font-size: 0;
+    top: 49px;
+    bottom: 0;
+    left: 0;
     overflow: hidden;
 
     // reset element-ui css

@@ -1,10 +1,21 @@
 <template>
   <div class="navbar">
-    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
+    <!--    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />-->
 
-    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
+    <!--    <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />-->
 
-    <div class="right-menu">
+    <div class="logo">
+      <img class="logo-img" :src="require('@/assets/image/logo.png')" alt="">
+      <span class="company-name">融资管理系统</span>
+    </div>
+
+    <!--<div class="menu">
+      <div class="menu-item hover-effect">
+
+      </div>
+    </div>-->
+
+    <!--<div class="right-menu">
       <template v-if="device!=='mobile'">
         <search id="header-search" class="right-menu-item" />
 
@@ -41,7 +52,7 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-    </div>
+    </div>-->
   </div>
 </template>
 
@@ -86,9 +97,34 @@ export default {
 .navbar {
   height: 50px;
   overflow: hidden;
-  position: relative;
-  background: #fff;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+  background: #545c64;
+  display: flex;
+  justify-content: space-between;
+
+  .logo {
+    height: 50px;
+    line-height: 50px;
+    padding-left: 10px;
+    width: 20%;
+    .company-name {
+      font-size: 16px;
+      color: white;
+      font-weight: bold;
+    }
+    .logo-img {
+      vertical-align: middle;
+      width: 30px;
+      height: 30px;
+      margin-right: 7px;
+      margin-top: -5px;
+    }
+  }
 
   .hamburger-container {
     line-height: 46px;
