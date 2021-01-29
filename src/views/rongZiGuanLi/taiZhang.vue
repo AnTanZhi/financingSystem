@@ -51,6 +51,8 @@
         </div>
       </header>
       <section class="table-container view-section">
+        <div style="text-align:center;background: rgb(240, 250, 255);line-height:48px;font-weight: 600;">
+          融资台账 (金额单位：万元)</div>
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
           element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
           :summary-method="getSummaries" show-summary>
@@ -60,8 +62,8 @@
           <el-table-column label="金融机构" prop="jinRongJiGou" fixed="left" show-overflow-tooltip />
           <el-table-column label="融资类型" prop="lxName" width="140" fixed="left" />
           <el-table-column label="期限" width="170" fixed="left" prop="theTerm" />
-          <el-table-column label="年利率" width="70" align="right" fixed="left" :formatter="row=>Number(row.lilv).toFixed(3)+'%'"
-            show-overflow-tooltip />
+          <el-table-column label="年利率" width="70" align="right" fixed="left"
+            :formatter="row=>Number(row.lilv).toFixed(3)+'%'" show-overflow-tooltip />
           <el-table-column label="融资金额(万元)" prop="sxje" width="130" align="right" fixed="left"
             :formatter="row=>Number(row.sxje).toFixed(6)" />
           <el-table-column label="本期余额(万元)" prop="bqye" width="130" align="right" fixed="left"

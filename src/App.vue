@@ -12,7 +12,7 @@ export default {
 <style lang="scss">
 .el-table__body tr.current-row > td {
   background: darkturquoise;
-  color: #fff;
+  color: #000;
 }
 .el-table__body-wrapper {
   z-index: 2;

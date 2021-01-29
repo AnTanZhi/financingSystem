@@ -37,6 +37,8 @@
         </div>
       </header>
       <section class="table-container view-section">
+        <div style="text-align:center;background: rgb(240, 250, 255);line-height:48px;font-weight: 600;">
+          融资汇总</div>
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
           element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
           :summary-method="getSummaries" show-summary>

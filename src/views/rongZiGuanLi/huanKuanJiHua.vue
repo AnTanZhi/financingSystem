@@ -95,8 +95,8 @@
           ref="principalManagementParams">
           <el-row>
             <el-col :span="12">
-              <el-form-item label="放款金额(万元)" prop="fangdaiId">
-                <el-select v-model="principalManagementParams.fangdaiId" style="width:220px" clearable>
+              <el-form-item label="放款金额(万元)" prop="fkeFkjy">
+                <el-select v-model="principalManagementParams.fkeFkjy" style="width:220px" clearable>
                   <el-option v-for="item in pmSelectData" :key="item.id" :value="item.id"
                     :label="Number(item.efkjy).toFixed(6)" />
                 </el-select>
@@ -159,8 +159,8 @@
         <el-form :model="setIrPrams" label-position="right" label-width="120px" :rules="irRules" ref="setIrPrams">
           <el-row>
             <el-col :span="24">
-              <el-form-item label="放款金额(万元)" prop="fangdaiId">
-                <el-select v-model="setIrPrams.fangdaiId" style="width:220px" clearable>
+              <el-form-item label="放款金额(万元)" prop="fkeFkjy">
+                <el-select v-model="setIrPrams.fkeFkjy" style="width:220px" clearable>
                   <el-option v-for="item in pmSelectData" :key="item.id" :value="item.id"
                     :label="Number(item.efkjy).toFixed(6)" />
                 </el-select>
@@ -320,7 +320,7 @@ export default {
       /* 本金管理删除参数 */ pmIds: [],
       /* 本金放款下拉框 */ pmSelectData: [],
       /* 添加本金校验 */ pmRules: {
-        fangdaiId: [
+        fkeFkjy: [
           { required: true, message: "请选择放款金额", trigger: "change" },
         ],
         efksj: [

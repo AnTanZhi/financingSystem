@@ -94,13 +94,16 @@
           <el-table-column label="是否结清" prop="jieqingmc" align="center" />
           <el-table-column width="100" label="操作" align="center" fixed="right">
             <template slot-scope="s">
-              <el-tooltip class="item" effect="dark" content="编辑" placement="bottom" v-if="userInfo.userId==s.row.zrr">
+              <el-tooltip class="item" effect="dark" content="编辑" placement="bottom"
+                v-if="userInfo.userId==s.row.zrr||userInfo.userId==1">
                 <i class="el-icon-edit-outline edit-btn" @click="goUpd(s.row.id)" />
               </el-tooltip>
-              <el-tooltip class="item" effect="dark" content="删除" placement="bottom" v-if="userInfo.userId==s.row.zrr">
+              <el-tooltip class="item" effect="dark" content="删除" placement="bottom"
+                v-if="userInfo.userId==s.row.zrr||userInfo.userId==1">
                 <i class="el-icon-delete edit-btn" @click="publicDel('delFinancing', [s.row.id])" />
               </el-tooltip>
-              <el-tooltip class="item" effect="dark" content="结清" placement="bottom" v-if="s.row.jieqingmc=='否'">
+              <el-tooltip class="item" effect="dark" content="结清" placement="bottom"
+                v-if="(s.row.jieqingmc=='否'&&userInfo.userId==s.row.zrr)||(userInfo.userId==1&&s.row.jieqingmc=='否')">
                 <i class="el-icon-edit edit-btn" @click="settile(s.row)" />
               </el-tooltip>
             </template>
@@ -740,14 +743,19 @@ export default {
       ) {
         this.$message.error("结清时间不能大于贷款日期止");
       } else {
-        this.settleParams.settleTime = String(
-          this.settleParams.settleTime
-        ).substring(0, 10);
-        guanLi.settle(this.settleParams).then((res) => {
-          this.$message.success("操作成功");
-          // guanLi.generateRepaymentPlan(this.settleParams.rongziId);
-          this.getTablData();
-          this.settleDia = false;
+        this.$confirm(`确定要结清吗?`, "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }).then(() => {
+          this.settleParams.settleTime = String(
+            this.settleParams.settleTime
+          ).substring(0, 10);
+          guanLi.settle(this.settleParams).then((res) => {
+            this.$message.success("操作成功");
+            this.getTablData();
+            this.settleDia = false;
+          });
         });
       }
     },

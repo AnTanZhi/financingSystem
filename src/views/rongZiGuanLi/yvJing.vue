@@ -118,7 +118,7 @@
         :page-size="selectParams.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
       </el-pagination>
       <!-- 预警还款 -->
-      <el-dialog title="收货地址" :visible.sync="addOrUpdateDig" :close-on-click-modal="false" width="20%">
+      <el-dialog title="还款预警" :visible.sync="addOrUpdateDig" :close-on-click-modal="false" width="20%">
         <el-form label-position="right" label-width="110px" :model="repaymentParams" :rules="rules"
           ref="repaymentParams">
           <el-form-item label="债务名称：">
