@@ -124,7 +124,7 @@ export default {
     };
   },
   methods: {
-    /* 导出融资管理 */ exportEG() {
+    /* 导出融资汇总 */ exportEG() {
       let [endDate, isJoin, rzlxmc, startDate, suoshugs, zrks] = [
         `endDate=${this.selectParams.endDate || ""}`,
         `isJoin=${this.selectParams.isJoin || ""}`,

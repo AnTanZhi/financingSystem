@@ -1089,9 +1089,6 @@ export default {
         res.data.rongZiEntityInfo.hkModel += "";
         if (isNull(res.data.rongZiEntityInfo.hkModel))
           res.data.rongZiEntityInfo.hkModel = "";
-        res.data.rongZiEntityInfo.rzlxmc += "";
-        if (isNull(res.data.rongZiEntityInfo.rzlxmc))
-          res.data.rongZiEntityInfo.rzlxmc = "";
         this.deadlineTian = res.data.rongZiEntityInfo.qx;
         this.deadlineYue = res.data.rongZiEntityInfo.qxy;
         this.addOrUpdParams = res.data;

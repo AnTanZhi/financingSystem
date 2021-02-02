@@ -23,7 +23,7 @@
               </div>
               <div style="text-align: end;">
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked" @click="exportFM">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportEG">导出</el-button>
                 </el-form-item>
                 <el-form-item>
                   <span>金额单位：万元</span>
@@ -72,7 +72,12 @@
 import publicMixin from "@/mixin/publicMixin";
 import KeShi from "@/myComponents/KeShi";
 import LeiXing from "@/myComponents/LeiXing";
-import { tableTotal, isNull, getYearsSelect } from "@/utils/utils";
+import {
+  tableTotal,
+  isNull,
+  getYearsSelect,
+  exportMethod,
+} from "@/utils/utils";
 import guanLi from "@/api/guanLi";
 import index from "@/api/index";
 export default {
@@ -94,6 +99,19 @@ export default {
     };
   },
   methods: {
+    /* 导出融资类型统计表 */ exportEG() {
+      let [pids, year, zrks] = [
+        `pids=${this.selectParams.pids || ""}`,
+        `year=${this.selectParams.year || ""}`,
+        `zrks=${this.selectParams.zrks || ""}`,
+      ];
+      /* 导出 */ exportMethod({
+        url: `${this.$store.state.upload.uploadHost}system/down/rzlx`,
+        method: "POST",
+        params: `${pids}&${year}&${zrks}`,
+        fileName: "融资类型统计表",
+      });
+    },
     /* 获取融资类型 */ getFinancingTypeOne() {
       index.getFinancingTypeOne().then((res) => {
         this.fto = res.data;

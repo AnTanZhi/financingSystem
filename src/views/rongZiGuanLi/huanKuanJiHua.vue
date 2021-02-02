@@ -18,7 +18,7 @@
                     :url="`${this.$store.state.upload.uploadHost}financing/rongziHuankuan/upload?rongziId=${this.$route.query.id}`" />
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked" @click="exportFM">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportEG">导出</el-button>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-download" @click="templateDownload">模板下载</el-button>
@@ -290,7 +290,12 @@
 import ShangChuan from "@/myComponents/ShangChuan";
 import publicMixin from "@/mixin/publicMixin";
 import guanLi from "@/api/guanLi";
-import { tableTotal, isNull, templateDownload } from "@/utils/utils";
+import {
+  tableTotal,
+  isNull,
+  templateDownload,
+  exportMethod,
+} from "@/utils/utils";
 export default {
   data() {
     return {
@@ -357,6 +362,20 @@ export default {
     };
   },
   methods: {
+    /* 导出融资类型统计表 */ exportEG() {
+      let [endDate, rongziId, sheet, startDate] = [
+        `endDate=${this.selectParams.endDate || ""}`,
+        `rongziId=${this.$route.query.id}`,
+        `sheet=${this.selectParams.sheet}`,
+        `startDate=${this.selectParams.startDate || ""}`,
+      ];
+      /* 导出 */ exportMethod({
+        url: `${this.$store.state.upload.uploadHost}system/down/hkjh`,
+        method: "POST",
+        params: `${endDate}&${rongziId}&${sheet}&${startDate}`,
+        fileName: "还款计划",
+      });
+    },
     /* 还款表 */ initPlan() {
       this.selectParams.sheet = 1;
       guanLi.getRepaymentPlan(this.selectParams).then((a) => {

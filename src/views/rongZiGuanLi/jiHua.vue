@@ -13,7 +13,7 @@
               </div>
               <div style="text-align: end;">
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked" @click="exportXLSX">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportEG">导出</el-button>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-plus" @click="()=>{addOrUpdateDig=true;addOrUpdParams={}}">
@@ -111,7 +111,7 @@
 
 <script>
 import publicMixin from "@/mixin/publicMixin";
-import { tableTotal } from "@/utils/utils";
+import { tableTotal, exportMethod } from "@/utils/utils";
 import guanLi from "@/api/guanLi";
 export default {
   data() {
@@ -137,6 +137,15 @@ export default {
     };
   },
   methods: {
+    /* 导出融资类型统计表 */ exportEG() {
+      let [yearMonth] = [`yearMonth=${this.selectParams.yearMonth || ""}`];
+      /* 导出 */ exportMethod({
+        url: `${this.$store.state.upload.uploadHost}system/down/ygzjh`,
+        method: "POST",
+        params: `${yearMonth}`,
+        fileName: "月工作计划",
+      });
+    },
     /* 修改前置 */ monthlyWorkPlanInfo(id) {
       guanLi.monthlyWorkPlanInfo(id).then((res) => {
         this.addOrUpdParams = res.data;
