@@ -51,7 +51,7 @@
                     添加
                   </el-button>
                 </el-form-item>
-                <el-form-item>
+                <el-form-item v-if="userMenu">
                   <el-button type="danger" icon="el-icon-delete" @click="delS">删除选中</el-button>
                 </el-form-item>
               </div>
@@ -94,14 +94,16 @@
           <el-table-column label="是否结清" prop="jieqingmc" align="center" />
           <el-table-column width="100" label="操作" align="center" fixed="right">
             <template slot-scope="s">
-              <el-tooltip class="item" effect="dark" content="编辑" placement="bottom" v-if="userInfo.userId==s.row.zrr">
+              <el-tooltip class="item" effect="dark" content="编辑" placement="bottom"
+                v-if="(userInfo.userId==s.row.zrr)||userMenu">
                 <i class="el-icon-edit-outline edit-btn" @click="goUpd(s.row.id)" />
               </el-tooltip>
-              <el-tooltip class="item" effect="dark" content="删除" placement="bottom" v-if="userInfo.userId==s.row.zrr">
+              <el-tooltip class="item" effect="dark" content="删除" placement="bottom"
+                v-if="(userInfo.userId==s.row.zrr)||userMenu">
                 <i class="el-icon-delete edit-btn" @click="publicDel('delFinancing', [s.row.id])" />
               </el-tooltip>
               <el-tooltip class="item" effect="dark" content="结清" placement="bottom"
-                v-if="userInfo.userId==s.row.zrr&&s.row.jieqing==0">
+                v-if="(userInfo.userId==s.row.zrr&&s.row.jieqing==0)||(userMenu&&s.row.jieqing==0)">
                 <i class="el-icon-edit edit-btn" @click="settile(s.row)" />
               </el-tooltip>
             </template>
@@ -636,6 +638,7 @@ import {
   tableTotal,
   templateDownload,
   exportMethod,
+  caidan,
 } from "@/utils/utils";
 import index from "@/api/index";
 import guanLi from "@/api/guanLi";
@@ -701,7 +704,7 @@ export default {
       },
       /* 上传需要用的融资id */ shangChuanId: "",
       /* 用户信息 */ userInfo: {},
-      /* 用户菜单 */ userMenu: {},
+      /* 用户菜单 */ userMenu: false,
     };
   },
   methods: {
@@ -709,8 +712,11 @@ export default {
       index.getInfo().then((res) => {
         this.userInfo = res.data;
         index.getCurrentLoginAuthorityMenu().then((ress) => {
-          console.log(ress.data);
-          this.userMenu = ress.data;
+          caidan(ress.data, []).forEach((item) => {
+            if (item.routeName == "guanLiAll" && item.isHasSys == 1) {
+              this.userMenu = true;
+            }
+          });
         });
       });
     },
