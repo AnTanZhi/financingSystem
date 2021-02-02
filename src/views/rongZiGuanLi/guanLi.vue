@@ -94,13 +94,14 @@
           <el-table-column label="是否结清" prop="jieqingmc" align="center" />
           <el-table-column width="100" label="操作" align="center" fixed="right">
             <template slot-scope="s">
-              <el-tooltip class="item" effect="dark" content="编辑" placement="bottom">
+              <el-tooltip class="item" effect="dark" content="编辑" placement="bottom" v-if="userInfo.userId==s.row.zrr">
                 <i class="el-icon-edit-outline edit-btn" @click="goUpd(s.row.id)" />
               </el-tooltip>
-              <el-tooltip class="item" effect="dark" content="删除" placement="bottom">
+              <el-tooltip class="item" effect="dark" content="删除" placement="bottom" v-if="userInfo.userId==s.row.zrr">
                 <i class="el-icon-delete edit-btn" @click="publicDel('delFinancing', [s.row.id])" />
               </el-tooltip>
-              <el-tooltip class="item" effect="dark" content="结清" placement="bottom">
+              <el-tooltip class="item" effect="dark" content="结清" placement="bottom"
+                v-if="userInfo.userId==s.row.zrr&&s.row.jieqing==0">
                 <i class="el-icon-edit edit-btn" @click="settile(s.row)" />
               </el-tooltip>
             </template>
@@ -636,6 +637,7 @@ import {
   templateDownload,
   exportMethod,
 } from "@/utils/utils";
+import index from "@/api/index";
 import guanLi from "@/api/guanLi";
 export default {
   data() {
@@ -698,9 +700,20 @@ export default {
         ],
       },
       /* 上传需要用的融资id */ shangChuanId: "",
+      /* 用户信息 */ userInfo: {},
+      /* 用户菜单 */ userMenu: {},
     };
   },
   methods: {
+    /* 获取用户信息 */ getInfo() {
+      index.getInfo().then((res) => {
+        this.userInfo = res.data;
+        index.getCurrentLoginAuthorityMenu().then((ress) => {
+          console.log(ress.data);
+          this.userMenu = ress.data;
+        });
+      });
+    },
     /* 导出融资管理 */ exportEG() {
       let [
         bz,
@@ -1114,6 +1127,7 @@ export default {
     },
   },
   mounted() {
+    /* 获取用户信息 */ this.getInfo();
     /* 获取表格数据 */ this.publicSelect();
   },
   components: {

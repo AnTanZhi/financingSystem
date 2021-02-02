@@ -15,6 +15,21 @@ export const recursion = (data, array) => {
   });
   return array
 }
+// /**
+//  * 
+//  * @param {Array} data 数据
+//  * @param {Array} array  空数组(用于返回)  
+//  */
+// export const recursion = (data, array) => {
+//   data.forEach(item => {
+//     array.push({
+//       departId: item.departId,
+//       departName: item.departName
+//     })
+//     if (item.childs != null) recursion(item.childs, array)
+//   });
+//   return array
+// }
 /**
  * 判断是否为null(true==null,false!=null)
  * @param {Object} value 字段

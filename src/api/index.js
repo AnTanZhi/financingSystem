@@ -140,4 +140,18 @@ export default {
       method: 'GET'
     })
   },
+  /* 获取用户信息 */
+  getInfo() {
+    return request({
+      url: `user/info`,
+      method: 'GET'
+    })
+  },
+  /* 获取当前登录人权限菜单 */
+  getCurrentLoginAuthorityMenu() {
+    return request({
+      url: `system/menu/getMenuForUser`,
+      method: 'GET'
+    })
+  },
 }
