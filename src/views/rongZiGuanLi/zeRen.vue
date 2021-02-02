@@ -24,7 +24,7 @@
               </div>
               <div>
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked" @click="exportXLSX">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportEG">导出</el-button>
                   <div style="display: inline;margin-left: 10px;">
                     金额单位：万元
                   </div>
@@ -79,7 +79,13 @@
 </template>
 
 <script>
-import { getYearsSelect, tableTotal, dateRange, isNull } from "@/utils/utils";
+import {
+  getYearsSelect,
+  tableTotal,
+  dateRange,
+  isNull,
+  exportMethod,
+} from "@/utils/utils";
 import publicMixin from "@/mixin/publicMixin";
 import guanLi from "@/api/guanLi";
 export default {
@@ -115,6 +121,20 @@ export default {
     };
   },
   methods: {
+    /* 导出还款预警 */ exportEG() {
+      let [endMonth, endYear, startMonth, startYear] = [
+        `endMonth=${this.selectParams.endMonth || ""}`,
+        `endYear=${this.selectParams.endYear || ""}`,
+        `startMonth=${this.selectParams.startMonth || ""}`,
+        `startYear=${this.selectParams.startYear || ""}`,
+      ];
+      /* 导出 */ exportMethod({
+        url: `${this.$store.state.upload.uploadHost}system/down/hkzr`,
+        method: "POST",
+        params: `${endMonth}&${endYear}&${startMonth}&${startYear}`,
+        fileName: "还本付息责任表",
+      });
+    },
     /* 导出初始化数据 */ formatJson(filterVal, jsonData) {
       return jsonData.map((v) =>
         filterVal.map((j) => {

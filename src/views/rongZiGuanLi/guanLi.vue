@@ -43,7 +43,7 @@
               </div>
               <div style="text-align: end;">
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked" @click="exportFM">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportEG">导出</el-button>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-plus"
@@ -94,16 +94,13 @@
           <el-table-column label="是否结清" prop="jieqingmc" align="center" />
           <el-table-column width="100" label="操作" align="center" fixed="right">
             <template slot-scope="s">
-              <el-tooltip class="item" effect="dark" content="编辑" placement="bottom"
-                v-if="userInfo.userId==s.row.zrr||userInfo.userId==1">
+              <el-tooltip class="item" effect="dark" content="编辑" placement="bottom">
                 <i class="el-icon-edit-outline edit-btn" @click="goUpd(s.row.id)" />
               </el-tooltip>
-              <el-tooltip class="item" effect="dark" content="删除" placement="bottom"
-                v-if="userInfo.userId==s.row.zrr||userInfo.userId==1">
+              <el-tooltip class="item" effect="dark" content="删除" placement="bottom">
                 <i class="el-icon-delete edit-btn" @click="publicDel('delFinancing', [s.row.id])" />
               </el-tooltip>
-              <el-tooltip class="item" effect="dark" content="结清" placement="bottom"
-                v-if="(s.row.jieqingmc=='否'&&userInfo.userId==s.row.zrr)||(userInfo.userId==1&&s.row.jieqingmc=='否')">
+              <el-tooltip class="item" effect="dark" content="结清" placement="bottom">
                 <i class="el-icon-edit edit-btn" @click="settile(s.row)" />
               </el-tooltip>
             </template>
@@ -633,7 +630,12 @@ import LiXiHuanKuanFangShi from "@/myComponents/LiXiHuanKuanFangShi";
 import PinLv from "@/myComponents/PinLv";
 import MoShi from "@/myComponents/MoShi";
 import ZeRenRen from "@/myComponents/ZeRenRen";
-import { isNull, tableTotal, templateDownload } from "@/utils/utils";
+import {
+  isNull,
+  tableTotal,
+  templateDownload,
+  exportMethod,
+} from "@/utils/utils";
 import guanLi from "@/api/guanLi";
 export default {
   data() {
@@ -696,10 +698,38 @@ export default {
         ],
       },
       /* 上传需要用的融资id */ shangChuanId: "",
-      /* 登陆人信息 */ userInfo: {},
     };
   },
   methods: {
+    /* 导出融资管理 */ exportEG() {
+      let [
+        bz,
+        endDate,
+        jieqing,
+        queryContent,
+        queryType,
+        rzlxmc,
+        startDate,
+        suoshugs,
+        zrks,
+      ] = [
+        `bz=${this.selectParams.bz || ""}`,
+        `endDate=${this.selectParams.endDate || ""}`,
+        `jieqing=${this.selectParams.jieqing || ""}`,
+        `queryContent=${this.selectParams.queryContent || ""}`,
+        `queryType=${this.selectParams.queryType || ""}`,
+        `rzlxmc=${this.selectParams.rzlxmc || ""}`,
+        `startDate=${this.selectParams.startDate || ""}`,
+        `suoshugs=${this.selectParams.suoshugs || ""}`,
+        `zrks=${this.selectParams.zrks || ""}`,
+      ];
+      /* 导出 */ exportMethod({
+        url: `${this.$store.state.upload.uploadHost}system/down/rzgl`,
+        method: "POST",
+        params: `${bz}&${endDate}&${jieqing}&${queryContent}&${queryType}&${rzlxmc}&${startDate}&${suoshugs}&${zrks}`,
+        fileName: "融资管理",
+      });
+    },
     /* 模板下载 */ mbxz() {
       let data = {
         method: "GET",
@@ -1084,9 +1114,6 @@ export default {
     },
   },
   mounted() {
-    /* 获取登录人 */ this.userInfo = JSON.parse(
-      sessionStorage.getItem("userInfo")
-    );
     /* 获取表格数据 */ this.publicSelect();
   },
   components: {

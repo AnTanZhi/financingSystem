@@ -3,7 +3,7 @@ import Router from 'vue-router'
 Vue.use(Router)
 import Layout from '@/layout'
 import rongZiCanShu from './modules/rongZiCanShu'
-import xiTongSheZhi from './modules/xiTongSheZhi'
+// import xiTongSheZhi from './modules/xiTongSheZhi'
 import rongZiGuanLi from './modules/rongZiGuanLi'
 import duiWaiDanBao from './modules/duiWaiDanBao'
 import home from './modules/home'
@@ -37,7 +37,7 @@ export const constantRoutes = [
   /* 对外担保 */
   duiWaiDanBao,
   /* 系统设置 */
-  xiTongSheZhi,
+  // xiTongSheZhi,
 ]
 const createRouter = () => new Router({
   scrollBehavior: () => ({ y: 0 }),

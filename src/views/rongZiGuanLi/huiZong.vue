@@ -26,7 +26,7 @@
               </div>
               <div style="text-align: end;">
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked" @click="exportXLSX">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportEG">导出</el-button>
                 </el-form-item>
                 <el-form-item>
                   <span>金额单位：万元</span>
@@ -103,7 +103,7 @@ import LeiXing from "@/myComponents/LeiXing";
 import KeShi from "@/myComponents/KeShi";
 import GongSi from "@/myComponents/GongSi";
 import guanLi from "@/api/guanLi";
-import { isNull, tableTotal, getTimeZeroFill } from "@/utils/utils";
+import { isNull, tableTotal, exportMethod } from "@/utils/utils";
 export default {
   data() {
     return {
@@ -124,6 +124,22 @@ export default {
     };
   },
   methods: {
+    /* 导出融资管理 */ exportEG() {
+      let [endDate, isJoin, rzlxmc, startDate, suoshugs, zrks] = [
+        `endDate=${this.selectParams.endDate || ""}`,
+        `isJoin=${this.selectParams.isJoin || ""}`,
+        `rzlxmc=${this.selectParams.rzlxmc || ""}`,
+        `startDate=${this.selectParams.startDate || ""}`,
+        `suoshugs=${this.selectParams.suoshugs || ""}`,
+        `zrks=${this.selectParams.zrks || ""}`,
+      ];
+      /* 导出 */ exportMethod({
+        url: `${this.$store.state.upload.uploadHost}system/down/rzhz`,
+        method: "POST",
+        params: `${endDate}&${isJoin}&${rzlxmc}&${startDate}&${suoshugs}&${zrks}`,
+        fileName: "融资汇总",
+      });
+    },
     /* 导出初始化数据 */ formatJson(filterVal, jsonData) {
       return jsonData.map((v) =>
         filterVal.map((j) => {

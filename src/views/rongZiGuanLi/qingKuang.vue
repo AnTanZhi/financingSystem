@@ -40,7 +40,7 @@
               </div>
               <div style="text-align: end;">
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked" @click="exportXLSX">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportEG">导出</el-button>
                 </el-form-item>
                 <el-form-item>
                   <span>金额单位：万元</span>
@@ -90,9 +90,13 @@
 import publicMixin from "@/mixin/publicMixin";
 import LeiXing from "@/myComponents/LeiXing";
 import KeShi from "@/myComponents/KeShi";
-import { tableTotal, isNull, getYearsSelect } from "@/utils/utils";
+import {
+  tableTotal,
+  isNull,
+  getYearsSelect,
+  exportMethod,
+} from "@/utils/utils";
 import guanLi from "@/api/guanLi";
-import { set } from "js-cookie";
 export default {
   data() {
     return {
@@ -107,6 +111,21 @@ export default {
     };
   },
   methods: {
+    /* 导出还款预警 */ exportEG() {
+      let [jinRongJiGou, month, rzlxmc, year, zrks] = [
+        `jinRongJiGou=${this.selectParams.jinRongJiGou || ""}`,
+        `month=${this.selectParams.month || ""}`,
+        `rzlxmc=${this.selectParams.rzlxmc || ""}`,
+        `year=${this.selectParams.year || ""}`,
+        `zrks=${this.selectParams.zrks || ""}`,
+      ];
+      /* 导出 */ exportMethod({
+        url: `${this.$store.state.upload.uploadHost}system/down/zjdz`,
+        method: "POST",
+        params: `${jinRongJiGou}&${month}&${rzlxmc}&${year}&${zrks}`,
+        fileName: "资金到账情况表",
+      });
+    },
     /* 导出初始化数据 */ formatJson(filterVal, jsonData) {
       return jsonData.map((v) =>
         filterVal.map((j) => {

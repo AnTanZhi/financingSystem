@@ -1,6 +1,7 @@
 <template>
-  <el-upload style="display:flex" class="upload-demo" ref="upload" :action="url" :on-remove="handleRemove"
-    :file-list="fileList" :auto-upload="false" :limit="1" :on-change="updIsShow" :on-success='uploadFailed'>
+  <el-upload style="display:flex" class="upload-demo" id="shangChuan" ref="upload" :action="url"
+    :on-remove="handleRemove" :file-list="fileList" :auto-upload="false" :limit="1" :on-change="updIsShow"
+    :on-success='uploadFailed'>
     <el-button v-show="!is.shangChuan" slot="trigger" type="primary" icon="el-icon-document-add">导入数据
     </el-button>
     <el-button v-if="is.shangChuan" style="margin-right:10px" type="success" icon="el-icon-upload2"

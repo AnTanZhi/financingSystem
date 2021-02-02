@@ -59,8 +59,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="融资类型：">
-              <el-select v-model="addOrUpdParams.rongZiEntityInfo.rzlxmc" multiple collapse-tags style="width:33%"
-                clearable>
+              <el-select v-model="addOrUpdParams.rongZiEntityInfo.rzlxmc" style="width:33%" clearable>
                 <el-option v-for="item in typeFinancing" :key="item.pid" :label="item.pname" :value="item.pid"
                   :disabled="item.fid==0" />
               </el-select>

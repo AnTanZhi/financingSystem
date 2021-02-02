@@ -43,7 +43,7 @@
               </div>
               <div style="text-align: end;">
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked" @click="exportXLSX">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportEG">导出</el-button>
                 </el-form-item>
               </div>
             </div>
@@ -61,7 +61,7 @@
           <el-table-column label="融资主体" prop="ztName" show-overflow-tooltip fixed="left" />
           <el-table-column label="金融机构" prop="jinRongJiGou" fixed="left" show-overflow-tooltip />
           <el-table-column label="融资类型" prop="lxName" width="140" fixed="left" />
-          <el-table-column label="期限" width="170" fixed="left" prop="theTerm" />
+          <el-table-column label="期限" width="180" fixed="left" prop="theTerm" align="center" />
           <el-table-column label="年利率" width="70" align="right" fixed="left"
             :formatter="row=>Number(row.lilv).toFixed(3)+'%'" show-overflow-tooltip />
           <el-table-column label="融资金额(万元)" prop="sxje" width="130" align="right" fixed="left"
@@ -97,7 +97,12 @@ import GongSi from "@/myComponents/GongSi";
 import KeShi from "@/myComponents/KeShi";
 import guanLi from "@/api/guanLi";
 import publicMixin from "@/mixin/publicMixin";
-import { getYearsSelectTen, tableTotal, isNull } from "@/utils/utils";
+import {
+  getYearsSelectTen,
+  tableTotal,
+  isNull,
+  exportMethod,
+} from "@/utils/utils";
 export default {
   data() {
     return {
@@ -116,6 +121,35 @@ export default {
     };
   },
   methods: {
+    /* 导出融资管理 */ exportEG() {
+      let [
+        bz,
+        endDate,
+        queryContent,
+        queryType,
+        rzlxmc,
+        startDate,
+        suoshugs,
+        year,
+        zrks,
+      ] = [
+        `bz=${this.selectParams.bz || ""}`,
+        `endDate=${this.selectParams.endDate || ""}`,
+        `queryContent=${this.selectParams.queryContent || ""}`,
+        `queryType=${this.selectParams.queryType || ""}`,
+        `rzlxmc=${this.selectParams.rzlxmc || ""}`,
+        `startDate=${this.selectParams.startDate || ""}`,
+        `suoshugs=${this.selectParams.suoshugs || ""}`,
+        `year=${this.selectParams.year || ""}`,
+        `zrks=${this.selectParams.zrks || ""}`,
+      ];
+      /* 导出 */ exportMethod({
+        url: `${this.$store.state.upload.uploadHost}system/down/rztz`,
+        method: "POST",
+        params: `${bz}&${endDate}&${queryContent}&${queryType}&${rzlxmc}&${startDate}&${suoshugs}&${year}&${zrks}`,
+        fileName: "融资台账",
+      });
+    },
     /* 更改每页展示的数量 */ sizeSelect(size) {
       this.selectParams.pageSize = size;
       this.getFinancingLedger();
@@ -326,7 +360,7 @@ export default {
             this.$set(
               itemS,
               "theTerm",
-              `${String(itemS.dkrqq).substring(0, 10)}-${String(
+              `${String(itemS.dkrqq).substring(0, 10)}~${String(
                 itemS.dkrqz
               ).substring(0, 10)}`
             );
@@ -395,7 +429,7 @@ export default {
           this.$set(
             itemS,
             "theTerm",
-            `${String(itemS.dkrqq).substring(0, 10)}-${String(
+            `${String(itemS.dkrqq).substring(0, 10)}~${String(
               itemS.dkrqz
             ).substring(0, 10)}`
           );

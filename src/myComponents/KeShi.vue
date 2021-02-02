@@ -1,6 +1,6 @@
 <template>
   <el-select v-model="copyDataId" placeholder="责任科室" :clearable="cle" @change="getChange">
-    <el-option v-for="(item,index) in dataInfo" :key="index" :label="item" :value="String(index)" />
+    <el-option v-for="(item,index) in dataInfo" :key="index" :label="item.label" :value="item.value" />
   </el-select>
 </template>
 <script>

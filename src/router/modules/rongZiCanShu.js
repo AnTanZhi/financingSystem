@@ -26,6 +26,12 @@ const rongZiCanShu = {
       name: 'zhuTi',
       meta: { title: '融资主体' }
     },
+    {
+      path: 'keShi',
+      component: () => import('@/views/rongZiCanShu/keShi'),
+      name: 'keShi',
+      meta: { title: '责任科室' }
+    },
   ]
 }
 export default rongZiCanShu

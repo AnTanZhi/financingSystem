@@ -29,9 +29,6 @@
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-s-operation" @click="goAddOrUpdIr">利率调整</el-button>
                 </el-form-item>
-                <el-form-item v-for="item in pageNumberLength" :key="item">
-                  <el-button type="success" icon="el-icon-postcard" @click="setSheet(item)">Sheet{{item}}</el-button>
-                </el-form-item>
                 <el-form-item>
                   <el-button type="danger" icon="el-icon-delete" @click="delRepaymentPlan">删除选中</el-button>
                 </el-form-item>
@@ -40,7 +37,9 @@
           </el-form>
         </div>
       </header>
-      <section class="table-container view-section" style="text-align: center;">
+      <el-button v-for="item in pageNumberLength" :key="item" type="success" icon="el-icon-postcard"
+        @click="setSheet(item)" style="margin-bottom:10px">Sheet{{item}}</el-button>
+      <section class="table-container view-section" style="text-align: center">
         <el-link type="primary" style="margin:10px 0" @click="generateRepaymentPlan" v-if="!pageNumberLength>0">计算时间
           {{computingTime}} 点击重新计算
         </el-link>

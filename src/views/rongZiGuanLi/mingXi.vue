@@ -42,7 +42,7 @@
               </div>
               <div style="text-align: end;">
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked" @click="exportXLSX">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportEG">导出</el-button>
                 </el-form-item>
               </div>
             </div>
@@ -99,7 +99,12 @@ import GongSi from "@/myComponents/GongSi";
 import KeShi from "@/myComponents/KeShi";
 import guanLi from "@/api/guanLi";
 import publicMixin from "@/mixin/publicMixin";
-import { getYearsSelectTen, tableTotal, isNull } from "@/utils/utils";
+import {
+  getYearsSelectTen,
+  tableTotal,
+  isNull,
+  exportMethod,
+} from "@/utils/utils";
 export default {
   data() {
     return {
@@ -120,6 +125,35 @@ export default {
     };
   },
   methods: {
+    /* 导出融资管理 */ exportEG() {
+      let [
+        bz,
+        endDate,
+        queryContent,
+        queryType,
+        rzlxmc,
+        startDate,
+        suoshugs,
+        year,
+        zrks,
+      ] = [
+        `bz=${this.selectParams.bz || ""}`,
+        `endDate=${this.selectParams.endDate || ""}`,
+        `queryContent=${this.selectParams.queryContent || ""}`,
+        `queryType=${this.selectParams.queryType || ""}`,
+        `rzlxmc=${this.selectParams.rzlxmc || ""}`,
+        `startDate=${this.selectParams.startDate || ""}`,
+        `suoshugs=${this.selectParams.suoshugs || ""}`,
+        `year=${this.selectParams.year || ""}`,
+        `zrks=${this.selectParams.zrks || ""}`,
+      ];
+      /* 导出 */ exportMethod({
+        url: `${this.$store.state.upload.uploadHost}system/down/hkmx`,
+        method: "POST",
+        params: `${bz}&${endDate}&${queryContent}&${queryType}&${rzlxmc}&${startDate}&${suoshugs}&${year}&${zrks}`,
+        fileName: "还本付息明细",
+      });
+    },
     /* 导出初始化数据 */ formatJson(filterVal, jsonData) {
       return jsonData.map((v) =>
         filterVal.map((j) => {

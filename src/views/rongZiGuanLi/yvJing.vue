@@ -69,7 +69,7 @@
               </div>
               <div>
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked" @click="exportXLSX">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportEG">导出</el-button>
                 </el-form-item>
               </div>
             </div>
@@ -159,7 +159,7 @@ import LeiXing from "@/myComponents/LeiXing";
 import KeShi from "@/myComponents/KeShi";
 import ShangChuan from "@/myComponents/ShangChuan";
 import guanLi from "@/api/guanLi";
-import { tableTotal, isNull } from "@/utils/utils";
+import { tableTotal, isNull, exportMethod } from "@/utils/utils";
 export default {
   data() {
     return {
@@ -179,6 +179,37 @@ export default {
     };
   },
   methods: {
+    /* 导出还款预警 */ exportEG() {
+      let [
+        days,
+        endDate,
+        isRepayment,
+        jieqing,
+        month,
+        queryContent,
+        queryType,
+        rzlxmc,
+        startDate,
+        zrks,
+      ] = [
+        `days=${this.selectParams.days || ""}`,
+        `endDate=${this.selectParams.endDate || ""}`,
+        `isRepayment=${this.selectParams.isRepayment || ""}`,
+        `jieqing=${this.selectParams.jieqing || ""}`,
+        `month=${this.selectParams.month || ""}`,
+        `queryContent=${this.selectParams.queryContent || ""}`,
+        `queryType=${this.selectParams.queryType || ""}`,
+        `rzlxmc=${this.selectParams.rzlxmc || ""}`,
+        `startDate=${this.selectParams.startDate || ""}`,
+        `zrks=${this.selectParams.zrks || ""}`,
+      ];
+      /* 导出 */ exportMethod({
+        url: `${this.$store.state.upload.uploadHost}system/down/hkyj`,
+        method: "POST",
+        params: `${days}&${endDate}&${isRepayment}&${jieqing}&${month}&${queryContent}&${queryType}&${rzlxmc}&${startDate}&${zrks}`,
+        fileName: "还款预警",
+      });
+    },
     /* 导出初始化数据 */ formatJson(filterVal, jsonData) {
       return jsonData.map((v) =>
         filterVal.map((j) => {

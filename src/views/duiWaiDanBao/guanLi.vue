@@ -35,7 +35,7 @@
                   <el-button type="primary" icon="el-icon-download" @click="templateDownload">模板下载</el-button>
                 </el-form-item>
                 <el-form-item>
-                  <el-button type="primary" icon="el-icon-document-checked" @click="exportXLSX">导出</el-button>
+                  <el-button type="primary" icon="el-icon-document-checked" @click="exportEG">导出</el-button>
                 </el-form-item>
                 <el-form-item>
                   <el-button type="primary" icon="el-icon-plus"

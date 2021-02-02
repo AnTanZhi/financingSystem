@@ -70,4 +70,28 @@ export default {
       data
     })
   },
+  /* 获取责任科室 */
+  getResponsibility(params) {
+    return request({
+      url: `financing/rongziParam/getResponsibility`,
+      method: 'GET',
+      params
+    })
+  },
+  /* 添加/修改责任科室 */
+  setResponsibility(data) {
+    return request({
+      url: `financing/rongziParam/saveOrUpdateResponsibility`,
+      method: 'POST',
+      data
+    })
+  },
+  /* 添加/修改责任科室 */
+  setResponsibility(data) {
+    return request({
+      url: `financing/rongziParam/saveOrUpdateResponsibility`,
+      method: 'POST',
+      data
+    })
+  },
 }
