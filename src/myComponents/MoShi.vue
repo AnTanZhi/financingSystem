@@ -38,6 +38,7 @@ export default {
     getRepaymentMode() {
       index.getRepaymentMode().then((res) => {
         this.dataInfo = res.data;
+        this.$emit("initMS", this.dataInfo);
       });
     },
   },

@@ -6,6 +6,7 @@
 
 <script>
 import index from "@/api/index";
+import { isNull } from "@/utils/utils";
 export default {
   watch: {
     fid() {
@@ -16,7 +17,6 @@ export default {
   props: {
     fid: {
       type: [String, Number, Array],
-      default: "18",
       required: false,
     },
   },
@@ -36,6 +36,9 @@ export default {
     getFid() {
       index.getCategories(0).then((res) => {
         this.fidData = res.data;
+        if (!isNull(this.fidData)) {
+          this.copyFid = this.fidData[i].value;
+        }
       });
     },
   },

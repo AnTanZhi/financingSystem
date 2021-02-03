@@ -38,6 +38,7 @@ export default {
     getResponsibilityDepartment() {
       index.getResponsibilityDepartment().then((res) => {
         this.dataInfo = res.data;
+        this.$emit("initKS", this.dataInfo);
       });
     },
   },

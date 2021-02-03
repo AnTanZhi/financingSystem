@@ -87,7 +87,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="币种：">
-              <BiZhong v-model="addOrUpdParams.rongZiEntityInfo.bz" style="width:33%" :cle="false" />
+              <BiZhong v-model="addOrUpdParams.rongZiEntityInfo.bz" style="width:33%" :cle="false" @initBz="initBz" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -169,7 +169,8 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="还款模式：">
-              <MoShi v-model="addOrUpdParams.rongZiEntityInfo.hkModel" style="width:33%" :cle="false" />
+              <MoShi v-model="addOrUpdParams.rongZiEntityInfo.hkModel" style="width:33%" :cle="false"
+                @initMS="initMS" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -239,7 +240,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="责任科室：">
-              <KeShi v-model="addOrUpdParams.rongZiEntityInfo.zrks" style="width:33%" />
+              <KeShi v-model="addOrUpdParams.rongZiEntityInfo.zrks" style="width:33%" @initKS="initKS" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -1145,13 +1146,48 @@ export default {
       });
       return array;
     },
+    /* 币种默认值 */ initBz(val) {
+      if (isNull(val)) {
+        this.$set(this.addOrUpdParams.rongZiEntityInfo, "bz", "");
+      } else {
+        let arr = [];
+        for (let v of Object.keys(val)) {
+          arr.push({
+            label: val[v],
+            value: v,
+          });
+        }
+        this.$set(this.addOrUpdParams.rongZiEntityInfo, "bz", arr[0].value);
+      }
+    },
+    /* 还款模式 */ initMS(val) {
+      if (isNull(val)) {
+        this.$set(this.addOrUpdParams.rongZiEntityInfo, "hkModel", "1");
+      } else {
+        let arr = [];
+        for (let v of Object.keys(val)) {
+          arr.push({
+            label: val[v],
+            value: v,
+          });
+        }
+        this.$set(
+          this.addOrUpdParams.rongZiEntityInfo,
+          "hkModel",
+          arr[0].value
+        );
+      }
+    },
+    /* 责任科室 */ initKS(val) {
+      if (isNull(val))
+        this.$set(this.addOrUpdParams.rongZiEntityInfo, "zrks", "");
+      else
+        this.$set(this.addOrUpdParams.rongZiEntityInfo, "zrks", val[0].value);
+    },
   },
   mounted() {
     /* 获取融资类型 */ this.getTypeFinancing();
     this.getSearchEngineLandNo();
-    this.$set(this.addOrUpdParams.rongZiEntityInfo, "bz", "1");
-    this.$set(this.addOrUpdParams.rongZiEntityInfo, "hkModel", "1");
-    this.$set(this.addOrUpdParams.rongZiEntityInfo, "zrks", "1");
     if (this.$route.query.id) {
       /* 融资详细 */ this.financingInfo();
       /* 放款金额表格 */ this.getLoan();

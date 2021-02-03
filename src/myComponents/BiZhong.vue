@@ -38,6 +38,7 @@ export default {
     getCurrency() {
       index.getCurrency().then((res) => {
         this.dataInfo = res.data;
+        this.$emit("initBz", this.dataInfo);
       });
     },
   },
