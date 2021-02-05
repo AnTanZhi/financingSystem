@@ -39,7 +39,8 @@
           element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
           :summary-method="getSummaries" show-summary>
           <el-table-column
-            :label="`${selectParams.startYear}年${selectParams.startMonth} - ${selectParams.endYear}年${selectParams.endMonth}月份还本付息责任表 截止${new Date().getFullYear()}年${new Date().getMonth()+1}月${new Date().getDate()}日数据`">
+            :label="`${selectParams.startYear}年${selectParams.startMonth} - ${selectParams.endYear}年${selectParams.endMonth}月份还本付息责任表 截止${new Date().getFullYear()}年${new Date().getMonth()+1}月${new Date().getDate()}日数据`"
+            align="center">
             <el-table-column prop="time" align="center" width="80" />
             <el-table-column label="还本付息总额" prop="money" align="right" :formatter="row=>Number(row.money).toFixed(6)"
               width="130" />

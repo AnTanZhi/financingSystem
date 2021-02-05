@@ -54,7 +54,7 @@
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
           element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
           :summary-method="getSummaries" show-summary>
-          <el-table-column :label="`城投公司${selectParams.year}年到账资金情况表`">
+          <el-table-column :label="`城投公司${selectParams.year}年到账资金情况表`" align="center">
             <el-table-column label="序号" type="index" align="center" width="50" />
             <el-table-column label="金融机构" prop="jinRongJiGou" show-overflow-tooltip />
             <el-table-column label="融资主体" prop="ztName" show-overflow-tooltip />

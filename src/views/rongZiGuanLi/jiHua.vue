@@ -28,7 +28,7 @@
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
           element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
           :summary-method="getSummaries" show-summary>
-          <el-table-column :label="`${selectParams.yearMonth.substring(5,7)}月份拟放款项目`">
+          <el-table-column :label="`${selectParams.yearMonth.substring(5,7)}月份拟放款项目`" align="center">
             <el-table-column label="序号" type="index" width="50" align="center" />
             <el-table-column label="金融机构" prop="jinRongName" />
             <el-table-column label="资金品种" prop="moneyType" />

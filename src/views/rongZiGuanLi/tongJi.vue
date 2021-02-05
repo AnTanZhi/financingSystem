@@ -37,7 +37,7 @@
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
           element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
           :summary-method="getSummaries" show-summary height="700px">
-          <el-table-column label="融资类型统计表">
+          <el-table-column label="融资类型统计表" align="center">
             <el-table-column label="序号" prop="parg" width="60" align="center" />
             <el-table-column label="所属大类" prop="ascription" />
             <el-table-column label="融资类型" prop="lxName" show-overflow-tooltip />

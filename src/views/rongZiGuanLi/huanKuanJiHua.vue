@@ -46,7 +46,7 @@
         <el-table :header-cell-style="{background:'#F0FAFF',color:'#787878'}" border stripe v-loading="loading"
           element-loading-text="加载中，请稍候……" :data="tableData" tooltip-effect="dark" style="width: 100%"
           @selection-change="handleSelectionChange" :summary-method="getSummaries" show-summary>
-          <el-table-column
+          <el-table-column align="center"
             :label="`${financingInfo.zwmc} 还款计划 ${financingInfo.bzcontext==null?'':`(注：${financingInfo.bzcontext})`}`">
             <el-table-column type="selection" width="40" align="center" />
             <el-table-column label="计划还款日期" prop="jhhkrq"
@@ -95,7 +95,7 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="放款金额(万元)" prop="fkeFkjy">
-                <el-select v-model="principalManagementParams.fkeFkjy" style="width:220px" clearable>
+                <el-select v-model="principalManagementParams.fangdaiId" style="width:220px" clearable>
                   <el-option v-for="item in pmSelectData" :key="item.id" :value="item.id"
                     :label="Number(item.efkjy).toFixed(6)" />
                 </el-select>
@@ -324,7 +324,7 @@ export default {
       /* 本金管理删除参数 */ pmIds: [],
       /* 本金放款下拉框 */ pmSelectData: [],
       /* 添加本金校验 */ pmRules: {
-        fkeFkjy: [
+        fangdaiId: [
           { required: true, message: "请选择放款金额", trigger: "change" },
         ],
         efksj: [
@@ -379,26 +379,61 @@ export default {
     /* 还款表 */ initPlan() {
       this.selectParams.sheet = 1;
       guanLi.getRepaymentPlan(this.selectParams).then((a) => {
-        this.tableData = a.data.records || a.data;
-        this.loading = false;
+        this.tableData = JSON.parse(JSON.stringify(a.data.records));
         this.total = a.data.total;
+        if (
+          this.selectParams.pageIndex ==
+          Math.ceil(this.total / this.selectParams.pageSize)
+        ) {
+          this.tableData[a.data.records.length - 2] =
+            a.data.records[a.data.records.length - 1];
+          this.tableData[a.data.records.length - 1] =
+            a.data.records[a.data.records.length - 2];
+        }
+        this.loading = false;
         this.getPageNumberLength();
       });
     },
     /* xlsx页码 */ setSheet(index) {
       this.selectParams.sheet = index;
       guanLi.getRepaymentPlan(this.selectParams).then((a) => {
-        this.tableData = a.data.records || a.data;
-        this.loading = false;
         this.total = a.data.total;
+        this.tableData = JSON.parse(JSON.stringify(a.data.records));
+        if (
+          this.selectParams.pageIndex ==
+          Math.ceil(this.total / this.selectParams.pageSize)
+        ) {
+          this.tableData[a.data.records.length - 2] =
+            a.data.records[a.data.records.length - 1];
+          this.tableData[a.data.records.length - 1] =
+            a.data.records[a.data.records.length - 2];
+        }
+        this.loading = false;
       });
+    },
+    /* 分页查询 */ publicPageSelect(page) {
+      this.selectParams.pageIndex = page;
+      this.getRepaymentPlan();
+    },
+    /* 更改页码 */ publicSizeSelect(size) {
+      this.selectParams.pageSize = size;
+      this.getRepaymentPlan();
     },
     /* 还款计划列表 */ getRepaymentPlan() {
       this.loading = true;
       guanLi.getRepaymentPlan(this.selectParams).then((a) => {
-        this.tableData = a.data.records || a.data;
-        this.loading = false;
         this.total = a.data.total;
+        this.tableData = JSON.parse(JSON.stringify(a.data.records));
+        if (
+          this.selectParams.pageIndex ==
+          Math.ceil(this.total / this.selectParams.pageSize)
+        ) {
+          this.tableData[a.data.records.length - 2] =
+            a.data.records[a.data.records.length - 1];
+          this.tableData[a.data.records.length - 1] =
+            a.data.records[a.data.records.length - 2];
+        }
+        this.loading = false;
         if (isNull(this.tableData)) {
           this.selectParams.sheet = 1;
           guanLi.getRepaymentPlan(this.selectParams).then((b) => {
@@ -406,18 +441,36 @@ export default {
               guanLi.generateRepaymentPlan(this.$route.query.id).then((c) => {
                 this.selectParams.sheet = 0;
                 guanLi.getRepaymentPlan(this.selectParams).then((d) => {
-                  this.tableData = d.data.records || d.data;
-                  this.loading = false;
                   this.total = d.data.total;
-                  this.computingTime = b.data.records[0].addTime;
+                  this.tableData = JSON.parse(JSON.stringify(d.data.records));
+                  if (
+                    this.selectParams.pageIndex ==
+                    Math.ceil(this.total / this.selectParams.pageSize)
+                  ) {
+                    this.tableData[d.data.records.length - 2] =
+                      d.data.records[d.data.records.length - 1];
+                    this.tableData[d.data.records.length - 1] =
+                      d.data.records[d.data.records.length - 2];
+                  }
+                  this.loading = false;
+                  this.computingTime = d.data.records[0].addTime;
                 });
               });
             } else {
               this.selectParams.sheet = 1;
               guanLi.getRepaymentPlan(this.selectParams).then((e) => {
-                this.tableData = e.data.records || e.data;
-                this.loading = false;
                 this.total = e.data.total;
+                tthis.tableData = JSON.parse(JSON.stringify(e.data.records));
+                if (
+                  this.selectParams.pageIndex ==
+                  Math.ceil(this.total / this.selectParams.pageSize)
+                ) {
+                  this.tableData[e.data.records.length - 2] =
+                    e.data.records[e.data.records.length - 1];
+                  this.tableData[e.data.records.length - 1] =
+                    e.data.records[e.data.records.length - 2];
+                }
+                this.loading = false;
                 this.computingTime = e.data.records[0].addTime;
               });
             }
