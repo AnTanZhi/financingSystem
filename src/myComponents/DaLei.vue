@@ -36,9 +36,7 @@ export default {
     getFid() {
       index.getCategories(0).then((res) => {
         this.fidData = res.data;
-        if (!isNull(this.fidData)) {
-          this.copyFid = this.fidData[i].value;
-        }
+        if (!isNull(this.fidData)) this.copyFid = String(this.fidData[0].value);
       });
     },
   },
