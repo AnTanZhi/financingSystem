@@ -14,12 +14,12 @@ const rongZiCanShu = {
       name: 'pinLv',
       meta: { title: '还款频率' }
     },
-    {
-      path: 'leiXing',
-      component: () => import('@/views/rongZiCanShu/leiXing'),
-      name: 'leiXing',
-      meta: { title: '融资类型' }
-    },
+    // {
+    //   path: 'leiXing',
+    //   component: () => import('@/views/rongZiCanShu/leiXing'),
+    //   name: 'leiXing',
+    //   meta: { title: '融资类型' }
+    // },
     {
       path: 'zhuTi',
       component: () => import('@/views/rongZiCanShu/zhuTi'),
