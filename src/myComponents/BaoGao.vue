@@ -1,5 +1,5 @@
 <template>
-  <el-select v-model="copyDataId" placeholder="征信报告" :clearable="cle" @change="getChange">
+  <el-select v-model="copyDataId" placeholder="征信报告" :clearable="cle" @change="getChange" style="width:33%">
     <el-option v-for="(item,index) in dataInfo" :key="index" :label="item" :value="String(index)" />
   </el-select>
 </template>

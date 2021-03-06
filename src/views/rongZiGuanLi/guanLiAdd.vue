@@ -175,36 +175,40 @@
           </el-col>
         </el-row>
         <el-row v-if="addOrUpdParams.rongZiEntityInfo.dsf">
-          <el-col :span="6">
+          <el-col :span="12">
             <el-form-item label="担保方：">
-              <el-input v-model="addOrUpdParams.rongZiEntityInfo.dbrmc" clearable />
+              <el-input v-model="addOrUpdParams.rongZiEntityInfo.dbrmc" clearable style="width:33%" />
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="12">
             <el-form-item label="担保协议号：">
-              <el-input v-model="addOrUpdParams.rongZiEntityInfo.dbxyh" clearable />
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="征信报告：">
-              <BaoGao v-model="addOrUpdParams.rongZiEntityInfo.dbrmczx" clearable style="width:220px" />
+              <el-input v-model="addOrUpdParams.rongZiEntityInfo.dbxyh" clearable style="width:33%" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row v-if="addOrUpdParams.rongZiEntityInfo.dsf">
-          <el-col :span="6">
-            <el-form-item label="担保方2：">
-              <el-input v-model="addOrUpdParams.rongZiEntityInfo.dbrmc2" clearable />
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
-            <el-form-item label="担保协议号：">
-              <el-input v-model="addOrUpdParams.rongZiEntityInfo.dbxyh2" clearable />
-            </el-form-item>
-          </el-col>
-          <el-col :span="6">
+          <el-col :span="12">
             <el-form-item label="征信报告：">
-              <BaoGao v-model="addOrUpdParams.rongZiEntityInfo.dbrmczx2" clearable style="width:220px" />
+              <BaoGao v-model="addOrUpdParams.rongZiEntityInfo.dbrmczx" clearable />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row v-if="addOrUpdParams.rongZiEntityInfo.dsf">
+          <el-col :span="12">
+            <el-form-item label="担保方2：">
+              <el-input v-model="addOrUpdParams.rongZiEntityInfo.dbrmc2" clearable style="width:33%" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="担保协议号：">
+              <el-input v-model="addOrUpdParams.rongZiEntityInfo.dbxyh2" clearable style="width:33%" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row v-if="addOrUpdParams.rongZiEntityInfo.dsf">
+          <el-col :span="12">
+            <el-form-item label="征信报告：">
+              <BaoGao v-model="addOrUpdParams.rongZiEntityInfo.dbrmczx2" clearable />
             </el-form-item>
           </el-col>
         </el-row>
